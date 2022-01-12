@@ -76,6 +76,6 @@ public abstract class Drivetrain
 
     public static void curvatureDrive(double leftY, double leftX, boolean isQuickTurn)
     {
-        drive.curvatureDrive(leftY, leftX, isQuickTurn);
+        drive.curvatureDrive(-leftY, leftX, isQuickTurn);
     }
 }

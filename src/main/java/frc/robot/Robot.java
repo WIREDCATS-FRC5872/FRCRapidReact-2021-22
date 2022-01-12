@@ -5,10 +5,8 @@
 package frc.robot;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
-import com.ctre.phoenix.motorcontrol.StatusFrame;
-import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
+import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.TimedRobot;
@@ -33,8 +31,6 @@ public class Robot extends TimedRobot
     private final Joystick controller = new Joystick(k.Controller_ID);
     private final Timer auto_timer = new Timer();
 
-    private static WPI_TalonSRX encodedTalon;
-
     /**
      * This function is run when the robot is first started up and should be used for any
      * initialization code.
@@ -44,11 +40,7 @@ public class Robot extends TimedRobot
     {
         Drivetrain.init();
         Pneumatics.init();
-        encodedTalon = new WPI_TalonSRX(5);
-        encodedTalon.configFactoryDefault();
-        encodedTalon.setNeutralMode(NeutralMode.Brake);
-        encodedTalon.setStatusFramePeriod(StatusFrame.Status_2_Feedback0, 5);
-        encodedTalon.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 100);
+        Falcon.init();
     }
 
     /** This function is run once each time the robot enters autonomous mode. */
@@ -85,7 +77,7 @@ public class Robot extends TimedRobot
     @Override
     public void teleopPeriodic()
     {
-        Drivetrain.curvatureDrive(controller.getRawAxis(k.LY_ID), controller.getRawAxis(k.LX_ID), false);
+        Drivetrain.curvatureDrive(controller.getRawAxis(k.LY_ID), controller.getRawAxis(k.LX_ID), true);
     }
 
     /** This function is called once each time the robot enters test mode. */
@@ -95,6 +87,10 @@ public class Robot extends TimedRobot
     /** This function is called periodically during test mode. */
     @Override
     public void testPeriodic() {
-        encodedTalon.set(ControlMode.Position, 4096);
+        if (controller.getRawButtonPressed(1))
+            Falcon.motor.set(ControlMode.Position, 4096);
+        if (controller.getRawButtonPressed(2))
+            Falcon.motor.set(ControlMode.Position, -4096);
+        System.out.println("Position: " + Falcon.motor.getSelectedSensorPosition());
     }
 }

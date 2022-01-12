@@ -18,6 +18,7 @@ public abstract class Pneumatics
     public static void init()
     {
         compressor.enableDigital();
+        compressor.disable();
         doubleSolenoid.set(Value.kReverse);
     }
 
