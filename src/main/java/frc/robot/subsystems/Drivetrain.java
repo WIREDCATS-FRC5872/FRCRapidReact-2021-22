@@ -72,10 +72,6 @@ public abstract class Drivetrain
         R_Master.setNeutralMode(NeutralMode.Brake);
         L_Slave.setNeutralMode(NeutralMode.Brake);
         R_Slave.setNeutralMode(NeutralMode.Brake);
-
-        // DifferentialDrive assumes (by default) that right side must be negative to move forward.
-        // Change to 'false' so positive/green-LEDs on the Talons moves robot forward
-        drive.setRightSideInverted(false);
     }
 
     public static void curvatureDrive(double leftY, double leftX, boolean isQuickTurn)

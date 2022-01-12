@@ -9,11 +9,8 @@ public abstract class Pneumatics
         private static final int COMPRESSOR_ID = 6;
     }
 
-    private static final Compressor compressor = new Compressor(k.COMPRESSOR_ID);
-
     public static void init()
     {
-        compressor.setClosedLoopControl(true);
-        compressor.start();
+
     }
 }
