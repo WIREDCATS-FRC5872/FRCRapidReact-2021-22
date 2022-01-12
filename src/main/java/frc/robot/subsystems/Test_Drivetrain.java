@@ -1,7 +1,6 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.*;
-import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
@@ -19,7 +18,7 @@ public abstract class Drivetrain
     
         private static final double WHEEL_DIAMETER = 4.0;
         private static final double GEAR_RATIO = 1.0;
-        private static final int TICKS_PER_REV = 2048;
+        private static final int TICKS_PER_REV = 4096;
         private static final double TICKS_PER_INCH = (TICKS_PER_REV * GEAR_RATIO) / (WHEEL_DIAMETER * Math.PI);
 
         // Set to zero to skip waiting for confirmation, set to nonzero to wait and
@@ -33,10 +32,10 @@ public abstract class Drivetrain
 
     // ===== MEMBERS ===== //
 
-    private static WPI_TalonFX R_Master;
-    private static WPI_TalonFX L_Master;
-    private static WPI_TalonFX L_Slave;
-    private static WPI_TalonFX R_Slave;
+    private static WPI_TalonSRX L_Master;
+    private static WPI_TalonSRX L_Slave;
+    private static WPI_TalonSRX R_Master;
+    private static WPI_TalonSRX R_Slave;
     private static DifferentialDrive drive;
 
     // ===== METHODS ===== //
@@ -46,10 +45,10 @@ public abstract class Drivetrain
     public static void init()
     {
         // Assign motors to ports
-        L_Master    = new WPI_TalonFX(k.FL_ID);
-        R_Master    = new WPI_TalonFX(k.FR_ID);
-        L_Slave     = new WPI_TalonFX(k.BL_ID);
-        R_Slave     = new WPI_TalonFX(k.BR_ID);
+        L_Master = new WPI_TalonSRX(k.FL_ID);
+        R_Master = new WPI_TalonSRX(k.FR_ID);
+        L_Slave = new WPI_TalonSRX(k.BL_ID);
+        R_Slave = new WPI_TalonSRX(k.BR_ID);
         drive = new DifferentialDrive(L_Master, R_Master);
 
         // Factory Default all hardware to prevent unexpected behaviour
@@ -73,14 +72,6 @@ public abstract class Drivetrain
         R_Master.setNeutralMode(NeutralMode.Brake);
         L_Slave.setNeutralMode(NeutralMode.Brake);
         R_Slave.setNeutralMode(NeutralMode.Brake);
-
-        L_Master.setStatusFramePeriod(StatusFrame.Status_2_Feedback0, 5);
-        R_Master.setStatusFramePeriod(StatusFrame.Status_2_Feedback0, 5);
-        L_Slave.setStatusFramePeriod(StatusFrame.Status_2_Feedback0, 5);
-        R_Slave.setStatusFramePeriod(StatusFrame.Status_2_Feedback0, 5);
-
-        L_Master.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor, 0, 100);
-        R_Master.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor, 0, 100);
     }
 
     public static void curvatureDrive(double leftY, double leftX, boolean isQuickTurn)
