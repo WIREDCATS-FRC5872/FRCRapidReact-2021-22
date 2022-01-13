@@ -11,7 +11,7 @@ import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
-
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.test_subsystems.*;
 
 /**
@@ -78,6 +78,8 @@ public class Robot extends TimedRobot
     public void teleopPeriodic()
     {
         Drivetrain.curvatureDrive(controller.getRawAxis(k.LY_ID), controller.getRawAxis(k.LX_ID), true);
+
+        SmartDashboard.putNumber("Position", Falcon.motor.getSelectedSensorPosition());
     }
 
     /** This function is called once each time the robot enters test mode. */
@@ -91,6 +93,8 @@ public class Robot extends TimedRobot
             Falcon.motor.set(ControlMode.Position, 4096);
         if (controller.getRawButtonPressed(2))
             Falcon.motor.set(ControlMode.Position, -4096);
+
+        // SmartDashboard manual outputs will NOT work in test mode
         System.out.println("Position: " + Falcon.motor.getSelectedSensorPosition());
     }
 }
