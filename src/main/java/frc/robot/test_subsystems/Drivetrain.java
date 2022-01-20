@@ -1,15 +1,8 @@
 package frc.robot.test_subsystems;
-<<<<<<< Updated upstream
-=======
-<<<<<<< HEAD
 
 import java.util.ArrayList;
-=======
->>>>>>> d86abb10be89667d9f4571686345668cd8d16dae
->>>>>>> Stashed changes
 
 import com.ctre.phoenix.motorcontrol.*;
-import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;

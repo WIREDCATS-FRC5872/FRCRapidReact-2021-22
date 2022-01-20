@@ -13,16 +13,19 @@ public abstract class Pneumatics
     }
 
     private static final Compressor compressor = new Compressor(k.COMPRESSOR_ID, PneumaticsModuleType.CTREPCM);
-    private static final DoubleSolenoid doubleSolenoid = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 0, 1);
+    public static final DoubleSolenoid doubleSolenoid = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 0, 1);
 
     public static void init()
     {
         compressor.enableDigital();
-        compressor.disable();
-        doubleSolenoid.set(Value.kReverse);
     }
 
     public static void toggleSolenoids() {
         doubleSolenoid.toggle();
+    }
+
+    public static Value getPosition()
+    {
+        return doubleSolenoid.get();
     }
 }
