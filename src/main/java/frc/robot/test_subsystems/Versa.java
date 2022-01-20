@@ -1,14 +1,14 @@
 package frc.robot.test_subsystems;
 
 import com.ctre.phoenix.motorcontrol.NeutralMode;
-import com.ctre.phoenix.motorcontrol.TalonFXFeedbackDevice;
-import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
+import com.ctre.phoenix.motorcontrol.TalonSRXFeedbackDevice;
+import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
-public abstract class Falcon
+public abstract class Versa
 {
     private static class k
     {
-        private static final int MOTOR_ID = 11;
+        private static final int MOTOR_ID = 5;
 
         /**
          * Talon FX supports multiple (cascaded) PID loops. For
@@ -25,20 +25,20 @@ public abstract class Falcon
 
     private static class Gains
     {
-        public static final double kP = 0.205;
+        public static final double kP = 0.1;
         public static final double kI = 0;
-        public static final double kD = 0;
+        public static final double kD = 0.05;
         public static final double kF = 0;
         public static final int kIzone = 0;
         public static final double kPeakOutput = 1.0;
     }
 
-    public static final WPI_TalonFX motor = new WPI_TalonFX(k.MOTOR_ID);
+    public static final WPI_TalonSRX motor = new WPI_TalonSRX(k.MOTOR_ID);
 
     public static void init()
     {
         motor.configFactoryDefault();
-        motor.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor, k.PIDLoopIDx, k.TimeoutMs);
+        motor.configSelectedFeedbackSensor(TalonSRXFeedbackDevice.CTRE_MagEncoder_Relative, k.PIDLoopIDx, k.TimeoutMs);
         motor.configNominalOutputForward(0, k.TimeoutMs);
 		motor.configNominalOutputReverse(0, k.TimeoutMs);
 		motor.configPeakOutputForward(1, k.TimeoutMs);

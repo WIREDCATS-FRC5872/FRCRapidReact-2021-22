@@ -5,14 +5,24 @@
 package frc.robot;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.motorcontrol.NeutralMode;
-import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
+<<<<<<< Updated upstream
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.test_subsystems.*;
+=======
+<<<<<<< HEAD
+import frc.robot.test_subsystems.Drivetrain;
+import frc.robot.test_subsystems.Falcon;
+import frc.robot.test_subsystems.Pneumatics;
+import frc.robot.test_subsystems.Versa;
+=======
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.test_subsystems.*;
+>>>>>>> d86abb10be89667d9f4571686345668cd8d16dae
+>>>>>>> Stashed changes
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -90,11 +100,19 @@ public class Robot extends TimedRobot
     @Override
     public void testPeriodic() {
         if (controller.getRawButtonPressed(1))
-            Falcon.motor.set(ControlMode.Position, 4096);
+        {
+            Versa.motor.set(ControlMode.Position, 4096*4);
+            Versa.motor.setSelectedSensorPosition(0);
+        }
         if (controller.getRawButtonPressed(2))
+<<<<<<< HEAD
+            Versa.motor.set(ControlMode.Position, 0);
+        System.out.println("Position: " + Versa.motor.getSelectedSensorPosition());
+=======
             Falcon.motor.set(ControlMode.Position, -4096);
 
         // SmartDashboard manual outputs will NOT work in test mode
         System.out.println("Position: " + Falcon.motor.getSelectedSensorPosition());
+>>>>>>> d86abb10be89667d9f4571686345668cd8d16dae
     }
 }

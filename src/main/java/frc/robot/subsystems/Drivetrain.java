@@ -49,7 +49,7 @@ public abstract class Drivetrain
         R_Master    = new WPI_TalonFX(k.FR_ID);
         L_Slave     = new WPI_TalonFX(k.BL_ID);
         R_Slave     = new WPI_TalonFX(k.BR_ID);
-        drive = new DifferentialDrive(L_Master, R_Master);
+        drive       = new DifferentialDrive(L_Master, R_Master);
 
         // Factory Default all hardware to prevent unexpected behaviour
         L_Master.configFactoryDefault();
