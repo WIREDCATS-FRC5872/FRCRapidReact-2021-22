@@ -27,6 +27,8 @@ public class Robot extends TimedRobot
     private static class k
     {
         private static final int LX_ID = 0, LY_ID = 1;
+        private static final int A = 1, B = 2, X = 3, Y = 4, LB = 5, RB = 6,
+            BACK = 7, START = 8, L_STICK = 9, R_STICK = 10;
         private static final int Controller_ID = 0;
     }
 
@@ -81,13 +83,13 @@ public class Robot extends TimedRobot
     {
         Drivetrain.curvatureDrive(controller.getRawAxis(k.LY_ID), controller.getRawAxis(k.LX_ID), true);
 
-        if (controller.getRawButtonPressed(1))
+        if (controller.getRawButtonPressed(k.A))
         {
             Pneumatics.doubleSolenoid.set(Value.kForward);
             System.out.println("1");
         }
 
-        if (controller.getRawButtonPressed(2))
+        if (controller.getRawButtonPressed(k.B))
         {
             Pneumatics.doubleSolenoid.set(Value.kReverse);
             System.out.println("2");
@@ -104,12 +106,12 @@ public class Robot extends TimedRobot
     /** This function is called periodically during test mode. */
     @Override
     public void testPeriodic() {
-        if (controller.getRawButtonPressed(1))
+        if (controller.getRawButtonPressed(k.A))
         {
             Versa.motor.set(ControlMode.Position, 4096*4);
             Versa.motor.setSelectedSensorPosition(0);
         }
-        if (controller.getRawButtonPressed(2))
+        if (controller.getRawButtonPressed(k.B))
 
             Versa.motor.set(ControlMode.Position, 0);
         System.out.println("Position: " + Versa.motor.getSelectedSensorPosition());
