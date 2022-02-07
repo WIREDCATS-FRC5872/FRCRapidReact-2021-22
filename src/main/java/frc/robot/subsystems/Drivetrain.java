@@ -1,5 +1,7 @@
 package frc.robot.subsystems;
 
+import java.util.ArrayList;
+
 import com.ctre.phoenix.motorcontrol.*;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 
@@ -11,32 +13,46 @@ public abstract class Drivetrain
     {
         private static final int FL_ID = 0, FR_ID = 1;
         private static final int BL_ID = 2, BR_ID = 3;
-        private static final double TELEOP_SPEED = 1; // temp
-
-        private static final boolean L_SENSOR_PHASE = true; // temp
-        private static final boolean R_SENSOR_PHASE = false; // temp
     
         private static final double WHEEL_DIAMETER = 4.0;
         private static final double GEAR_RATIO = 1.0;
-        private static final int TICKS_PER_REV = 2048;
+        private static final int TICKS_PER_REV = 4096;
         private static final double TICKS_PER_INCH = (TICKS_PER_REV * GEAR_RATIO) / (WHEEL_DIAMETER * Math.PI);
 
         // Set to zero to skip waiting for confirmation, set to nonzero to wait and
         // report to DS if action fails.
-        private static final int timeoutMs = 30; // temp
+        private static final int TimeoutMs = 30;
+
+        /**
+         * Which PID slot to pull gains from. Starting 2018, you can choose from
+         * 0,1,2 or 3. Only the first two (0,1) are visible in web-based
+         * configuration.
+         */
+        public static final int SlotIDx = 0;
 
         // Talon SRX/ Victor SPX will supported multiple (cascaded) PID loops. For
         // now we just want the primary one.
-        private static final int PIDLoopIdx = 0;
+        private static final int PIDLoopIDx = 0;
+    }
+
+    private static class Gains
+    {
+        public static final double kP = 0.205;
+        public static final double kI = 0;
+        public static final double kD = 0;
+        public static final double kF = 0;
+        public static final int kIzone = 0;
+        public static final double kPeakOutput = 1.0;
     }
 
     // ===== MEMBERS ===== //
 
-    private static WPI_TalonFX R_Master;
-    private static WPI_TalonFX L_Master;
-    private static WPI_TalonFX L_Slave;
-    private static WPI_TalonFX R_Slave;
-    private static DifferentialDrive drive;
+    private static WPI_TalonFX L_Master = new WPI_TalonFX(k.FL_ID);
+    private static WPI_TalonFX R_Master = new WPI_TalonFX(k.FR_ID);
+    private static WPI_TalonFX L_Slave = new WPI_TalonFX(k.BL_ID);
+    private static WPI_TalonFX R_Slave = new WPI_TalonFX(k.BR_ID);
+    private static DifferentialDrive drive = new DifferentialDrive(L_Master, R_Master);
+    private static WPI_TalonFX[] DriveMotors = new WPI_TalonFX[]{L_Master, R_Master, L_Slave, R_Slave};
 
     // ===== METHODS ===== //
 
@@ -44,42 +60,40 @@ public abstract class Drivetrain
 
     public static void init()
     {
-        // Assign motors to ports
-        L_Master    = new WPI_TalonFX(k.FL_ID);
-        R_Master    = new WPI_TalonFX(k.FR_ID);
-        L_Slave     = new WPI_TalonFX(k.BL_ID);
-        R_Slave     = new WPI_TalonFX(k.BR_ID);
-        drive       = new DifferentialDrive(L_Master, R_Master);
+        for (WPI_TalonFX motor : DriveMotors)
+        {
+            motor.configFactoryDefault();
+            motor.setInverted(true);
+            motor.setNeutralMode(NeutralMode.Brake);
 
-        // Factory Default all hardware to prevent unexpected behaviour
-        L_Master.configFactoryDefault();
-        R_Master.configFactoryDefault();
-        L_Slave.configFactoryDefault();
-        R_Slave.configFactoryDefault();
+            /* Set relevant frame periods to be at least as fast as periodic rate */
+            motor.setStatusFramePeriod(StatusFrameEnhanced.Status_13_Base_PIDF0, 10, k.TimeoutMs);
+            motor.setStatusFramePeriod(StatusFrameEnhanced.Status_10_MotionMagic, 10, k.TimeoutMs);
+
+            motor.configNeutralDeadband(0.001, k.TimeoutMs);
+
+            motor.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor, k.PIDLoopIDx, k.TimeoutMs);
+            motor.configNominalOutputForward(0, k.TimeoutMs);
+            motor.configNominalOutputReverse(0, k.TimeoutMs);
+            motor.configPeakOutputForward(1, k.TimeoutMs);
+            motor.configPeakOutputReverse(-1, k.TimeoutMs);
+            motor.configAllowableClosedloopError(0, k.PIDLoopIDx, k.TimeoutMs);
+            
+            motor.selectProfileSlot(k.SlotIDx, k.PIDLoopIDx);
+            motor.config_kP(k.SlotIDx, Gains.kP, k.TimeoutMs);
+            motor.config_kI(k.SlotIDx, Gains.kI, k.TimeoutMs);
+            motor.config_kD(k.SlotIDx, Gains.kD, k.TimeoutMs);
+            motor.config_kF(k.SlotIDx, Gains.kF, k.TimeoutMs);
+            
+            motor.configMotionCruiseVelocity(0, k.TimeoutMs);
+            motor.configMotionAcceleration(0, k.TimeoutMs);
+
+            motor.setSelectedSensorPosition(0, k.PIDLoopIDx, k.TimeoutMs);
+        }
 
         // Set followers
         L_Slave.follow(L_Master);
         R_Slave.follow(R_Master);
-
-        // Reverse motors
-        L_Master.setInverted(true);
-        R_Master.setInverted(true);
-        L_Slave.setInverted(InvertType.FollowMaster);
-        R_Slave.setInverted(InvertType.FollowMaster);
-
-        // Set motor neutral mode
-        L_Master.setNeutralMode(NeutralMode.Brake);
-        R_Master.setNeutralMode(NeutralMode.Brake);
-        L_Slave.setNeutralMode(NeutralMode.Brake);
-        R_Slave.setNeutralMode(NeutralMode.Brake);
-
-        L_Master.setStatusFramePeriod(StatusFrame.Status_2_Feedback0, 5);
-        R_Master.setStatusFramePeriod(StatusFrame.Status_2_Feedback0, 5);
-        L_Slave.setStatusFramePeriod(StatusFrame.Status_2_Feedback0, 5);
-        R_Slave.setStatusFramePeriod(StatusFrame.Status_2_Feedback0, 5);
-
-        L_Master.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor, 0, 100);
-        R_Master.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor, 0, 100);
     }
 
     public static void curvatureDrive(double leftY, double leftX, boolean isQuickTurn)

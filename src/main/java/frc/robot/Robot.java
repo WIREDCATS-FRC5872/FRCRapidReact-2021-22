@@ -4,23 +4,13 @@
 
 package frc.robot;
 
-import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.sensors.PigeonIMU;
 
 import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot.test_subsystems.*;
-
 import frc.robot.test_subsystems.Drivetrain;
-import frc.robot.test_subsystems.Falcon;
-import frc.robot.test_subsystems.Pneumatics;
-import frc.robot.test_subsystems.Versa;
-
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot.test_subsystems.*;
 
 public class Robot extends TimedRobot 
 {
@@ -29,10 +19,12 @@ public class Robot extends TimedRobot
         private static final int LX_ID = 0, LY_ID = 1;
         private static final int A = 1, B = 2, X = 3, Y = 4, LB = 5, RB = 6,
             BACK = 7, START = 8, L_STICK = 9, R_STICK = 10;
-        private static final int Controller_ID = 0;
+        private static final int CONTROLLER_ID = 0;
+        private static final int PIGEON_ID = 999; // temp
     }
 
-    private final Joystick controller = new Joystick(k.Controller_ID);
+    private final Joystick controller = new Joystick(k.CONTROLLER_ID);
+    private final PigeonIMU pigeon = new PigeonIMU(k.PIGEON_ID);
     private final Timer auto_timer = new Timer();
 
     /**
@@ -43,8 +35,6 @@ public class Robot extends TimedRobot
     public void robotInit()
     {
         Drivetrain.init();
-        Pneumatics.init();
-        Falcon.init();
     }
 
     /** This function is run once each time the robot enters autonomous mode. */
@@ -59,15 +49,7 @@ public class Robot extends TimedRobot
     @Override
     public void autonomousPeriodic()
     {
-        // Drive for 2 seconds
-        if (auto_timer.get() < 2.0)
-        {
-            Drivetrain.curvatureDrive(1, 0, true);
-        }
-        else
-        {
-            Drivetrain.curvatureDrive(0, 0, true);
-        }
+
     }
 
     /** This function is called once each time the robot enters teleoperated mode. */
@@ -82,21 +64,7 @@ public class Robot extends TimedRobot
     public void teleopPeriodic()
     {
         Drivetrain.curvatureDrive(controller.getRawAxis(k.LY_ID), controller.getRawAxis(k.LX_ID), true);
-
-        if (controller.getRawButtonPressed(k.A))
-        {
-            Pneumatics.doubleSolenoid.set(Value.kForward);
-            System.out.println("1");
-        }
-
-        if (controller.getRawButtonPressed(k.B))
-        {
-            Pneumatics.doubleSolenoid.set(Value.kReverse);
-            System.out.println("2");
-        }
-
-        SmartDashboard.putString("DoubleSolenoid", Pneumatics.getPosition().name());
-        SmartDashboard.putNumber("Position", Falcon.motor.getSelectedSensorPosition());
+        SmartDashboard.putNumber("Heading", pigeon.getYaw());
     }
 
     /** This function is called once each time the robot enters test mode. */
@@ -105,21 +73,8 @@ public class Robot extends TimedRobot
 
     /** This function is called periodically during test mode. */
     @Override
-    public void testPeriodic() {
-        if (controller.getRawButtonPressed(k.A))
-        {
-            Versa.motor.set(ControlMode.Position, 4096*4);
-            Versa.motor.setSelectedSensorPosition(0);
-        }
-        if (controller.getRawButtonPressed(k.B))
-
-            Versa.motor.set(ControlMode.Position, 0);
-        System.out.println("Position: " + Versa.motor.getSelectedSensorPosition());
-
-            Falcon.motor.set(ControlMode.Position, -4096);
-
-        // SmartDashboard manual outputs will NOT work in test mode
-        System.out.println("Position: " + Falcon.motor.getSelectedSensorPosition());
+    public void testPeriodic()
+    {
 
     }
 }
