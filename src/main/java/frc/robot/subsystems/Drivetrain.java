@@ -89,8 +89,8 @@ public abstract class Drivetrain
         }
 
         // Invert as necessary & assign to diff drive 
-        L_Master.setInverted(false);
-        R_Master.setInverted(true);
+        // L_Master.setInverted(false);
+        // R_Master.setInverted(true);
         drive = new DifferentialDrive(L_Master, R_Master);
 
         // Set followers
@@ -100,13 +100,15 @@ public abstract class Drivetrain
 
     public static void curvatureDrive(double leftY, double leftX, boolean isQuickTurn)
     {
-        drive.curvatureDrive(-temperInput(leftY), temperInput(leftX), isQuickTurn);
+        drive.curvatureDrive(leftY, leftX, isQuickTurn);
     }
 
-    /** For smoother acceleration */
+    /*
+    // For smoother acceleration
     public static double temperInput(double value)
     {
         return value/Math.abs(value)    // 1 or -1. to preserve original signage when using even exponent below
             * Math.pow(value, 2);
     }
+    */
 }
