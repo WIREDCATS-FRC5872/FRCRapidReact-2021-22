@@ -63,18 +63,17 @@ public class Robot extends TimedRobot
     @Override
     public void teleopPeriodic()
     {
-<<<<<<< HEAD
         Drivetrain.curvatureDrive(controller.getRawAxis(k.LY_ID), controller.getRawAxis(k.LX_ID), true);
+        
         // SmartDashboard.putNumber("Heading", pigeon.getYaw());
-=======
         // ==== Drive control ==== //
+        /*
         if (controller.getRawButton(k.RB))  // Slow mode
             Drivetrain.curvatureDrive(controller.getRawAxis(k.LY_ID)/3, controller.getRawAxis(k.LX_ID)/3, true);
         else
             Drivetrain.curvatureDrive(controller.getRawAxis(k.LY_ID), controller.getRawAxis(k.LX_ID), true);
+        */
         
-        SmartDashboard.putNumber("Heading", pigeon.getYaw());
->>>>>>> 3ea1a820caa5fb4fc4562794edf5bfd49c0bca51
     }
 
     /** This function is called once each time the robot enters test mode. */
