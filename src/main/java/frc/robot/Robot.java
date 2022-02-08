@@ -24,7 +24,7 @@ public class Robot extends TimedRobot
     }
 
     private final Joystick controller = new Joystick(k.CONTROLLER_ID);
-    private final PigeonIMU pigeon = new PigeonIMU(k.PIGEON_ID);
+    // private final PigeonIMU pigeon = new PigeonIMU(k.PIGEON_ID);
     private final Timer auto_timer = new Timer();
 
     /**
@@ -64,7 +64,7 @@ public class Robot extends TimedRobot
     public void teleopPeriodic()
     {
         Drivetrain.curvatureDrive(controller.getRawAxis(k.LY_ID), controller.getRawAxis(k.LX_ID), true);
-        SmartDashboard.putNumber("Heading", pigeon.getYaw());
+        // SmartDashboard.putNumber("Heading", pigeon.getYaw());
     }
 
     /** This function is called once each time the robot enters test mode. */
