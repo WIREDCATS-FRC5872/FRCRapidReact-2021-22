@@ -100,6 +100,17 @@ public abstract class Drivetrain
 
     public static void curvatureDrive(double leftY, double leftX, boolean isQuickTurn)
     {
-        drive.curvatureDrive(-leftY, leftX, isQuickTurn);
+        drive.curvatureDrive(-temperInput(leftY), temperInput(leftX), isQuickTurn);
+    }
+
+    /**
+     * For smoother acceleration
+     * @param value Some joystick input to be used for drive control
+     * @return A corrected input value
+     */
+    public static double temperInput(double value)
+    {
+        return value/Math.abs(value)    // 1 or -1. to preserve original signage when using even exponent below
+            * Math.pow(value, 2);
     }
 }

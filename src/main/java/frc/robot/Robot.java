@@ -63,7 +63,12 @@ public class Robot extends TimedRobot
     @Override
     public void teleopPeriodic()
     {
-        Drivetrain.curvatureDrive(controller.getRawAxis(k.LY_ID), controller.getRawAxis(k.LX_ID), true);
+        // ==== Drive control ==== //
+        if (controller.getRawButton(k.RB))  // Slow mode
+            Drivetrain.curvatureDrive(controller.getRawAxis(k.LY_ID)/3, controller.getRawAxis(k.LX_ID)/3, true);
+        else
+            Drivetrain.curvatureDrive(controller.getRawAxis(k.LY_ID), controller.getRawAxis(k.LX_ID), true);
+        
         SmartDashboard.putNumber("Heading", pigeon.getYaw());
     }
 
