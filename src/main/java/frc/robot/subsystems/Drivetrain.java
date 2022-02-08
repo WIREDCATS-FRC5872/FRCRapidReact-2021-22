@@ -89,8 +89,8 @@ public abstract class Drivetrain
         }
 
         // Invert as necessary & assign to diff drive 
-        L_Master.setInverted(true);
-        R_Master.setInverted(false);
+        L_Master.setInverted(false);
+        R_Master.setInverted(true);
 
         // Set followers
         L_Slave.follow(L_Master);
@@ -104,7 +104,7 @@ public abstract class Drivetrain
 
     public static void curvatureDrive(double leftY, double leftX, boolean isQuickTurn)
     {
-        drive.curvatureDrive(leftY, leftX, isQuickTurn);
+        drive.curvatureDrive(-leftY, leftX, isQuickTurn);
     }
 
     /*
