@@ -1,7 +1,5 @@
 package frc.robot.subsystems;
 
-import java.util.ArrayList;
-
 import com.ctre.phoenix.motorcontrol.*;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 
@@ -51,7 +49,7 @@ public abstract class Drivetrain
     private static WPI_TalonFX R_Master = new WPI_TalonFX(k.FR_ID);
     private static WPI_TalonFX L_Slave = new WPI_TalonFX(k.BL_ID);
     private static WPI_TalonFX R_Slave = new WPI_TalonFX(k.BR_ID);
-    private static DifferentialDrive drive = new DifferentialDrive(L_Master, R_Master);
+    private static DifferentialDrive drive;
     private static WPI_TalonFX[] DriveMotors = new WPI_TalonFX[]{L_Master, R_Master, L_Slave, R_Slave};
 
     // ===== METHODS ===== //
@@ -63,7 +61,6 @@ public abstract class Drivetrain
         for (WPI_TalonFX motor : DriveMotors)
         {
             motor.configFactoryDefault();
-            motor.setInverted(true);
             motor.setNeutralMode(NeutralMode.Brake);
 
             /* Set relevant frame periods to be at least as fast as periodic rate */
@@ -91,6 +88,11 @@ public abstract class Drivetrain
             motor.setSelectedSensorPosition(0, k.PIDLoopIDx, k.TimeoutMs);
         }
 
+        // Invert as necessary & assign to diff drive 
+        L_Master.setInverted(false);
+        R_Master.setInverted(true);
+        drive = new DifferentialDrive(L_Master, R_Master);
+
         // Set followers
         L_Slave.follow(L_Master);
         R_Slave.follow(R_Master);
@@ -98,6 +100,13 @@ public abstract class Drivetrain
 
     public static void curvatureDrive(double leftY, double leftX, boolean isQuickTurn)
     {
-        drive.curvatureDrive(-leftY, leftX, isQuickTurn);
+        drive.curvatureDrive(-temperInput(leftY), temperInput(leftX), isQuickTurn);
+    }
+
+    /** For smoother acceleration */
+    public static double temperInput(double value)
+    {
+        return value/Math.abs(value)    // 1 or -1. to preserve original signage when using even exponent below
+            * Math.pow(value, 2);
     }
 }
