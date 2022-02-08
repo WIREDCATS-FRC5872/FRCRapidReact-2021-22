@@ -91,11 +91,15 @@ public abstract class Drivetrain
         // Invert as necessary & assign to diff drive 
         // L_Master.setInverted(false);
         // R_Master.setInverted(true);
-        drive = new DifferentialDrive(L_Master, R_Master);
 
         // Set followers
         L_Slave.follow(L_Master);
         R_Slave.follow(R_Master);
+
+        L_Slave.setInverted(InvertType.FollowMaster);
+        R_Slave.setInverted(InvertType.FollowMaster);
+
+        drive = new DifferentialDrive(L_Master, R_Master);
     }
 
     public static void curvatureDrive(double leftY, double leftX, boolean isQuickTurn)
