@@ -89,8 +89,8 @@ public abstract class Drivetrain
         }
 
         // Invert as necessary & assign to diff drive 
-        // L_Master.setInverted(false);
-        // R_Master.setInverted(true);
+        L_Master.setInverted(true);
+        R_Master.setInverted(false);
 
         // Set followers
         L_Slave.follow(L_Master);
