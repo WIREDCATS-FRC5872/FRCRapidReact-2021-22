@@ -16,15 +16,15 @@ public class Robot extends TimedRobot
 {
     private static class k
     {
-        private static final int LX_ID = 0, LY_ID = 1;
+        private static final int LX_ID = 0, LY_ID = 1, RX_ID = 4, RY_ID = 5;
         private static final int A = 1, B = 2, X = 3, Y = 4, LB = 5, RB = 6,
             BACK = 7, START = 8, L_STICK = 9, R_STICK = 10;
         private static final int CONTROLLER_ID = 0;
-        private static final int PIGEON_ID = 999; // temp
+        private static final int PIGEON_ID = 0; // temp
     }
 
     private final Joystick controller = new Joystick(k.CONTROLLER_ID);
-    // private final PigeonIMU pigeon = new PigeonIMU(k.PIGEON_ID);
+    private final PigeonIMU pigeon = new PigeonIMU(k.PIGEON_ID);
     private final Timer auto_timer = new Timer();
 
     /**
@@ -63,17 +63,15 @@ public class Robot extends TimedRobot
     @Override
     public void teleopPeriodic()
     {
-        Drivetrain.curvatureDrive(controller.getRawAxis(k.LY_ID), controller.getRawAxis(k.LX_ID), true);
-        
-        // SmartDashboard.putNumber("Heading", pigeon.getYaw());
         // ==== Drive control ==== //
-        /*
         if (controller.getRawButton(k.RB))  // Slow mode
-            Drivetrain.curvatureDrive(controller.getRawAxis(k.LY_ID)/3, controller.getRawAxis(k.LX_ID)/3, true);
+            Drivetrain.arcadeDrive(controller.getRawAxis(k.LY_ID)/2, controller.getRawAxis(k.RX_ID)/2);
         else
-            Drivetrain.curvatureDrive(controller.getRawAxis(k.LY_ID), controller.getRawAxis(k.LX_ID), true);
-        */
-        
+            Drivetrain.arcadeDrive(controller.getRawAxis(k.LY_ID), controller.getRawAxis(k.RX_ID));
+
+        // ==== Telemetry ==== //
+        Drivetrain.printEncoderCount();
+        SmartDashboard.putNumber("Heading", pigeon.getYaw());
     }
 
     /** This function is called once each time the robot enters test mode. */

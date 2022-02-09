@@ -4,6 +4,7 @@ import com.ctre.phoenix.motorcontrol.*;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public abstract class Drivetrain
 {
@@ -102,9 +103,14 @@ public abstract class Drivetrain
         drive = new DifferentialDrive(L_Master, R_Master);
     }
 
-    public static void curvatureDrive(double leftY, double leftX, boolean isQuickTurn)
+    public static void arcadeDrive(double leftY, double leftX)
     {
-        drive.curvatureDrive(-leftY, leftX, isQuickTurn);
+        drive.arcadeDrive(-leftY, leftX);
+
+        SmartDashboard.putNumber("L_Master", L_Master.getSelectedSensorPosition());
+        SmartDashboard.putNumber("L_Slave", L_Slave.getSelectedSensorPosition());
+        SmartDashboard.putNumber("R_Master", R_Master.getSelectedSensorPosition());
+        SmartDashboard.putNumber("R_Slave", R_Slave.getSelectedSensorPosition());
     }
 
     /*
