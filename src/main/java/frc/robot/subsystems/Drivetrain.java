@@ -106,7 +106,10 @@ public abstract class Drivetrain
     public static void arcadeDrive(double leftY, double leftX)
     {
         drive.arcadeDrive(-leftY, leftX);
+    }
 
+    public static void printEncoderCount()
+    {
         SmartDashboard.putNumber("L_Master", L_Master.getSelectedSensorPosition());
         SmartDashboard.putNumber("L_Slave", L_Slave.getSelectedSensorPosition());
         SmartDashboard.putNumber("R_Master", R_Master.getSelectedSensorPosition());
