@@ -26,6 +26,7 @@ public class Robot extends TimedRobot
     private final Joystick controller = new Joystick(k.CONTROLLER_ID);
     private final PigeonIMU pigeon = new PigeonIMU(k.PIGEON_ID);
     private final Timer auto_timer = new Timer();
+    private double heading = 0, absHeading = 0;
 
     /**
      * This function is run when the robot is first started up and should be used for any
@@ -55,7 +56,7 @@ public class Robot extends TimedRobot
     /** This function is called once each time the robot enters teleoperated mode. */
     @Override
     public void teleopInit() 
-    {
+    { 
 
     }
 
@@ -63,6 +64,7 @@ public class Robot extends TimedRobot
     @Override
     public void teleopPeriodic()
     {
+        /*
         // ==== Drive control ==== //
         if (controller.getRawButton(k.RB))  // Slow mode
             Drivetrain.arcadeDrive(controller.getRawAxis(k.LY_ID)/2, controller.getRawAxis(k.RX_ID)/2);
@@ -72,6 +74,18 @@ public class Robot extends TimedRobot
         // ==== Telemetry ==== //
         Drivetrain.printEncoderCount();
         SmartDashboard.putNumber("Heading", pigeon.getYaw());
+        */
+
+        if (controller.getRawButtonPressed(k.A))
+            pigeon.setYaw(0);
+
+        // Conversion
+        heading = -pigeon.getYaw();
+        absHeading = heading%360;
+        if (absHeading < 0)
+            absHeading += 360;
+        SmartDashboard.putNumber("Running Heading", heading);
+        SmartDashboard.putNumber("Absolute Heading", absHeading);
     }
 
     /** This function is called once each time the robot enters test mode. */
