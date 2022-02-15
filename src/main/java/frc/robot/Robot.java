@@ -20,13 +20,13 @@ public class Robot extends TimedRobot
         private static final int A = 1, B = 2, X = 3, Y = 4, LB = 5, RB = 6,
             BACK = 7, START = 8, L_STICK = 9, R_STICK = 10;
         private static final int CONTROLLER_ID = 0;
-        private static final int PIGEON_ID = 0; // temp
+        private static final int PIGEON_ID = 0;
     }
 
     private final Joystick controller = new Joystick(k.CONTROLLER_ID);
     private final PigeonIMU pigeon = new PigeonIMU(k.PIGEON_ID);
     private final Timer auto_timer = new Timer();
-    private double heading = 0, absHeading = 0;
+    private double rawHeading = 0, absHeading = 0;
 
     /**
      * This function is run when the robot is first started up and should be used for any
@@ -57,35 +57,30 @@ public class Robot extends TimedRobot
     @Override
     public void teleopInit() 
     { 
-
+        pigeon.setYaw(0);
     }
 
     /** This function is called periodically during teleoperated mode. */
     @Override
     public void teleopPeriodic()
     {
-        /*
         // ==== Drive control ==== //
         if (controller.getRawButton(k.RB))  // Slow mode
             Drivetrain.arcadeDrive(controller.getRawAxis(k.LY_ID)/2, controller.getRawAxis(k.RX_ID)/2);
         else
             Drivetrain.arcadeDrive(controller.getRawAxis(k.LY_ID), controller.getRawAxis(k.RX_ID));
 
-        // ==== Telemetry ==== //
-        Drivetrain.printEncoderCount();
-        SmartDashboard.putNumber("Heading", pigeon.getYaw());
-        */
-
-        if (controller.getRawButtonPressed(k.A))
-            pigeon.setYaw(0);
-
+        // ==== Pigeon ==== //
         // Conversion
-        heading = -pigeon.getYaw();
-        absHeading = heading%360;
+        rawHeading = -pigeon.getYaw();
+        absHeading = rawHeading%360;
         if (absHeading < 0)
             absHeading += 360;
-        SmartDashboard.putNumber("Running Heading", heading);
-        SmartDashboard.putNumber("Absolute Heading", absHeading);
+
+        // ==== Telemetry ==== //
+        Drivetrain.printEncoderCount();
+        SmartDashboard.putNumber("Raw Heading", rawHeading);
+        SmartDashboard.putNumber("Abs Heading", absHeading);
     }
 
     /** This function is called once each time the robot enters test mode. */
