@@ -35,15 +35,17 @@ public class Robot extends TimedRobot
     @Override
     public void robotInit()
     {
-        Drivetrain.init();
+
     }
 
     /** This function is run once each time the robot enters autonomous mode. */
     @Override
     public void autonomousInit()
     {
+        /*
         auto_timer.reset();
         auto_timer.start();
+        */
     }
 
     /** This function is called periodically during autonomous. */
@@ -57,6 +59,7 @@ public class Robot extends TimedRobot
     @Override
     public void teleopInit() 
     { 
+        Drivetrain.init();
         pigeon.setYaw(0);
     }
 

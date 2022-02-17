@@ -15,7 +15,7 @@ public abstract class Drivetrain
     
         private static final double WHEEL_DIAMETER = 4.0;
         private static final double GEAR_RATIO = 1.0;
-        private static final int TICKS_PER_REV = 4096;
+        private static final int TICKS_PER_REV = 2048;
         private static final double TICKS_PER_INCH = (TICKS_PER_REV * GEAR_RATIO) / (WHEEL_DIAMETER * Math.PI);
 
         // Set to zero to skip waiting for confirmation, set to nonzero to wait and
