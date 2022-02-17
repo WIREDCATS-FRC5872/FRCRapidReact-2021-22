@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.subsystems.Drivetrain;
+import frc.robot.subsystems.Intake;
 
 public class Robot extends TimedRobot 
 {
@@ -35,17 +36,17 @@ public class Robot extends TimedRobot
     @Override
     public void robotInit()
     {
-
+        Drivetrain.init();
+        Intake.init();
     }
 
     /** This function is run once each time the robot enters autonomous mode. */
     @Override
     public void autonomousInit()
     {
-        /*
         auto_timer.reset();
         auto_timer.start();
-        */
+        pigeon.setYaw(0);
     }
 
     /** This function is called periodically during autonomous. */
@@ -59,8 +60,7 @@ public class Robot extends TimedRobot
     @Override
     public void teleopInit() 
     { 
-        Drivetrain.init();
-        pigeon.setYaw(0);
+
     }
 
     /** This function is called periodically during teleoperated mode. */
@@ -72,6 +72,14 @@ public class Robot extends TimedRobot
             Drivetrain.arcadeDrive(controller.getRawAxis(k.LY_ID)/2, controller.getRawAxis(k.RX_ID)/2);
         else
             Drivetrain.arcadeDrive(controller.getRawAxis(k.LY_ID), controller.getRawAxis(k.RX_ID));
+
+        // ==== Intake ==== //
+        if (controller.getRawButtonPressed(k.A) && Intake._RunState != Intake.RunState.FORWARD)
+            Intake.forward();
+        else if (controller.getRawButtonPressed(k.B) && Intake._RunState != Intake.RunState.REVERSE)
+            Intake.reverse();
+        else
+            Intake.stop();
 
         // ==== Pigeon ==== //
         // Conversion
