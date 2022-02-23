@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Intake;
+import frc.robot.subsystems.Hanger;
 
 public class Robot extends TimedRobot 
 {
@@ -22,6 +23,7 @@ public class Robot extends TimedRobot
         private static final int LX_ID = 0, LY_ID = 1, RX_ID = 4, RY_ID = 5;
         private static final int A = 1, B = 2, X = 3, Y = 4, LB = 5, RB = 6,
             BACK = 7, START = 8, L_STICK = 9, R_STICK = 10;
+        private static final int UP = 0, RIGHT = 90, DOWN = 180, LEFT = 270;
         private static final int CONTROLLER_ID = 0;
         private static final int PIGEON_ID = 0;
         private static final int PCM_ID = 0; // default node ID
@@ -79,17 +81,36 @@ public class Robot extends TimedRobot
             Drivetrain.arcadeDrive(controller.getRawAxis(k.LY_ID), controller.getRawAxis(k.RX_ID));
 
         // ==== Intake ==== //
+
+        // Raise/Lower
         if (controller.getRawButtonPressed(k.X) && Intake._Position == Intake.Position.UP)
             Intake.lower();
         else if (controller.getRawButtonPressed(k.X))
             Intake.raise();
 
+        // Spin
         if (controller.getRawButtonPressed(k.A) && Intake._RunState != Intake.RunState.FORWARD)
             Intake.forward();
         else if (controller.getRawButtonPressed(k.B) && Intake._RunState != Intake.RunState.REVERSE)
             Intake.reverse();
         else if (controller.getRawButtonPressed(k.A) || controller.getRawButtonPressed(k.B))
             Intake.stop();
+
+        // === Hanger === //
+
+        // Vertical
+        if (controller.getRawButton(k.UP))
+            Hanger.raise();
+        else if (controller.getRawButton(k.DOWN))
+            Hanger.lower();
+        else
+            Hanger.stop();
+
+        // Angle
+        if (controller.getRawButtonPressed(k.RIGHT) && Hanger._Angle != Hanger.Angle.FORWARD)
+            Hanger.forward();
+        else if (controller.getRawButtonPressed(k.LEFT) && Hanger._Angle != Hanger.Angle.REST)
+            Hanger.rest();
 
         // ==== Pigeon ==== //
 
