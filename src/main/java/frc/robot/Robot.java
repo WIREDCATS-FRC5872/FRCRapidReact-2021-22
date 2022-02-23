@@ -6,7 +6,9 @@ package frc.robot;
 
 import com.ctre.phoenix.sensors.PigeonIMU;
 
+import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -22,10 +24,12 @@ public class Robot extends TimedRobot
             BACK = 7, START = 8, L_STICK = 9, R_STICK = 10;
         private static final int CONTROLLER_ID = 0;
         private static final int PIGEON_ID = 0;
+        private static final int PCM_ID = 0; // default node ID
     }
 
     private final Joystick controller = new Joystick(k.CONTROLLER_ID);
     private final PigeonIMU pigeon = new PigeonIMU(k.PIGEON_ID);
+    private static final Compressor pcmCompressor = new Compressor(k.PCM_ID, PneumaticsModuleType.CTREPCM);
     private final Timer auto_timer = new Timer();
     private double rawHeading = 0, absHeading = 0;
 
@@ -36,6 +40,7 @@ public class Robot extends TimedRobot
     @Override
     public void robotInit()
     {
+        pcmCompressor.enableDigital();
         Drivetrain.init();
         Intake.init();
     }
@@ -74,14 +79,20 @@ public class Robot extends TimedRobot
             Drivetrain.arcadeDrive(controller.getRawAxis(k.LY_ID), controller.getRawAxis(k.RX_ID));
 
         // ==== Intake ==== //
+        if (controller.getRawButtonPressed(k.X) && Intake._Position == Intake.Position.UP)
+            Intake.lower();
+        else if (controller.getRawButtonPressed(k.X))
+            Intake.raise();
+
         if (controller.getRawButtonPressed(k.A) && Intake._RunState != Intake.RunState.FORWARD)
             Intake.forward();
         else if (controller.getRawButtonPressed(k.B) && Intake._RunState != Intake.RunState.REVERSE)
             Intake.reverse();
-        else
+        else if (controller.getRawButtonPressed(k.A) || controller.getRawButtonPressed(k.B))
             Intake.stop();
 
         // ==== Pigeon ==== //
+
         // Conversion
         rawHeading = -pigeon.getYaw();
         absHeading = rawHeading%360;
