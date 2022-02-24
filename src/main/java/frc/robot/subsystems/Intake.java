@@ -7,8 +7,6 @@ import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 
-import frc.robot.RobotException;
-
 public abstract class Intake
 {
     private static class k
@@ -48,7 +46,7 @@ public abstract class Intake
     public static void init()
     {
         motor.configFactoryDefault();
-        motor.setInverted(true);
+        motor.setInverted(false);
         motor.setNeutralMode(NeutralMode.Coast);
     }
 

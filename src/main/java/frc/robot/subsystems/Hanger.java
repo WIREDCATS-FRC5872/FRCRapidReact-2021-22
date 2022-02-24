@@ -38,7 +38,7 @@ public abstract class Hanger
     public static void init()
     {
         motor.configFactoryDefault();
-        motor.setInverted(true);
+        motor.setInverted(false); // temp
         motor.setNeutralMode(NeutralMode.Coast);
     }
 
