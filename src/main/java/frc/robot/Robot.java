@@ -16,6 +16,7 @@ import frc.robot.subsystems.Conveyor;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Hanger;
+import frc.robot.subsystems.Cameras;
 
 public class Robot extends TimedRobot 
 {
@@ -122,6 +123,10 @@ public class Robot extends TimedRobot
             Hanger.forward();
         else if (controller2.getRawButtonPressed(k.LEFT) && Hanger._Angle != Hanger.Angle.REST)
             Hanger.rest();
+
+        // === Cameras === //
+        if (controller1.getRawButtonPressed(k.LB))
+            Cameras.toggle();
 
         // ==== Pigeon ==== //
 
