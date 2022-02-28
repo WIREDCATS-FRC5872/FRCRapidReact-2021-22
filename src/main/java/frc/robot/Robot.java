@@ -6,6 +6,7 @@ package frc.robot;
 
 import com.ctre.phoenix.sensors.PigeonIMU;
 
+import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
@@ -16,7 +17,7 @@ import frc.robot.subsystems.Conveyor;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Hanger;
-import frc.robot.subsystems.Cameras;
+import frc.robot.subsystems.Vision;
 
 public class Robot extends TimedRobot 
 {
@@ -45,9 +46,11 @@ public class Robot extends TimedRobot
     @Override
     public void robotInit()
     {
+        SmartDashboard.updateValues();
         pcmCompressor.enableDigital();
         Drivetrain.init();
         Intake.init();
+        Vision.init();
     }
 
     /** This function is run once each time the robot enters autonomous mode. */
@@ -126,7 +129,7 @@ public class Robot extends TimedRobot
 
         // === Cameras === //
         if (controller1.getRawButtonPressed(k.LB))
-            Cameras.toggle();
+            Vision.toggle();
 
         // ==== Pigeon ==== //
 
@@ -138,7 +141,7 @@ public class Robot extends TimedRobot
 
         // ==== Telemetry ==== //
         
-        Drivetrain.printEncoderCount();
+        Drivetrain.printData();
         SmartDashboard.putNumber("Raw Heading", rawHeading);
         SmartDashboard.putNumber("Abs Heading", absHeading);
     }

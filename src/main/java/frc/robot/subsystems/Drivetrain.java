@@ -55,8 +55,6 @@ public abstract class Drivetrain
 
     // ===== METHODS ===== //
 
-    public Drivetrain() { }
-
     public static void init()
     {
         for (WPI_TalonFX motor : DriveMotors)
@@ -108,12 +106,17 @@ public abstract class Drivetrain
         drive.arcadeDrive(-leftY, leftX);
     }
 
-    public static void printEncoderCount()
+    public static void printData()
     {
-        SmartDashboard.putNumber("L_Master", L_Master.getSelectedSensorPosition());
-        SmartDashboard.putNumber("L_Slave", L_Slave.getSelectedSensorPosition());
-        SmartDashboard.putNumber("R_Master", R_Master.getSelectedSensorPosition());
-        SmartDashboard.putNumber("R_Slave", R_Slave.getSelectedSensorPosition());
+        SmartDashboard.putNumber("L-Master Position", L_Master.getSelectedSensorPosition());
+        SmartDashboard.putNumber("L-Slave Position", L_Slave.getSelectedSensorPosition());
+        SmartDashboard.putNumber("R-Master Position", R_Master.getSelectedSensorPosition());
+        SmartDashboard.putNumber("R-Slave Position", R_Slave.getSelectedSensorPosition());
+
+        SmartDashboard.putNumber("L-Master Power", L_Master.get());
+        SmartDashboard.putNumber("L-Slave Power", L_Slave.get());
+        SmartDashboard.putNumber("R-Master Power", R_Master.get());
+        SmartDashboard.putNumber("R-Slave Power", R_Slave.get());
     }
 
     /*

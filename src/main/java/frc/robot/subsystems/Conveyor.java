@@ -4,6 +4,8 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
 public abstract class Conveyor
 {
     private static class k
@@ -40,6 +42,13 @@ public abstract class Conveyor
         rightMotor.setInverted(true);
 
         stop();
+    }
+
+    public static void printData()
+    {
+        SmartDashboard.putString("Conveyor RunState", _RunState.name());
+        SmartDashboard.putNumber("L-Motor Power", leftMotor.get());
+        SmartDashboard.putNumber("R-Motor Power", rightMotor.get());
     }
 
     public static void forward()

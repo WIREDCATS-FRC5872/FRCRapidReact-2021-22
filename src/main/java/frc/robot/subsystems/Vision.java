@@ -2,21 +2,19 @@ package frc.robot.subsystems;
 
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.cscore.UsbCamera;
-import edu.wpi.first.cscore.VideoSink;
 import edu.wpi.first.cscore.VideoSource;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 
-public abstract class Cameras
+public abstract class Vision
 {
     private static class k
     {
-        private static final int INTAKE = 0; // temp
-        private static final int CONVEYOR = 1;   // temp
-        private static final String INTAKE_NAME = "Intake Camera";
-        private static final String CONVEYOR_NAME = "Conveyor Camera";
+        private static final int FRONT_ID = 0; // temp
+        private static final int BACK_ID = 1;   // temp
+        private static final String FRONT_NAME = "Intake Camera";
+        private static final String BACK_NAME = "Conveyor Camera";
     }
 
     public static enum Display
@@ -27,9 +25,9 @@ public abstract class Cameras
 
     // ===== MEMBERS ===== //
 
-    private static UsbCamera frontCam = new UsbCamera(k.INTAKE_NAME, k.INTAKE);
-    private static UsbCamera backCam = new UsbCamera(k.CONVEYOR_NAME, k.CONVEYOR);
-    private static Cameras.Display _Display;
+    private static UsbCamera frontCam = new UsbCamera(k.FRONT_NAME, k.FRONT_ID);
+    private static UsbCamera backCam = new UsbCamera(k.BACK_NAME, k.BACK_ID);
+    private static Vision.Display _Display;
     private static NetworkTableEntry camSelect;
     
 
@@ -37,8 +35,8 @@ public abstract class Cameras
 
     public static void init()
     {
-        frontCam = CameraServer.startAutomaticCapture(k.INTAKE);
-        backCam = CameraServer.startAutomaticCapture(k.CONVEYOR);
+        frontCam = CameraServer.startAutomaticCapture(k.FRONT_ID);
+        backCam = CameraServer.startAutomaticCapture(k.BACK_ID);
 
         frontCam.setConnectionStrategy(VideoSource.ConnectionStrategy.kKeepOpen);
         backCam.setConnectionStrategy(VideoSource.ConnectionStrategy.kKeepOpen);
@@ -55,13 +53,13 @@ public abstract class Cameras
         {
             camSelect.setString(frontCam.getName());
             _Display = Display.INTAKE;
-            return k.INTAKE_NAME;
+            return k.FRONT_NAME;
         }
         else
         {
             camSelect.setString(backCam.getName());
             _Display = Display.CONVEYOR;
-            return k.CONVEYOR_NAME;
+            return k.BACK_NAME;
         }
     }
 }

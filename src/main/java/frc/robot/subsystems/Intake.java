@@ -6,6 +6,7 @@ import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public abstract class Intake
 {
@@ -48,6 +49,14 @@ public abstract class Intake
         motor.configFactoryDefault();
         motor.setInverted(false);
         motor.setNeutralMode(NeutralMode.Coast);
+    }
+
+    public static void printData()
+    {
+        SmartDashboard.putString("Intake RunState", _RunState.name());
+        SmartDashboard.putString("Intake Position", _RunState.name());
+        SmartDashboard.putString("Solenoid Value", solenoid.get().toString());
+        SmartDashboard.putNumber("Motor Power", motor.get());
     }
 
     public static void raise()

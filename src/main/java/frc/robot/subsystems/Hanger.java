@@ -6,6 +6,7 @@ import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public abstract class Hanger
 {
@@ -40,6 +41,13 @@ public abstract class Hanger
         motor.configFactoryDefault();
         motor.setInverted(false); // temp
         motor.setNeutralMode(NeutralMode.Coast);
+    }
+
+    public static void printData()
+    {
+        SmartDashboard.putString("Hanger Angle", _Angle.name());
+        SmartDashboard.putString("Solenoid Value", solenoid.get().toString());
+        SmartDashboard.putNumber("Motor Power", motor.get());
     }
 
     public static void raise()
