@@ -18,7 +18,11 @@ public abstract class Hanger
         private static final DoubleSolenoid.Value rest = DoubleSolenoid.Value.kReverse;
         private static final DoubleSolenoid.Value off = DoubleSolenoid.Value.kOff;
         
-        private static final float speed = 1;
+        private static final float speed = 1f;
+        private static final float TICKS_PER_REV = 1024f;
+        private static final float GEAR_RATIO = 100f;
+        private static final float INCHES_PER_REV = 0f; // TEMP
+        private static final float TICKS_PER_INCH = (TICKS_PER_REV * GEAR_RATIO) / (INCHES_PER_REV);
     }
 
     public static enum Angle
