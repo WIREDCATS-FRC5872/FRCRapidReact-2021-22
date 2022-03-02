@@ -6,7 +6,6 @@ package frc.robot;
 
 import com.ctre.phoenix.sensors.PigeonIMU;
 
-import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
@@ -47,9 +46,9 @@ public class Robot extends TimedRobot
     public void robotInit()
     {
         SmartDashboard.updateValues();
-        pcmCompressor.enableDigital();
-        Drivetrain.init();
-        Intake.init();
+        // pcmCompressor.enableDigital();
+        // Drivetrain.init();
+        // Intake.init();
         Vision.init();
     }
 
@@ -80,6 +79,7 @@ public class Robot extends TimedRobot
     @Override
     public void teleopPeriodic()
     {
+        /*
         // ==== Drive control ==== //
         if (controller1.getRawButton(k.RB))  // Slow mode
             Drivetrain.arcadeDrive(controller1.getRawAxis(k.LY_ID)/2, controller1.getRawAxis(k.RX_ID)/2);
@@ -144,6 +144,7 @@ public class Robot extends TimedRobot
         Drivetrain.printData();
         SmartDashboard.putNumber("Raw Heading", rawHeading);
         SmartDashboard.putNumber("Abs Heading", absHeading);
+        */
     }
 
     /** This function is called once each time the robot enters test mode. */
