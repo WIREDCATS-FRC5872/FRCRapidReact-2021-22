@@ -6,6 +6,11 @@ package frc.robot;
 
 import com.ctre.phoenix.sensors.PigeonIMU;
 
+import edu.wpi.first.cameraserver.CameraServer;
+import edu.wpi.first.cscore.UsbCamera;
+import edu.wpi.first.cscore.VideoSource;
+import edu.wpi.first.networktables.NetworkTableEntry;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
@@ -38,6 +43,10 @@ public class Robot extends TimedRobot
     private final Timer auto_timer = new Timer();
     private double rawHeading = 0, absHeading = 0;
 
+    // Vision
+    private static UsbCamera cam = new UsbCamera("Test camera", 0);
+    private static NetworkTableEntry camSelect;
+
     /**
      * This function is run when the robot is first started up and should be used for any
      * initialization code.
@@ -48,8 +57,14 @@ public class Robot extends TimedRobot
         SmartDashboard.updateValues();
         // pcmCompressor.enableDigital();
         // Drivetrain.init();
-        // Intake.init();
-        Vision.init();
+        // Intake.init();   
+        // Vision.init();
+        
+        cam = CameraServer.startAutomaticCapture(0);
+
+        cam.setConnectionStrategy(VideoSource.ConnectionStrategy.kKeepOpen);
+
+        camSelect = NetworkTableInstance.getDefault().getTable("").getEntry("CameraSelection");
     }
 
     /** This function is run once each time the robot enters autonomous mode. */
