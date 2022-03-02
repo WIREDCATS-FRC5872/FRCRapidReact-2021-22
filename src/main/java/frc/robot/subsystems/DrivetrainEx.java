@@ -15,59 +15,61 @@ import frc.robot.subsystems.Drivetrain;
 
 public class DrivetrainEx extends Drivetrain {
 
-  private static class k {
+  private static class kEx {
     
-    // These are example values only - DO NOT USE THESE FOR YOUR OWN ROBOT!
     // These characterization values MUST be determined either experimentally or theoretically
     // for *your* robot's drive.
     // The Robot Characterization Toolsuite provides a convenient tool for obtaining these
     // values for your robot.
-    public static final double ksVolts = 0.22;
-    public static final double kvVoltSecondsPerMeter = 1.98;
-    public static final double kaVoltSecondsSquaredPerMeter = 0.2;
+    public static final double sVolts = 0.22;  // TEMP - FIX IT!
+    public static final double vVoltSecondsPerMeter = 1.98;  // TEMP - FIX IT!
+    public static final double aVoltSecondsSquaredPerMeter = 0.2;  // TEMP - FIX IT!
 
     // Example value only - as above, this must be tuned for your drive!
-    public static final double kPDriveVel = 8.5;
+    public static final double PDriveVel = 8.5;
 
-    public static final double kTrackwidthMeters = 0.69;
-    public static final DifferentialDriveKinematics kDriveKinematics =
-        new DifferentialDriveKinematics(kTrackwidthMeters);
+    public static final double TrackwidthMeters = 0.69;
+    public static final DifferentialDriveKinematics DriveKinematics =
+        new DifferentialDriveKinematics(TrackwidthMeters);
+
+    // For Ramsete controller. Only tune if needed.
+    // Reasonable baseline values for a RAMSETE follower in units of meters and seconds
+    public static final double RamseteB = 2;
+    public static final double RamseteZeta = 0.7;
+
+    // Speed & Acceleration
+    public static final double MaxSpeedMetersPerSecond = 3;
+    public static final double MaxAccelerationMetersPerSecondSquared = 3;
   }
 
-  public static final double kMaxSpeedMetersPerSecond = 3;
-    public static final double kMaxAccelerationMetersPerSecondSquared = 3;
-
   // The motors on the left side of the drive.
-  private final MotorControllerGroup m_leftMotors =
+  private final MotorControllerGroup leftMotors =
       new MotorControllerGroup(
-          new PWMSparkMax(DriveConstants.kLeftMotor1Port),
-          new PWMSparkMax(DriveConstants.kLeftMotor2Port));
+          new PWMSparkMax(k.FL_ID),
+          new PWMSparkMax(k.BL_ID));
 
   // The motors on the right side of the drive.
-  private final MotorControllerGroup m_rightMotors =
+  private final MotorControllerGroup rightMotors =
       new MotorControllerGroup(
-          new PWMSparkMax(DriveConstants.kRightMotor1Port),
-          new PWMSparkMax(DriveConstants.kRightMotor2Port));
-
-  // The robot's drive
-  private final DifferentialDrive m_drive = new DifferentialDrive(m_leftMotors, m_rightMotors);
+          new PWMSparkMax(k.FR_ID),
+          new PWMSparkMax(k.BR_ID));
 
   // The left-side drive encoder
-  private final Encoder m_leftEncoder =
+  private final Encoder leftEncoder =
       new Encoder(
-          DriveConstants.kLeftEncoderPorts[0],
-          DriveConstants.kLeftEncoderPorts[1],
-          DriveConstants.kLeftEncoderReversed);
+          k.FL_ID,
+          k.FR_ID,
+          false);
 
   // The right-side drive encoder
   private final Encoder m_rightEncoder =
       new Encoder(
-          DriveConstants.kRightEncoderPorts[0],
-          DriveConstants.kRightEncoderPorts[1],
-          DriveConstants.kRightEncoderReversed);
+          k.BL_ID,
+          k.BL_ID,
+          true);
 
   // The gyro sensor
-  private final PigeonIMU m_gyro = new PigeonIMU();
+  private final PigeonIMU imu = new PigeonIMU();
 
   // Odometry class for tracking robot pose
   private final DifferentialDriveOdometry m_odometry;

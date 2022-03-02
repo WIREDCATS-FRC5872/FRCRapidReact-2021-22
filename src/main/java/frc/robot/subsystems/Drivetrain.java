@@ -8,10 +8,10 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public abstract class Drivetrain
 {
-    private static class k
+    protected static class k
     {
-        private static final int FL_ID = 0, FR_ID = 1;
-        private static final int BL_ID = 2, BR_ID = 3;
+        public static final int FL_ID = 0, FR_ID = 1;
+        public static final int BL_ID = 2, BR_ID = 3;
     
         private static final double WHEEL_DIAMETER = 4.0;
         private static final double GEAR_RATIO = 1.0;
@@ -34,7 +34,7 @@ public abstract class Drivetrain
         private static final int PIDLoopIDx = 0;
     }
 
-    private static class Gains
+    protected static class Gains
     {
         public static final double kP = 0.205;
         public static final double kI = 0;
@@ -46,12 +46,12 @@ public abstract class Drivetrain
 
     // ===== MEMBERS ===== //
 
-    private static WPI_TalonFX L_Master = new WPI_TalonFX(k.FL_ID);
-    private static WPI_TalonFX R_Master = new WPI_TalonFX(k.FR_ID);
-    private static WPI_TalonFX L_Slave = new WPI_TalonFX(k.BL_ID);
-    private static WPI_TalonFX R_Slave = new WPI_TalonFX(k.BR_ID);
-    private static DifferentialDrive drive;
-    private static WPI_TalonFX[] DriveMotors = new WPI_TalonFX[]{L_Master, R_Master, L_Slave, R_Slave};
+    protected static WPI_TalonFX L_Master = new WPI_TalonFX(k.FL_ID);
+    protected static WPI_TalonFX R_Master = new WPI_TalonFX(k.FR_ID);
+    protected static WPI_TalonFX L_Slave = new WPI_TalonFX(k.BL_ID);
+    protected static WPI_TalonFX R_Slave = new WPI_TalonFX(k.BR_ID);
+    protected static DifferentialDrive drive;
+    protected static WPI_TalonFX[] DriveMotors = new WPI_TalonFX[]{L_Master, R_Master, L_Slave, R_Slave};
 
     // ===== METHODS ===== //
 
