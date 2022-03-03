@@ -44,8 +44,9 @@ public class Robot extends TimedRobot
     private double rawHeading = 0, absHeading = 0;
 
     // Vision
-    private static UsbCamera cam = new UsbCamera("Test camera", 0);
-    private static NetworkTableEntry camSelect;
+    private static UsbCamera cam;
+    //private static UsbCamera cam = new UsbCamera("Test camera", 0);
+    //private static NetworkTableEntry camSelect;
 
     /**
      * This function is run when the robot is first started up and should be used for any
@@ -54,17 +55,14 @@ public class Robot extends TimedRobot
     @Override
     public void robotInit()
     {
-        SmartDashboard.updateValues();
+        // SmartDashboard.updateValues();
         // pcmCompressor.enableDigital();
         // Drivetrain.init();
         // Intake.init();   
         // Vision.init();
-        
-        cam = CameraServer.startAutomaticCapture(0);
-
-        cam.setConnectionStrategy(VideoSource.ConnectionStrategy.kKeepOpen);
-
-        camSelect = NetworkTableInstance.getDefault().getTable("").getEntry("CameraSelection");
+        cam = CameraServer.startAutomaticCapture();
+        cam.setResolution(100, 100);
+        //cam.setResolution(500, 650);
     }
 
     /** This function is run once each time the robot enters autonomous mode. */
@@ -87,13 +85,17 @@ public class Robot extends TimedRobot
     @Override
     public void teleopInit() 
     { 
+        
 
+        //camSelect = NetworkTableInstance.getDefault().getTable("").getEntry("CameraSelection");
+        
     }
 
     /** This function is called periodically during teleoperated mode. */
     @Override
     public void teleopPeriodic()
     {
+        
         /*
         // ==== Drive control ==== //
         if (controller1.getRawButton(k.RB))  // Slow mode
@@ -159,6 +161,12 @@ public class Robot extends TimedRobot
         Drivetrain.printData();
         SmartDashboard.putNumber("Raw Heading", rawHeading);
         SmartDashboard.putNumber("Abs Heading", absHeading);
+        */
+
+        /*
+        SmartDashboard.putBoolean("Connected:", cam.isConnected());
+        SmartDashboard.putBoolean("Enabled:", cam.isEnabled());
+        SmartDashboard.putBoolean("Valid:", cam.isValid());
         */
     }
 
