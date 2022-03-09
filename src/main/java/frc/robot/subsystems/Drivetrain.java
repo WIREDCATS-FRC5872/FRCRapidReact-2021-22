@@ -101,6 +101,12 @@ public abstract class Drivetrain
         drive = new DifferentialDrive(L_Master, R_Master);
     }
 
+    /**
+    * Drives the robot using arcade controls.
+    *
+    * @param fwd the commanded forward movement
+    * @param rot the commanded rotation
+    */
     public static void arcadeDrive(double leftY, double leftX)
     {
         drive.arcadeDrive(-leftY, leftX);

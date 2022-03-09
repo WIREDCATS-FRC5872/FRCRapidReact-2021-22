@@ -42,6 +42,9 @@ public abstract class Vision
         backCam.setConnectionStrategy(VideoSource.ConnectionStrategy.kKeepOpen);
 
         camSelect = NetworkTableInstance.getDefault().getTable("").getEntry("CameraSelection");
+
+        frontCam.setResolution(100, 100);
+        backCam.setResolution(100, 100);
     }
 
     /**

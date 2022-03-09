@@ -1,6 +1,7 @@
 package frc.robot.subsystems;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
@@ -10,12 +11,17 @@ import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.interfaces.Gyro;
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
 import edu.wpi.first.wpilibj.motorcontrol.PWMSparkMax;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.Drivetrain;
 
 public class DrivetrainEx extends Drivetrain {
 
   private static class kEx {
+
+    private static final int PIGEON_ID = 0;
+    private static final int xAxis = 0, yAxis = 1, zAxis = 2;
+    private static final int rotAxis = xAxis;
     
     // These characterization values MUST be determined either experimentally or theoretically
     // for *your* robot's drive.
@@ -40,60 +46,66 @@ public class DrivetrainEx extends Drivetrain {
     // Speed & Acceleration
     public static final double MaxSpeedMetersPerSecond = 3;
     public static final double MaxAccelerationMetersPerSecondSquared = 3;
+
+    // “Pulse” refers to a full encoder cycle (i.e. four edges),
+    // and thus will be 1/4 the value that was specified in the SysId config. (meters)
+    public static final double EncoderDistancePerPulse = 0;  // TEMP - SysId
   }
 
   // The motors on the left side of the drive.
-  private final MotorControllerGroup leftMotors =
+  private static final MotorControllerGroup leftMotors =
       new MotorControllerGroup(
           new PWMSparkMax(k.FL_ID),
           new PWMSparkMax(k.BL_ID));
 
   // The motors on the right side of the drive.
-  private final MotorControllerGroup rightMotors =
+  private static final MotorControllerGroup rightMotors =
       new MotorControllerGroup(
           new PWMSparkMax(k.FR_ID),
           new PWMSparkMax(k.BR_ID));
 
   // The left-side drive encoder
-  private final Encoder leftEncoder =
+  private static final Encoder leftEncoder =
       new Encoder(
           k.FL_ID,
           k.FR_ID,
           false);
 
   // The right-side drive encoder
-  private final Encoder m_rightEncoder =
+  private static final Encoder rightEncoder =
       new Encoder(
           k.BL_ID,
           k.BL_ID,
           true);
 
   // The gyro sensor
-  private final PigeonIMU imu = new PigeonIMU();
+  private static final PigeonIMU imu = new PigeonIMU(kEx.PIGEON_ID);
 
   // Odometry class for tracking robot pose
-  private final DifferentialDriveOdometry m_odometry;
+  private static DifferentialDriveOdometry odometry;
 
   /** Creates a new DriveSubsystem. */
-  public DriveSubsystem() {
+  public static void init() {
+
+    Drivetrain.init();
+
     // We need to invert one side of the drivetrain so that positive voltages
     // result in both sides moving forward. Depending on how your robot's
     // gearbox is constructed, you might have to invert the left side instead.
-    m_rightMotors.setInverted(true);
+    // Done in DT
+    // rightMotors.setInverted(true);
 
     // Sets the distance per pulse for the encoders
-    m_leftEncoder.setDistancePerPulse(DriveConstants.kEncoderDistancePerPulse);
-    m_rightEncoder.setDistancePerPulse(DriveConstants.kEncoderDistancePerPulse);
+    leftEncoder.setDistancePerPulse(kEx.EncoderDistancePerPulse);
+    rightEncoder.setDistancePerPulse(kEx.EncoderDistancePerPulse);
 
     resetEncoders();
-    m_odometry = new DifferentialDriveOdometry(m_gyro.getRotation2d());
+    odometry = new DifferentialDriveOdometry(getRotation2d());
   }
 
-  @Override
-  public void periodic() {
+  public static void updateOdometry() {
     // Update the odometry in the periodic block
-    m_odometry.update(
-        m_gyro.getRotation2d(), m_leftEncoder.getDistance(), m_rightEncoder.getDistance());
+    odometry.update(getRotation2d(), leftEncoder.getDistance(), rightEncoder.getDistance());
   }
 
   /**
@@ -101,8 +113,8 @@ public class DrivetrainEx extends Drivetrain {
    *
    * @return The pose.
    */
-  public Pose2d getPose() {
-    return m_odometry.getPoseMeters();
+  public static Pose2d getPose() {
+    return odometry.getPoseMeters();
   }
 
   /**
@@ -110,8 +122,8 @@ public class DrivetrainEx extends Drivetrain {
    *
    * @return The current wheel speeds.
    */
-  public DifferentialDriveWheelSpeeds getWheelSpeeds() {
-    return new DifferentialDriveWheelSpeeds(m_leftEncoder.getRate(), m_rightEncoder.getRate());
+  public static DifferentialDriveWheelSpeeds getWheelSpeeds() {
+    return new DifferentialDriveWheelSpeeds(leftEncoder.getRate(), rightEncoder.getRate());
   }
 
   /**
@@ -119,19 +131,9 @@ public class DrivetrainEx extends Drivetrain {
    *
    * @param pose The pose to which to set the odometry.
    */
-  public void resetOdometry(Pose2d pose) {
+  public static void resetOdometry(Pose2d pose) {
     resetEncoders();
-    m_odometry.resetPosition(pose, m_gyro.getRotation2d());
-  }
-
-  /**
-   * Drives the robot using arcade controls.
-   *
-   * @param fwd the commanded forward movement
-   * @param rot the commanded rotation
-   */
-  public void arcadeDrive(double fwd, double rot) {
-    m_drive.arcadeDrive(fwd, rot);
+    odometry.resetPosition(pose, getRotation2d());
   }
 
   /**
@@ -140,16 +142,16 @@ public class DrivetrainEx extends Drivetrain {
    * @param leftVolts the commanded left output
    * @param rightVolts the commanded right output
    */
-  public void tankDriveVolts(double leftVolts, double rightVolts) {
-    m_leftMotors.setVoltage(leftVolts);
-    m_rightMotors.setVoltage(rightVolts);
-    m_drive.feed();
+  public static void tankDriveVolts(double leftVolts, double rightVolts) {
+    leftMotors.setVoltage(leftVolts);
+    rightMotors.setVoltage(rightVolts);
+    drive.feed();
   }
 
   /** Resets the drive encoders to currently read a position of 0. */
-  public void resetEncoders() {
-    m_leftEncoder.reset();
-    m_rightEncoder.reset();
+  public static void resetEncoders() {
+    leftEncoder.reset();
+    rightEncoder.reset();
   }
 
   /**
@@ -157,8 +159,8 @@ public class DrivetrainEx extends Drivetrain {
    *
    * @return the average of the two encoder readings
    */
-  public double getAverageEncoderDistance() {
-    return (m_leftEncoder.getDistance() + m_rightEncoder.getDistance()) / 2.0;
+  public static double getAverageEncoderDistance() {
+    return (leftEncoder.getDistance() + rightEncoder.getDistance()) / 2.0;
   }
 
   /**
@@ -166,8 +168,8 @@ public class DrivetrainEx extends Drivetrain {
    *
    * @return the left drive encoder
    */
-  public Encoder getLeftEncoder() {
-    return m_leftEncoder;
+  public static Encoder getLeftEncoder() {
+    return leftEncoder;
   }
 
   /**
@@ -175,8 +177,8 @@ public class DrivetrainEx extends Drivetrain {
    *
    * @return the right drive encoder
    */
-  public Encoder getRightEncoder() {
-    return m_rightEncoder;
+  public static Encoder getRightEncoder() {
+    return rightEncoder;
   }
 
   /**
@@ -184,13 +186,19 @@ public class DrivetrainEx extends Drivetrain {
    *
    * @param maxOutput the maximum output to which the drive will be constrained
    */
-  public void setMaxOutput(double maxOutput) {
-    m_drive.setMaxOutput(maxOutput);
+  public static void setMaxOutput(double maxOutput) {
+    drive.setMaxOutput(maxOutput);
   }
 
   /** Zeroes the heading of the robot. */
-  public void zeroHeading() {
-    m_gyro.reset();
+  public static void zeroHeading() {
+    imu.setYaw(0);
+  }
+
+  public static void printEncoders()
+  {
+    SmartDashboard.putNumber("LEFT ENCODER", leftEncoder.get());
+    SmartDashboard.putNumber("RIGHT ENCODER", rightEncoder.get());
   }
 
   /**
@@ -198,8 +206,24 @@ public class DrivetrainEx extends Drivetrain {
    *
    * @return the robot's heading in degrees, from -180 to 180
    */
-  public double getHeading() {
-    return m_gyro.getRotation2d().getDegrees();
+  public static double getHeading() {
+
+    double res = getRawHeading()%360;
+    if (res < 0)
+      res += 360;
+    return res;
+  }
+
+  public static double getRawHeading() {
+    return -imu.getYaw();
+  }
+
+  /**
+   * @return the heading of the robot as a Rotation2d
+   */
+  public static Rotation2d getRotation2d() {
+
+    return Rotation2d.fromDegrees(getRawHeading());
   }
 
   /**
@@ -207,7 +231,11 @@ public class DrivetrainEx extends Drivetrain {
    *
    * @return The turn rate of the robot, in degrees per second
    */
-  public double getTurnRate() {
-    return -m_gyro.getRate();
+  public static double getTurnRate() {
+    
+    double[] res = new double[3];
+    imu.getRawGyro(res);
+
+    return res[kEx.rotAxis];
   }
 }
