@@ -10,8 +10,8 @@ public abstract class Conveyor
 {
     private static class k
     {
-        private static final int LEFT_MOTOR_ID = 99; // temp
-        private static final int RIGHT_MOTOR_ID = 98; // temp
+        private static final int LEFT_MOTOR_ID = 51;
+        private static final int RIGHT_MOTOR_ID = 52;
 
         private static final float speed = 1;
     }

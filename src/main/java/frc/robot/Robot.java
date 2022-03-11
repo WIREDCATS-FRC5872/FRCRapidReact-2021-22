@@ -76,6 +76,7 @@ public class Robot extends TimedRobot
     public void autonomousPeriodic()
     {
         DrivetrainEx.updateOdometry();
+        DrivetrainEx.printData();
     }
 
     /** This function is called once each time the robot enters teleoperated mode. */
@@ -86,7 +87,6 @@ public class Robot extends TimedRobot
     @Override
     public void teleopPeriodic()
     {
-        
         // ==== Drive control ==== //
         if (controller1.getRawButton(k.RB))  // Slow mode
             DrivetrainEx.arcadeDrive(controller1.getRawAxis(k.LY_ID)/2, controller1.getRawAxis(k.RX_ID)/2);
@@ -95,12 +95,12 @@ public class Robot extends TimedRobot
 
         // DT TELEMENTRY
         DrivetrainEx.printData();
-        DrivetrainEx.printEncoders();
+        /*DrivetrainEx.printEncoders();
         SmartDashboard.putNumber("Raw Heading", DrivetrainEx.getRawHeading());
         SmartDashboard.putNumber("Abs Heading", DrivetrainEx.getHeading());
         SmartDashboard.putNumber("Turn rate", DrivetrainEx.getTurnRate());
+        */
 
-        /*
         // ==== Intake ==== //
 
         // Raise/Lower
@@ -117,6 +117,7 @@ public class Robot extends TimedRobot
         else if (controller1.getRawButtonPressed(k.A) || controller1.getRawButtonPressed(k.B))
             Intake.stop();
 
+        /*
         // ==== Conveyor ==== //
 
         if (controller2.getRawButtonPressed(k.A) && Conveyor._RunState != Conveyor.RunState.FORWARD)
@@ -145,21 +146,6 @@ public class Robot extends TimedRobot
         // === Cameras === //
         if (controller1.getRawButtonPressed(k.LB))
             Vision.toggle();
-        
-
-        // ==== Pigeon ==== //
-
-        // Conversion
-        rawHeading = -pigeon.getYaw();
-        absHeading = rawHeading%360;
-        if (absHeading < 0)
-            absHeading += 360;
-
-        // ==== Telemetry ==== //
-        
-        Drivetrain.printData();
-        SmartDashboard.putNumber("Raw Heading", rawHeading);
-        SmartDashboard.putNumber("Abs Heading", absHeading);
         */
     }
 
@@ -170,4 +156,15 @@ public class Robot extends TimedRobot
     /** This function is called periodically during test mode. */
     @Override
     public void testPeriodic() {}
+
+    public void delay(int ms){
+
+        try{
+                Thread.sleep(ms);
+            }
+            catch(Exception e1){
+                e1.printStackTrace();
+            }
+    
+      }
 }

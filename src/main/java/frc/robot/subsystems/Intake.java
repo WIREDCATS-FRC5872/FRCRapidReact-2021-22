@@ -12,13 +12,13 @@ public abstract class Intake
 {
     private static class k
     {
-        private static final int MOTOR_ID = 99; // temp
+        private static final int MOTOR_ID = 10;
 
         private static final DoubleSolenoid.Value forward = DoubleSolenoid.Value.kForward;
         private static final DoubleSolenoid.Value reverse = DoubleSolenoid.Value.kReverse;
         private static final DoubleSolenoid.Value off = DoubleSolenoid.Value.kOff;
         
-        private static final float speed = 1;
+        private static final float speed = 0.5f;
     }
 
     public static enum RunState

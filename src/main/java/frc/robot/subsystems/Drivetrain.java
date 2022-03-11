@@ -14,7 +14,7 @@ public abstract class Drivetrain
         public static final int BL_ID = 2, BR_ID = 3;
     
         private static final double WHEEL_DIAMETER = 4.0;
-        private static final double GEAR_RATIO = 1.0; // FIX PLS TY
+        private static final double GEAR_RATIO = 7.0; // 7 motor rots = 1 shaft rot
         private static final int TICKS_PER_REV = 2048;
         private static final double TICKS_PER_INCH = (TICKS_PER_REV * GEAR_RATIO) / (WHEEL_DIAMETER * Math.PI);
 
@@ -51,6 +51,7 @@ public abstract class Drivetrain
     protected static WPI_TalonFX L_Slave = new WPI_TalonFX(k.BL_ID);
     protected static WPI_TalonFX R_Slave = new WPI_TalonFX(k.BR_ID);
     protected static DifferentialDrive drive;
+    // Left motors even, right odd
     protected static WPI_TalonFX[] DriveMotors = new WPI_TalonFX[]{L_Master, R_Master, L_Slave, R_Slave};
 
     // ===== METHODS ===== //
@@ -119,6 +120,11 @@ public abstract class Drivetrain
         SmartDashboard.putNumber("R-Master Position", R_Master.getSelectedSensorPosition());
         SmartDashboard.putNumber("R-Slave Position", R_Slave.getSelectedSensorPosition());
 
+        printPowers();
+    }
+
+    public static void printPowers()
+    {
         SmartDashboard.putNumber("L-Master Power", L_Master.get());
         SmartDashboard.putNumber("L-Slave Power", L_Slave.get());
         SmartDashboard.putNumber("R-Master Power", R_Master.get());

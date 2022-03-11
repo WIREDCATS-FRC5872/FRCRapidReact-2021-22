@@ -6,14 +6,7 @@ import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
 import com.ctre.phoenix.sensors.PigeonIMU;
-import edu.wpi.first.wpilibj.Encoder;
-import edu.wpi.first.wpilibj.drive.DifferentialDrive; 
-import edu.wpi.first.wpilibj.interfaces.Gyro;
-import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
-import edu.wpi.first.wpilibj.motorcontrol.PWMSparkMax;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.subsystems.Drivetrain;
 
 public class DrivetrainEx extends Drivetrain {
 
@@ -52,32 +45,6 @@ public class DrivetrainEx extends Drivetrain {
     public static final double EncoderDistancePerPulse = 0;  // TEMP - SysId
   }
 
-  // The motors on the left side of the drive.
-  private static final MotorControllerGroup leftMotors =
-      new MotorControllerGroup(
-          new PWMSparkMax(k.FL_ID),
-          new PWMSparkMax(k.BL_ID));
-
-  // The motors on the right side of the drive.
-  private static final MotorControllerGroup rightMotors =
-      new MotorControllerGroup(
-          new PWMSparkMax(k.FR_ID),
-          new PWMSparkMax(k.BR_ID));
-
-  // The left-side drive encoder
-  private static final Encoder leftEncoder =
-      new Encoder(
-          k.FL_ID,
-          k.FR_ID,
-          false);
-
-  // The right-side drive encoder
-  private static final Encoder rightEncoder =
-      new Encoder(
-          k.BL_ID,
-          k.BL_ID,
-          true);
-
   // The gyro sensor
   private static final PigeonIMU imu = new PigeonIMU(kEx.PIGEON_ID);
 
@@ -89,23 +56,16 @@ public class DrivetrainEx extends Drivetrain {
 
     Drivetrain.init();
 
-    // We need to invert one side of the drivetrain so that positive voltages
-    // result in both sides moving forward. Depending on how your robot's
-    // gearbox is constructed, you might have to invert the left side instead.
-    // Done in DT
-    // rightMotors.setInverted(true);
+    // TODO: Instead of this, we need to just multiply by the distance per native unit.
+    //leftEncoder.setDistancePerPulse(kEx.EncoderDistancePerPulse);
+    //rightEncoder.setDistancePerPulse(kEx.EncoderDistancePerPulse);
 
-    // Sets the distance per pulse for the encoders
-    leftEncoder.setDistancePerPulse(kEx.EncoderDistancePerPulse);
-    rightEncoder.setDistancePerPulse(kEx.EncoderDistancePerPulse);
-
-    resetEncoders();
     odometry = new DifferentialDriveOdometry(getRotation2d());
   }
 
   public static void updateOdometry() {
     // Update the odometry in the periodic block
-    odometry.update(getRotation2d(), leftEncoder.getDistance(), rightEncoder.getDistance());
+    odometry.update(getRotation2d(), L_Master.getSelectedSensorPosition(), R_Master.getSelectedSensorPosition());
   }
 
   /**
@@ -123,7 +83,9 @@ public class DrivetrainEx extends Drivetrain {
    * @return The current wheel speeds.
    */
   public static DifferentialDriveWheelSpeeds getWheelSpeeds() {
-    return new DifferentialDriveWheelSpeeds(leftEncoder.getRate(), rightEncoder.getRate());
+    return new DifferentialDriveWheelSpeeds(
+      L_Master.getSelectedSensorVelocity(), R_Master.getSelectedSensorVelocity()
+    );
   }
 
   /**
@@ -143,15 +105,16 @@ public class DrivetrainEx extends Drivetrain {
    * @param rightVolts the commanded right output
    */
   public static void tankDriveVolts(double leftVolts, double rightVolts) {
-    leftMotors.setVoltage(leftVolts);
-    rightMotors.setVoltage(rightVolts);
+    L_Master.setVoltage(leftVolts);
+    R_Master.setVoltage(rightVolts);
     drive.feed();
   }
 
   /** Resets the drive encoders to currently read a position of 0. */
   public static void resetEncoders() {
-    leftEncoder.reset();
-    rightEncoder.reset();
+    
+    L_Master.setSelectedSensorPosition(0);
+    R_Master.setSelectedSensorPosition(0);
   }
 
   /**
@@ -160,25 +123,7 @@ public class DrivetrainEx extends Drivetrain {
    * @return the average of the two encoder readings
    */
   public static double getAverageEncoderDistance() {
-    return (leftEncoder.getDistance() + rightEncoder.getDistance()) / 2.0;
-  }
-
-  /**
-   * Gets the left drive encoder.
-   *
-   * @return the left drive encoder
-   */
-  public static Encoder getLeftEncoder() {
-    return leftEncoder;
-  }
-
-  /**
-   * Gets the right drive encoder.
-   *
-   * @return the right drive encoder
-   */
-  public static Encoder getRightEncoder() {
-    return rightEncoder;
+    return (L_Master.getSelectedSensorPosition() + R_Master.getSelectedSensorPosition()) / 2.0;
   }
 
   /**
@@ -197,8 +142,25 @@ public class DrivetrainEx extends Drivetrain {
 
   public static void printEncoders()
   {
-    SmartDashboard.putNumber("LEFT ENCODER", leftEncoder.get());
-    SmartDashboard.putNumber("RIGHT ENCODER", rightEncoder.get());
+    SmartDashboard.putNumber("LEFT ENCODER", L_Master.getSelectedSensorPosition());
+    SmartDashboard.putNumber("RIGHT ENCODER", R_Master.getSelectedSensorPosition());
+
+    SmartDashboard.putNumber("LEFT VELOCITY", L_Master.getSelectedSensorVelocity());
+    SmartDashboard.putNumber("RIGHT VELOCITY", R_Master.getSelectedSensorVelocity());
+  }
+
+  public static void printData()
+  {
+    printPowers();
+    printEncoders();
+    printIMUData();
+  }
+
+  public static void printIMUData()
+  {
+    SmartDashboard.putNumber("Raw Heading", getRawHeading());
+    SmartDashboard.putNumber("Abs Heading", getHeading());
+    SmartDashboard.putNumber("Turn rate", getTurnRate());
   }
 
   /**
