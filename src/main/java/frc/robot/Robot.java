@@ -137,6 +137,7 @@ public class Robot extends TimedRobot
         
         // ==== Intake ==== //
 
+        /*
         // Raise/Lower
         if (controller1.getRawButtonPressed(controls.intakeRaise) && Intake._Position == Intake.Position.UP)
             Intake.lower();
@@ -150,7 +151,32 @@ public class Robot extends TimedRobot
             Intake.reverse();
         else if (controller1.getRawButtonPressed(controls.intakeFwd) || controller1.getRawButtonPressed(controls.intakeRev))
             Intake.stop();
+        */
 
+        // Raise/Lower
+        if (controller2.getRawButton(controls.intakeFwd))
+        {
+            Intake.lower();
+            long startTime = System.currentTimeMillis();
+            if (System.currentTimeMillis() - startTime > Intake.DELAY)
+                Intake.forward();
+        }
+
+        else if (controller2.getRawButton(controls.intakeRev))
+        {
+            Intake.lower();
+            long startTime = System.currentTimeMillis();
+            if (System.currentTimeMillis() - startTime > Intake.DELAY)
+                Intake.reverse();
+        }
+
+        else if (Intake._Position == Intake.Position.DOWN && Intake._RunState != Intake.RunState.STOP)
+        {
+            Intake.stop();
+            long startTime = System.currentTimeMillis();
+            if (System.currentTimeMillis() - startTime > Intake.DELAY)
+                Intake.raise();
+        }
         
         /*
         // ==== Conveyor ==== //

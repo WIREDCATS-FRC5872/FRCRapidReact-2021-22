@@ -36,7 +36,8 @@ public abstract class Intake
     }
 
     // ===== MEMBERS ===== //
-
+    
+    public static final long DELAY = 1000;
     public static Intake.RunState _RunState; 
     public static Intake.Position _Position;
     private static final WPI_TalonSRX motor = new WPI_TalonSRX(k.MOTOR_ID);
