@@ -24,7 +24,7 @@ public class Intake
 
     public enum RunState
     {
-        FORWARD,
+        ON,
         REVERSE,
         STOP;
     }
@@ -36,22 +36,11 @@ public class Intake
     }
 
     // ===== MEMBERS ===== //
-<<<<<<< Updated upstream
-    
-    public static final long DELAY = 1000;
-    public static Intake.RunState _RunState; 
-    public static Intake.Position _Position;
-    private static final WPI_TalonSRX motor = new WPI_TalonSRX(k.MOTOR_ID);
-    private static final DoubleSolenoid solenoid
-        = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, k.FWD_ID, k.REV_ID);
-=======
-
     public Intake.RunState _RunState; 
     public Intake.Position _Position;
     private final WPI_TalonSRX motor = new WPI_TalonSRX(k.MOTOR_ID);
     //private final DoubleSolenoid solenoid = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, k.FWD_ID, k.REV_ID);
->>>>>>> Stashed changes
-    
+    public static final long DELAY = 1000; // ms
 
     // ===== METHODS ===== //
 
@@ -62,7 +51,7 @@ public class Intake
         motor.setNeutralMode(NeutralMode.Coast);
 
         // Initial state
-        _RunState = RunState.STOP;
+        stop();
         _Position = Position.DOWN;
         // Init raise/lower
     }
@@ -90,12 +79,12 @@ public class Intake
         forward();
     }*/
 
-    public void forward()
+    public void on()
     {
         //if (_Position == Position.DOWN)
         //{
             motor.set(ControlMode.PercentOutput, k.speed);
-            _RunState = RunState.FORWARD;
+            _RunState = RunState.ON;
         //}
     }
 

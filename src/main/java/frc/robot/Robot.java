@@ -61,18 +61,19 @@ public class Robot extends TimedRobot
     */
 
     private final Joystick controller1 = new Joystick(k.CONTROLLER1_ID);
-    private final Joystick controller2 = new Joystick(k.CONTROLLER1_ID);    // SHould be 2
-    // private final PigeonIMU pigeon = new PigeonIMU(k.PIGEON_ID);
-    private static final Compressor pcmCompressor = new Compressor(k.PCM_ID, PneumaticsModuleType.CTREPCM);
+    private final Joystick controller2 = new Joystick(k.CONTROLLER1_ID);    // Should be 2
+    private final Compressor pcmCompressor = new Compressor(k.PCM_ID, PneumaticsModuleType.CTREPCM);
     private final Timer auto_timer = new Timer();
-    // private double rawHeading = 0, absHeading = 0;
+
+    long runIntakeTime, raiseIntakeTime;
+    private final long UNQUEUED = -1;    // Sentinel for prev line's vars
 
     // === Subsystems === //
     Drivetrain dt;
     Conveyor conveyor;
     Intake intake;
     //Hanger hanger;
-    // Vision vision;
+    //Vision vision;
     //private static UsbCamera cam;
 
     /**
@@ -89,7 +90,8 @@ public class Robot extends TimedRobot
         conveyor = new Conveyor();
         //cam = CameraServer.startAutomaticCapture();
         //cam.setResolution(100, 100);
-        SmartDashboard.putString("INITIALIZATION", "SUCCESS!");
+
+        // TODO: SUBSYSTEMS ARE STARTING IN THEIR LAST-USED STATE! WHY IS THE INTAKE ON!?
     }
 
     /** This function is run once each time the robot enters autonomous mode. */
@@ -111,27 +113,31 @@ public class Robot extends TimedRobot
 
     /** This function is called once each time the robot enters teleoperated mode. */
     @Override
-    public void teleopInit() {}
+    public void teleopInit() {
+        runIntakeTime = UNQUEUED;
+        raiseIntakeTime = UNQUEUED;
+    }
 
     /** This function is called periodically during teleoperated mode. */
     @Override
     public void teleopPeriodic()
     {
-        pcmCompressor.disable();
-
         // ==== Drive control ==== //
-        if (controller1.getRawButton(k.RB))  // Slow mode
-            dt.arcadeDrive(controller1.getRawAxis(k.LY_ID)/2, controller1.getRawAxis(k.RX_ID)/2);
+        boolean rb1 = controller1.getRawButton(k.RB);
+        double ly1 = controller1.getRawAxis(k.LY_ID);
+        Double rx1 = controller1.getRawAxis(k.RX_ID);
+        
+        if (rb1)  // Slow mode
+            dt.arcadeDrive(ly1/2, rx1/2);
         else
-            dt.arcadeDrive(controller1.getRawAxis(k.LY_ID), controller1.getRawAxis(k.RX_ID));
+            dt.arcadeDrive(ly1, rx1);
 
         // DT TELEMENTRY
         dt.printData();
         /*
-        DrivetrainEx.printEncoders();
-        SmartDashboard.putNumber("Raw Heading", DrivetrainEx.getRawHeading());
-        SmartDashboard.putNumber("Abs Heading", DrivetrainEx.getHeading());
-        SmartDashboard.putNumber("Turn rate", DrivetrainEx.getTurnRate());
+        SmartDashboard.putNumber("Raw Heading", dt.getRawHeading());
+        SmartDashboard.putNumber("Abs Heading", dt.getHeading());
+        SmartDashboard.putNumber("Turn rate", dt.getTurnRate());
         */
 
         /*
@@ -143,71 +149,47 @@ public class Robot extends TimedRobot
         */
         
         // ==== Intake ==== //
-
         /*
         // Raise/Lower
-        if (controller1.getRawButtonPressed(controls.intakeRaise) && Intake._Position == Intake.Position.UP)
-            Intake.lower();
-        else if (controller1.getRawButtonPressed(controls.intakeRaise))
-            Intake.raise();
+        // These actions queue further actions to ensure the intake does not destroy the wires in our beloved robot
+        if (controller1.getRawButtonPressed(k.LB) && intake._Position == Intake.Position.UP)
+        {
+            intake.lower();
+            runIntakeTime = System.currentTimeMillis() + Intake.DELAY;
+        }
+        else if (controller1.getRawButtonPressed(k.LB))
+        {
+            raiseIntakeTime = System.currentTimeMillis() + Intake.DELAY;
+        }
+
+        // Act on the queues
+        // Run intake as queued
+        if (System.currentTimeMillis() >= runIntakeTime)
+        {
+            intake.on();
+            runIntakeTime = UNQUEUED; // Return to sentinel
+        }
+        // Raise intake as queued
+        if (System.currentTimeMillis() >= raiseIntakeTime)
+        {
+            intake.raise();
+            raiseIntakeTime = UNQUEUED;   // Return to sentinel
+        }
         */
 
         // Spin
-<<<<<<< Updated upstream
-        if (controller1.getRawButtonPressed(controls.intakeFwd) && Intake._RunState != Intake.RunState.FORWARD)
-            Intake.forward();
-        else if (controller1.getRawButtonPressed(controls.intakeRev) && Intake._RunState != Intake.RunState.REVERSE)
-            Intake.reverse();
-        else if (controller1.getRawButtonPressed(controls.intakeFwd) || controller1.getRawButtonPressed(controls.intakeRev))
-            Intake.stop();
-        */
-
-        // Raise/Lower
-        if (controller2.getRawButton(controls.intakeFwd))
-        {
-            Intake.lower();
-            long startTime = System.currentTimeMillis();
-            if (System.currentTimeMillis() - startTime > Intake.DELAY)
-                Intake.forward();
-        }
-
-        else if (controller2.getRawButton(controls.intakeRev))
-        {
-            Intake.lower();
-            long startTime = System.currentTimeMillis();
-            if (System.currentTimeMillis() - startTime > Intake.DELAY)
-                Intake.reverse();
-        }
-
-        else if (Intake._Position == Intake.Position.DOWN && Intake._RunState != Intake.RunState.STOP)
-        {
-            Intake.stop();
-            long startTime = System.currentTimeMillis();
-            if (System.currentTimeMillis() - startTime > Intake.DELAY)
-                Intake.raise();
-        }
-        
-        /*
-=======
-        if (controller1.getRawButtonPressed(k.A) && intake._RunState != Intake.RunState.FORWARD)
-        {
-            intake.forward();
-        }
-        else if (controller1.getRawButtonPressed(k.B) || controller1.getRawButtonPressed(k.A))
+        boolean a1 = controller1.getRawButtonPressed(k.A);
+        if (a1 && intake._RunState != Intake.RunState.ON)
+            intake.on();
+        else if (a1)
             intake.stop();      
 
->>>>>>> Stashed changes
         // ==== Conveyor ==== //
-        
-        if (controller2.getRawButtonPressed(k.X) && conveyor._RunState != Conveyor.RunState.UP)
-        {
+        boolean x2 = controller2.getRawButtonPressed(k.X);
+        if (x2 && conveyor._RunState != Conveyor.RunState.UP)
             conveyor.up();
-        }
-        else if (controller2.getRawButtonPressed(k.Y) || controller2.getRawButtonPressed(k.X))
-        {
+        else if (x2)
             conveyor.stop();
-        }
-        SmartDashboard.putString("Conveyor State", conveyor._RunState.name());
 
         /*
         // === Hanger === //

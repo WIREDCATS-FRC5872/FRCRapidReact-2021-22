@@ -44,7 +44,7 @@ public class Conveyor
         rightMotor.setInverted(true);
 
         // Initial position
-        _RunState = RunState.STOP;
+        stop();
     }
 
     public void printData()
