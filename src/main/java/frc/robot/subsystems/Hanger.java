@@ -9,13 +9,13 @@ import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-public abstract class Hanger
+public class Hanger
 {
     private static class k
     {
         private static final int LEFT_MOTOR_ID = 16;
         private static final int RIGHT_MOTOR_ID = 17;
-        private static final int FWD_ID = 99, REV_ID = 89; // TEMP
+        private static final int FWD_ID = 0, REV_ID = 1; // TEMP
 
         private static final DoubleSolenoid.Value forward = DoubleSolenoid.Value.kForward;
         private static final DoubleSolenoid.Value rest = DoubleSolenoid.Value.kReverse;
@@ -50,15 +50,15 @@ public abstract class Hanger
 
     // ===== MEMBERS ===== //
 
-    public static Hanger.Angle _Angle;
-    private static final WPI_TalonSRX lMotor = new WPI_TalonSRX(k.LEFT_MOTOR_ID);
-    private static final WPI_TalonSRX rMotor = new WPI_TalonSRX(k.RIGHT_MOTOR_ID);
-    private static final WPI_TalonSRX[] motors = new WPI_TalonSRX[]{lMotor, rMotor};
-    private static final DoubleSolenoid solenoid = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, k.FWD_ID, k.REV_ID);
+    public Hanger.Angle _Angle;
+    private final WPI_TalonSRX lMotor = new WPI_TalonSRX(k.LEFT_MOTOR_ID);
+    private final WPI_TalonSRX rMotor = new WPI_TalonSRX(k.RIGHT_MOTOR_ID);
+    private final WPI_TalonSRX[] motors = new WPI_TalonSRX[]{lMotor, rMotor};
+    private final DoubleSolenoid solenoid = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, k.FWD_ID, k.REV_ID);
 
     // ===== METHODS ===== //
 
-    public static void init()
+    public Hanger()
     {
         for (WPI_TalonSRX motor : motors)
         {
@@ -69,9 +69,12 @@ public abstract class Hanger
         lMotor.setInverted(false);
         rMotor.setInverted(true);
         resetEncoders();
+
+        // Initial position
+        // rest();
     }
 
-    public static void printData()
+    public void printData()
     {
         SmartDashboard.putString("Hanger Angle", _Angle.name());
         SmartDashboard.putString("Solenoid Value", solenoid.get().toString());
@@ -82,7 +85,7 @@ public abstract class Hanger
         SmartDashboard.putNumber("R Motor Position", rMotor.getSelectedSensorPosition());
     }
 
-    public static void raise()
+    public void raise()
     {
         for (WPI_TalonSRX motor : motors)
         {
@@ -91,7 +94,7 @@ public abstract class Hanger
         }
     }
 
-    public static void lower()
+    public void lower()
     {
         for (WPI_TalonSRX motor : motors)
         {
@@ -100,26 +103,26 @@ public abstract class Hanger
         }
     }
 
-    public static void stop()
+    public void stop()
     {
         for (WPI_TalonSRX motor : motors)
             motor.set(ControlMode.PercentOutput, 0);
     }
 
-    public static void forward()
+    public void forward()
     {
         solenoid.set(k.forward);
         _Angle = Angle.FORWARD;
     }
 
-    public static void rest()
+    public void rest()
     {
         solenoid.set(k.rest);
         _Angle = Angle.REST;
     }
 
     /** Resets the drive encoders to currently read a position of 0. */
-  public static void resetEncoders() {
+  public void resetEncoders() {
     
     lMotor.setSelectedSensorPosition(0);
     rMotor.setSelectedSensorPosition(0);
@@ -130,7 +133,7 @@ public abstract class Hanger
    *
    * @return the average of the two encoder readings
    */
-  public static double getAverageEncoderDistance() {
+  public double getAverageEncoderDistance() {
     return (lMotor.getSelectedSensorPosition() + rMotor.getSelectedSensorPosition()) / 2.0;
   }
 }

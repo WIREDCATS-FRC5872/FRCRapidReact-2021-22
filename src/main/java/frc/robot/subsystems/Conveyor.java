@@ -5,70 +5,77 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.subsystems.Intake.RunState;
 
-public abstract class Conveyor
+public class Conveyor
 {
     private static class k
     {
         private static final int LEFT_MOTOR_ID = 51;
         private static final int RIGHT_MOTOR_ID = 52;
 
-        private static final float speed = 1;
+        private static final float speed = -1.0f;
     }
 
     public static enum RunState
     {
-        FORWARD,
-        REVERSE,
+        UP,
+        DOWN,
         STOP;
     }
 
     // ===== MEMBERS ===== //
 
-    public static Conveyor.RunState _RunState;
-    private static final WPI_TalonSRX leftMotor = new WPI_TalonSRX(k.LEFT_MOTOR_ID);
-    private static final WPI_TalonSRX rightMotor = new WPI_TalonSRX(k.RIGHT_MOTOR_ID);
-    private static final WPI_TalonSRX[] motors = {leftMotor, rightMotor};
+    public Conveyor.RunState _RunState;
+    private final WPI_TalonSRX leftMotor = new WPI_TalonSRX(k.LEFT_MOTOR_ID);
+    private final WPI_TalonSRX rightMotor = new WPI_TalonSRX(k.RIGHT_MOTOR_ID);
+    private final WPI_TalonSRX[] motors = {leftMotor, rightMotor};
 
     // ===== METHODS ===== //
 
-    public static void init()
+    public Conveyor()
     {
         for (WPI_TalonSRX motor : motors)
         {
             motor.configFactoryDefault();
-            motor.setNeutralMode(NeutralMode.Coast);
+            motor.setNeutralMode(NeutralMode.Brake);
         }
+        leftMotor.setInverted(false);
         rightMotor.setInverted(true);
 
-        stop();
+        // Initial position
+        _RunState = RunState.STOP;
     }
 
-    public static void printData()
+    public void printData()
     {
         SmartDashboard.putString("Conveyor RunState", _RunState.name());
         SmartDashboard.putNumber("L-Motor Power", leftMotor.get());
         SmartDashboard.putNumber("R-Motor Power", rightMotor.get());
     }
 
-    public static void forward()
+    public void up()
     {
         leftMotor.set(ControlMode.PercentOutput, k.speed);
         rightMotor.set(ControlMode.PercentOutput, k.speed);
-        _RunState = RunState.FORWARD;
+        _RunState = RunState.UP;
     }
 
-    public static void reverse()
+    /*
+    public void down()
     {
         leftMotor.set(ControlMode.PercentOutput, -k.speed);
         rightMotor.set(ControlMode.PercentOutput, -k.speed);
-        _RunState = RunState.REVERSE;
+        _RunState = RunState.DOWN;
     }
+    */
 
-    public static void stop()
+    public void stop()
     {
-        leftMotor.set(ControlMode.PercentOutput, 0);
-        rightMotor.set(ControlMode.PercentOutput, 0);
+        leftMotor.stopMotor();
+        rightMotor.stopMotor();
+        //leftMotor.set(ControlMode.PercentOutput, 0.0f);
+        //rightMotor.set(ControlMode.PercentOutput, 0.0f);
         _RunState = RunState.STOP;
     }
 }

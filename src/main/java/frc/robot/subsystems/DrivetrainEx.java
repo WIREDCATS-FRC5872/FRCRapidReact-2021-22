@@ -5,6 +5,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
+
 import com.ctre.phoenix.sensors.PigeonIMU;
 
 import edu.wpi.first.wpilibj.DoubleSolenoid;
@@ -16,11 +17,11 @@ public class DrivetrainEx extends Drivetrain {
   private static class kEx {
 
     private static final int PIGEON_ID = 0;
-    private static final int FWD_ID = 99, REV_ID = 89;  // TEMP
+    private static final int FWD_ID = 0, REV_ID = 1;  // TEMP
 
     private static final DoubleSolenoid.Value high = DoubleSolenoid.Value.kForward;
     private static final DoubleSolenoid.Value low = DoubleSolenoid.Value.kReverse;
-    // private static final DoubleSolenoid.Value off = DoubleSolenoid.Value.kOff;
+    private static final DoubleSolenoid.Value off = DoubleSolenoid.Value.kOff;
 
     private static final int xAxis = 0, yAxis = 1, zAxis = 2;
     private static final int rotAxis = xAxis;
@@ -55,8 +56,8 @@ public class DrivetrainEx extends Drivetrain {
   }
 
   // The gyro sensor
-  private static final PigeonIMU imu = new PigeonIMU(kEx.PIGEON_ID);
-  private static final DoubleSolenoid shifter
+  private final PigeonIMU imu = new PigeonIMU(kEx.PIGEON_ID);
+  private final DoubleSolenoid shifter
     = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, kEx.FWD_ID, kEx.REV_ID);
 
   public static enum Gear
@@ -65,14 +66,14 @@ public class DrivetrainEx extends Drivetrain {
       LOW;
   }
 
-  public static DrivetrainEx.Gear _Gear;
+  public DrivetrainEx.Gear _Gear;
   // Odometry class for tracking robot pose
-  private static DifferentialDriveOdometry odometry;
+  private DifferentialDriveOdometry odometry;
 
   /** Creates a new DriveSubsystem. */
-  public static void init() {
+  public DrivetrainEx() {
 
-    Drivetrain.init();
+    super();
     setHighGear();
 
     // TODO: Instead of this, we need to just multiply by the distance per native unit.
@@ -82,19 +83,19 @@ public class DrivetrainEx extends Drivetrain {
     odometry = new DifferentialDriveOdometry(getRotation2d());
   }
 
-  public static void setHighGear()
+  public void setHighGear()
   {
     _Gear = Gear.HIGH;
     shifter.set(kEx.high);  // TEMP - check which is high
   }
 
-  public static void setLowGear()
+  public void setLowGear()
   {
     _Gear = Gear.LOW;
     shifter.set(kEx.low);  // TEMP - check which is low
   }
 
-  public static void updateOdometry() {
+  public void updateOdometry() {
     // Update the odometry in the periodic block
     odometry.update(getRotation2d(), L_Master.getSelectedSensorPosition(), R_Master.getSelectedSensorPosition());
   }
@@ -104,7 +105,7 @@ public class DrivetrainEx extends Drivetrain {
    *
    * @return The pose.
    */
-  public static Pose2d getPose() {
+  public Pose2d getPose() {
     return odometry.getPoseMeters();
   }
 
@@ -113,7 +114,7 @@ public class DrivetrainEx extends Drivetrain {
    *
    * @return The current wheel speeds.
    */
-  public static DifferentialDriveWheelSpeeds getWheelSpeeds() {
+  public DifferentialDriveWheelSpeeds getWheelSpeeds() {
     return new DifferentialDriveWheelSpeeds(
       L_Master.getSelectedSensorVelocity(), R_Master.getSelectedSensorVelocity()
     );
@@ -124,7 +125,7 @@ public class DrivetrainEx extends Drivetrain {
    *
    * @param pose The pose to which to set the odometry.
    */
-  public static void resetOdometry(Pose2d pose) {
+  public void resetOdometry(Pose2d pose) {
     resetEncoders();
     odometry.resetPosition(pose, getRotation2d());
   }
@@ -135,14 +136,14 @@ public class DrivetrainEx extends Drivetrain {
    * @param leftVolts the commanded left output
    * @param rightVolts the commanded right output
    */
-  public static void tankDriveVolts(double leftVolts, double rightVolts) {
+  public void tankDriveVolts(double leftVolts, double rightVolts) {
     L_Master.setVoltage(leftVolts);
     R_Master.setVoltage(rightVolts);
     drive.feed();
   }
 
   /** Resets the drive encoders to currently read a position of 0. */
-  public static void resetEncoders() {
+  public void resetEncoders() {
     
     L_Master.setSelectedSensorPosition(0);
     R_Master.setSelectedSensorPosition(0);
@@ -153,7 +154,7 @@ public class DrivetrainEx extends Drivetrain {
    *
    * @return the average of the two encoder readings
    */
-  public static double getAverageEncoderDistance() {
+  public double getAverageEncoderDistance() {
     return (L_Master.getSelectedSensorPosition() + R_Master.getSelectedSensorPosition()) / 2.0;
   }
 
@@ -162,16 +163,16 @@ public class DrivetrainEx extends Drivetrain {
    *
    * @param maxOutput the maximum output to which the drive will be constrained
    */
-  public static void setMaxOutput(double maxOutput) {
+  public void setMaxOutput(double maxOutput) {
     drive.setMaxOutput(maxOutput);
   }
 
   /** Zeroes the heading of the robot. */
-  public static void zeroHeading() {
+  public void zeroHeading() {
     imu.setYaw(0);
   }
 
-  public static void printEncoders()
+  public void printEncoders()
   {
     SmartDashboard.putNumber("LEFT ENCODER", L_Master.getSelectedSensorPosition());
     SmartDashboard.putNumber("RIGHT ENCODER", R_Master.getSelectedSensorPosition());
@@ -180,14 +181,14 @@ public class DrivetrainEx extends Drivetrain {
     SmartDashboard.putNumber("RIGHT VELOCITY", R_Master.getSelectedSensorVelocity());
   }
 
-  public static void printData()
+  public void printData()
   {
     printPowers();
     printEncoders();
     printIMUData();
   }
 
-  public static void printIMUData()
+  public void printIMUData()
   {
     SmartDashboard.putNumber("Raw Heading", getRawHeading());
     SmartDashboard.putNumber("Abs Heading", getHeading());
@@ -199,7 +200,7 @@ public class DrivetrainEx extends Drivetrain {
    *
    * @return the robot's heading in degrees, from -180 to 180
    */
-  public static double getHeading() {
+  public double getHeading() {
 
     double res = getRawHeading()%360;
     if (res < 0)
@@ -207,14 +208,14 @@ public class DrivetrainEx extends Drivetrain {
     return res;
   }
 
-  public static double getRawHeading() {
+  public double getRawHeading() {
     return -imu.getYaw();
   }
 
   /**
    * @return the heading of the robot as a Rotation2d
    */
-  public static Rotation2d getRotation2d() {
+  public Rotation2d getRotation2d() {
 
     return Rotation2d.fromDegrees(getRawHeading());
   }
@@ -224,7 +225,7 @@ public class DrivetrainEx extends Drivetrain {
    *
    * @return The turn rate of the robot, in degrees per second
    */
-  public static double getTurnRate() {
+  public double getTurnRate() {
     
     double[] res = new double[3];
     imu.getRawGyro(res);

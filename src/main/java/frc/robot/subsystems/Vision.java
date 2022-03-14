@@ -7,7 +7,7 @@ import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 
 
-public abstract class Vision
+public class Vision
 {
     private static class k
     {
@@ -25,15 +25,15 @@ public abstract class Vision
 
     // ===== MEMBERS ===== //
 
-    private static UsbCamera frontCam = new UsbCamera(k.FRONT_NAME, k.FRONT_ID);
-    private static UsbCamera backCam = new UsbCamera(k.BACK_NAME, k.BACK_ID);
-    private static Vision.Display _Display;
-    private static NetworkTableEntry camSelect;
+    private UsbCamera frontCam = new UsbCamera(k.FRONT_NAME, k.FRONT_ID);
+    private UsbCamera backCam = new UsbCamera(k.BACK_NAME, k.BACK_ID);
+    private Vision.Display _Display;
+    private NetworkTableEntry camSelect;
     
 
     // ===== METHODS ===== //
 
-    public static void init()
+    public Vision()
     {
         frontCam = CameraServer.startAutomaticCapture(k.FRONT_ID);
         backCam = CameraServer.startAutomaticCapture(k.BACK_ID);
@@ -50,7 +50,7 @@ public abstract class Vision
     /**
      * @return title for the display
      */
-    public static String toggle()
+    public String toggle()
     {
         if (_Display != Display.INTAKE)
         {

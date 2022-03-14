@@ -5,8 +5,9 @@ import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-public abstract class Drivetrain
+public class Drivetrain extends SubsystemBase
 {
     protected static class k
     {
@@ -47,17 +48,17 @@ public abstract class Drivetrain
 
     // ===== MEMBERS ===== //
 
-    protected static WPI_TalonFX L_Master = new WPI_TalonFX(k.FL_ID);
-    protected static WPI_TalonFX R_Master = new WPI_TalonFX(k.FR_ID);
-    protected static WPI_TalonFX L_Slave = new WPI_TalonFX(k.BL_ID);
-    protected static WPI_TalonFX R_Slave = new WPI_TalonFX(k.BR_ID);
-    protected static DifferentialDrive drive;
+    protected WPI_TalonFX L_Master = new WPI_TalonFX(k.FL_ID);
+    protected WPI_TalonFX R_Master = new WPI_TalonFX(k.FR_ID);
+    protected WPI_TalonFX L_Slave = new WPI_TalonFX(k.BL_ID);
+    protected WPI_TalonFX R_Slave = new WPI_TalonFX(k.BR_ID);
+    protected DifferentialDrive drive;
     // Left motors even, right odd
-    protected static WPI_TalonFX[] DriveMotors = new WPI_TalonFX[]{L_Master, R_Master, L_Slave, R_Slave};
+    protected WPI_TalonFX[] DriveMotors = new WPI_TalonFX[]{L_Master, R_Master, L_Slave, R_Slave};
 
     // ===== METHODS ===== //
 
-    public static void init()
+    public Drivetrain()
     {
         for (WPI_TalonFX motor : DriveMotors)
         {
@@ -109,12 +110,12 @@ public abstract class Drivetrain
     * @param fwd the commanded forward movement
     * @param rot the commanded rotation
     */
-    public static void arcadeDrive(double leftY, double leftX)
+    public void arcadeDrive(double leftY, double leftX)
     {
         drive.arcadeDrive(-leftY, leftX);
     }
 
-    public static void printData()
+    public void printData()
     {
         SmartDashboard.putNumber("L-Master Position", L_Master.getSelectedSensorPosition());
         SmartDashboard.putNumber("L-Slave Position", L_Slave.getSelectedSensorPosition());
@@ -124,7 +125,7 @@ public abstract class Drivetrain
         printPowers();
     }
 
-    public static void printPowers()
+    public void printPowers()
     {
         SmartDashboard.putNumber("L-Master Power", L_Master.get());
         SmartDashboard.putNumber("L-Slave Power", L_Slave.get());

@@ -7,8 +7,8 @@
 package frc.robot;
 
 
-import edu.wpi.first.cameraserver.CameraServer;
-import edu.wpi.first.cscore.UsbCamera;
+//import edu.wpi.first.cameraserver.CameraServer;
+//import edu.wpi.first.cscore.UsbCamera;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.subsystems.Conveyor;
+import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.DrivetrainEx;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Hanger;
@@ -32,6 +33,7 @@ public class Robot extends TimedRobot
         private static final int PCM_ID = 0; // default node ID
     }
 
+    /*
     private static class controls
     {
         // Drive
@@ -44,9 +46,7 @@ public class Robot extends TimedRobot
         private static final int intakeRev = k.B;
         
         // Conveyor
-        private static final int conveyorFwd = k.A;
-        private static final int conveyorRev = k.B;
-        private static final int conveyorUp = k.UP;
+        private static final int conveyorUp = k.X;
         private static final int conveyorDown = k.DOWN;
         
         // Hanger
@@ -58,18 +58,22 @@ public class Robot extends TimedRobot
         // Vision
         private static final int shiftCam = k.LB;
     }
+    */
 
     private final Joystick controller1 = new Joystick(k.CONTROLLER1_ID);
-    private final Joystick controller2 = new Joystick(k.CONTROLLER2_ID);
+    private final Joystick controller2 = new Joystick(k.CONTROLLER1_ID);    // SHould be 2
     // private final PigeonIMU pigeon = new PigeonIMU(k.PIGEON_ID);
     private static final Compressor pcmCompressor = new Compressor(k.PCM_ID, PneumaticsModuleType.CTREPCM);
     private final Timer auto_timer = new Timer();
     // private double rawHeading = 0, absHeading = 0;
 
-    // Vision
-    private static UsbCamera cam;
-    //private static UsbCamera cam = new UsbCamera("Test camera", 0);
-    //private static NetworkTableEntry camSelect;
+    // === Subsystems === //
+    Drivetrain dt;
+    Conveyor conveyor;
+    Intake intake;
+    //Hanger hanger;
+    // Vision vision;
+    //private static UsbCamera cam;
 
     /**
      * This function is run when the robot is first started up and should be used for any
@@ -80,12 +84,12 @@ public class Robot extends TimedRobot
     {
         // SmartDashboard.updateValues();
         // pcmCompressor.enableDigital();
-        // Drivetrain.init();
-        DrivetrainEx.init();
-        // Intake.init();   
-        // Vision.init();
-        cam = CameraServer.startAutomaticCapture();
-        cam.setResolution(100, 100);
+        dt = new DrivetrainEx();
+        intake = new Intake();
+        conveyor = new Conveyor();
+        //cam = CameraServer.startAutomaticCapture();
+        //cam.setResolution(100, 100);
+        SmartDashboard.putString("INITIALIZATION", "SUCCESS!");
     }
 
     /** This function is run once each time the robot enters autonomous mode. */
@@ -94,15 +98,15 @@ public class Robot extends TimedRobot
     {
         auto_timer.reset();
         auto_timer.start();
-        DrivetrainEx.zeroHeading();
+        //dt.zeroHeading();
     }
 
     /** This function is called periodically during autonomous. */
     @Override
     public void autonomousPeriodic()
     {
-        DrivetrainEx.updateOdometry();
-        DrivetrainEx.printData();
+        //dt.updateOdometry();
+        dt.printData();
     }
 
     /** This function is called once each time the robot enters teleoperated mode. */
@@ -113,15 +117,18 @@ public class Robot extends TimedRobot
     @Override
     public void teleopPeriodic()
     {
+        pcmCompressor.disable();
+
         // ==== Drive control ==== //
-        if (controller1.getRawButton(controls.slowMode))  // Slow mode
-            DrivetrainEx.arcadeDrive(controller1.getRawAxis(k.LY_ID)/2, controller1.getRawAxis(k.RX_ID)/2);
+        if (controller1.getRawButton(k.RB))  // Slow mode
+            dt.arcadeDrive(controller1.getRawAxis(k.LY_ID)/2, controller1.getRawAxis(k.RX_ID)/2);
         else
-            DrivetrainEx.arcadeDrive(controller1.getRawAxis(k.LY_ID), controller1.getRawAxis(k.RX_ID));
+            dt.arcadeDrive(controller1.getRawAxis(k.LY_ID), controller1.getRawAxis(k.RX_ID));
 
         // DT TELEMENTRY
-        DrivetrainEx.printData();
-        /*DrivetrainEx.printEncoders();
+        dt.printData();
+        /*
+        DrivetrainEx.printEncoders();
         SmartDashboard.putNumber("Raw Heading", DrivetrainEx.getRawHeading());
         SmartDashboard.putNumber("Abs Heading", DrivetrainEx.getHeading());
         SmartDashboard.putNumber("Turn rate", DrivetrainEx.getTurnRate());
@@ -143,8 +150,10 @@ public class Robot extends TimedRobot
             Intake.lower();
         else if (controller1.getRawButtonPressed(controls.intakeRaise))
             Intake.raise();
+        */
 
         // Spin
+<<<<<<< Updated upstream
         if (controller1.getRawButtonPressed(controls.intakeFwd) && Intake._RunState != Intake.RunState.FORWARD)
             Intake.forward();
         else if (controller1.getRawButtonPressed(controls.intakeRev) && Intake._RunState != Intake.RunState.REVERSE)
@@ -179,15 +188,28 @@ public class Robot extends TimedRobot
         }
         
         /*
+=======
+        if (controller1.getRawButtonPressed(k.A) && intake._RunState != Intake.RunState.FORWARD)
+        {
+            intake.forward();
+        }
+        else if (controller1.getRawButtonPressed(k.B) || controller1.getRawButtonPressed(k.A))
+            intake.stop();      
+
+>>>>>>> Stashed changes
         // ==== Conveyor ==== //
+        
+        if (controller2.getRawButtonPressed(k.X) && conveyor._RunState != Conveyor.RunState.UP)
+        {
+            conveyor.up();
+        }
+        else if (controller2.getRawButtonPressed(k.Y) || controller2.getRawButtonPressed(k.X))
+        {
+            conveyor.stop();
+        }
+        SmartDashboard.putString("Conveyor State", conveyor._RunState.name());
 
-        if (controller2.getRawButtonPressed(controls.conveyorFwd) && Conveyor._RunState != Conveyor.RunState.FORWARD)
-            Conveyor.forward();
-        else if (controller2.getRawButtonPressed(controls.conveyorRev) && Conveyor._RunState != Conveyor.RunState.REVERSE)
-            Conveyor.reverse();
-        else if (controller2.getRawButtonPressed(controls.conveyorFwd) || controller2.getRawButtonPressed(controls.conveyorRev))
-            Conveyor.stop();
-
+        /*
         // === Hanger === //
 
         // Vertical
@@ -221,11 +243,75 @@ public class Robot extends TimedRobot
     public void delay(int ms){
 
         try{
-                Thread.sleep(ms);
-            }
-            catch(Exception e1){
-                e1.printStackTrace();
-            }
+            Thread.sleep(ms);
+        }
+        catch(Exception e1){
+            e1.printStackTrace();
+        }
+    }
+
+    /**
+     * Use this to pass the autonomous command to the main {@link Robot} class.
+     *
+     * @return the command to run in autonomous
+     */
+    /*
+    public static Command getAutonomousCommand() {
+
+        // Create a voltage constraint to ensure we don't accelerate too fast
+        var autoVoltageConstraint =
+            new DifferentialDriveVoltageConstraint(
+                new SimpleMotorFeedforward(
+                    kEx.sVolts,
+                    kEx.vVoltSecondsPerMeter,
+                    kEx.aVoltSecondsSquaredPerMeter),
+                kEx.DriveKinematics,
+                10);
     
+        // Create config for trajectory
+        TrajectoryConfig config =
+            new TrajectoryConfig(
+                    kEx.MaxSpeedMetersPerSecond,
+                    kEx.MaxAccelerationMetersPerSecondSquared)
+                // Add kinematics to ensure max speed is actually obeyed
+                .setKinematics(kEx.DriveKinematics)
+                // Apply the voltage constraint
+                .addConstraint(autoVoltageConstraint);
+    
+        // An example trajectory to follow.  All units in meters.
+        Trajectory exampleTrajectory =
+            TrajectoryGenerator.generateTrajectory(
+                // Start at the origin facing the +X direction
+                new Pose2d(0, 0, new Rotation2d(0)),
+                // Pass through these two interior waypoints, making an 's' curve path
+                List.of(new Translation2d(1, 1), new Translation2d(2, -1)),
+                // End 3 meters straight ahead of where we started, facing forward
+                new Pose2d(3, 0, new Rotation2d(0)),
+                // Pass config
+                config);
+    
+        RamseteCommand ramseteCommand =
+            new RamseteCommand(
+                exampleTrajectory,
+                drive::getPose,
+                new RamseteController(kEx.RamseteB, kEx.RamseteZeta),
+                new SimpleMotorFeedforward(
+                    kEx.sVolts,
+                    kEx.vVoltSecondsPerMeter,
+                    kEx.aVoltSecondsSquaredPerMeter),
+                kEx.DriveKinematics,
+                drive::getWheelSpeeds,
+                new PIDController(kEx.PDriveVel, 0, 0),
+                new PIDController(kEx.PDriveVel, 0, 0),
+                // RamseteCommand passes volts to the callback
+                drive::tankDriveVolts,
+                m_robotDrive);
+    
+        // Reset odometry to the starting pose of the trajectory.
+        m_robotDrive.resetOdometry(exampleTrajectory.getInitialPose());
+    
+        // Run path following command, then stop at the end.
+        return ramseteCommand.andThen(() -> m_robotDrive.tankDriveVolts(0, 0));
       }
+    }*/
 }

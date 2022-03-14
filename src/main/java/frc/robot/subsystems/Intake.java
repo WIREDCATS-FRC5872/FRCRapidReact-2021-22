@@ -8,34 +8,35 @@ import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-public abstract class Intake
+public class Intake
 {
     private static class k
     {
         private static final int MOTOR_ID = 10;
-        private static final int FWD_ID = 99, REV_ID = 89;  // TEMP
+        //private static final int FWD_ID = 11, REV_ID = 12;  // TEMP
 
         private static final DoubleSolenoid.Value forward = DoubleSolenoid.Value.kForward;
         private static final DoubleSolenoid.Value reverse = DoubleSolenoid.Value.kReverse;
         private static final DoubleSolenoid.Value off = DoubleSolenoid.Value.kOff;
         
-        private static final float speed = 0.5f;
+        private static final float speed = -0.5f;
     }
 
-    public static enum RunState
+    public enum RunState
     {
         FORWARD,
         REVERSE,
         STOP;
     }
 
-    public static enum Position
+    public enum Position
     {
         UP,
         DOWN;
     }
 
     // ===== MEMBERS ===== //
+<<<<<<< Updated upstream
     
     public static final long DELAY = 1000;
     public static Intake.RunState _RunState; 
@@ -43,60 +44,62 @@ public abstract class Intake
     private static final WPI_TalonSRX motor = new WPI_TalonSRX(k.MOTOR_ID);
     private static final DoubleSolenoid solenoid
         = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, k.FWD_ID, k.REV_ID);
+=======
+
+    public Intake.RunState _RunState; 
+    public Intake.Position _Position;
+    private final WPI_TalonSRX motor = new WPI_TalonSRX(k.MOTOR_ID);
+    //private final DoubleSolenoid solenoid = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, k.FWD_ID, k.REV_ID);
+>>>>>>> Stashed changes
     
 
     // ===== METHODS ===== //
 
-    public static void init()
+    public void init()
     {
         motor.configFactoryDefault();
         motor.setInverted(false);
         motor.setNeutralMode(NeutralMode.Coast);
 
-        // TODO: Init RunState & Position
+        // Initial state
+        _RunState = RunState.STOP;
+        _Position = Position.DOWN;
+        // Init raise/lower
     }
 
-    public static void printData()
+    public void printData()
     {
         SmartDashboard.putString("Intake RunState", _RunState.name());
         SmartDashboard.putString("Intake Position", _RunState.name());
-        SmartDashboard.putString("Solenoid Value", solenoid.get().toString());
+        //SmartDashboard.putString("Solenoid Value", solenoid.get().toString());
         SmartDashboard.putNumber("Motor Power", motor.get());
     }
 
-    public static void raise()
+    /*
+    public void raise()
     {
         stop();
         solenoid.set(k.forward);
         _Position = Position.UP;
     }
 
-    public static void lower()
+    public void lower()
     {
         solenoid.set(k.reverse);
         _Position = Position.DOWN;
         forward();
-    }
+    }*/
 
-    public static void forward()
+    public void forward()
     {
-        if (_Position == Position.DOWN)
-        {
+        //if (_Position == Position.DOWN)
+        //{
             motor.set(ControlMode.PercentOutput, k.speed);
             _RunState = RunState.FORWARD;
-        }
+        //}
     }
 
-    public static void reverse()
-    {
-        if (_Position == Position.DOWN)
-        {
-            motor.set(ControlMode.PercentOutput, -k.speed);
-            _RunState = RunState.FORWARD;
-        }
-    }
-
-    public static void stop()
+    public void stop()
     {
         motor.set(ControlMode.PercentOutput, 0);
         _RunState = RunState.STOP;
