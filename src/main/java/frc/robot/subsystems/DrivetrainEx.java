@@ -6,6 +6,9 @@ import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
 import com.ctre.phoenix.sensors.PigeonIMU;
+
+import edu.wpi.first.wpilibj.DoubleSolenoid;
+import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class DrivetrainEx extends Drivetrain {
@@ -13,6 +16,12 @@ public class DrivetrainEx extends Drivetrain {
   private static class kEx {
 
     private static final int PIGEON_ID = 0;
+    private static final int FWD_ID = 99, REV_ID = 89;  // TEMP
+
+    private static final DoubleSolenoid.Value high = DoubleSolenoid.Value.kForward;
+    private static final DoubleSolenoid.Value low = DoubleSolenoid.Value.kReverse;
+    // private static final DoubleSolenoid.Value off = DoubleSolenoid.Value.kOff;
+
     private static final int xAxis = 0, yAxis = 1, zAxis = 2;
     private static final int rotAxis = xAxis;
     
@@ -47,7 +56,16 @@ public class DrivetrainEx extends Drivetrain {
 
   // The gyro sensor
   private static final PigeonIMU imu = new PigeonIMU(kEx.PIGEON_ID);
+  private static final DoubleSolenoid shifter
+    = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, kEx.FWD_ID, kEx.REV_ID);
 
+  public static enum Gear
+  {
+      HIGH,
+      LOW;
+  }
+
+  public static DrivetrainEx.Gear _Gear;
   // Odometry class for tracking robot pose
   private static DifferentialDriveOdometry odometry;
 
@@ -55,12 +73,25 @@ public class DrivetrainEx extends Drivetrain {
   public static void init() {
 
     Drivetrain.init();
+    setHighGear();
 
     // TODO: Instead of this, we need to just multiply by the distance per native unit.
     //leftEncoder.setDistancePerPulse(kEx.EncoderDistancePerPulse);
     //rightEncoder.setDistancePerPulse(kEx.EncoderDistancePerPulse);
 
     odometry = new DifferentialDriveOdometry(getRotation2d());
+  }
+
+  public static void setHighGear()
+  {
+    _Gear = Gear.HIGH;
+    shifter.set(kEx.high);  // TEMP - check which is high
+  }
+
+  public static void setLowGear()
+  {
+    _Gear = Gear.LOW;
+    shifter.set(kEx.low);  // TEMP - check which is low
   }
 
   public static void updateOdometry() {

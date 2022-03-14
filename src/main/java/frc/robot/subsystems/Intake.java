@@ -13,6 +13,7 @@ public abstract class Intake
     private static class k
     {
         private static final int MOTOR_ID = 10;
+        private static final int FWD_ID = 99, REV_ID = 89;  // TEMP
 
         private static final DoubleSolenoid.Value forward = DoubleSolenoid.Value.kForward;
         private static final DoubleSolenoid.Value reverse = DoubleSolenoid.Value.kReverse;
@@ -39,7 +40,8 @@ public abstract class Intake
     public static Intake.RunState _RunState; 
     public static Intake.Position _Position;
     private static final WPI_TalonSRX motor = new WPI_TalonSRX(k.MOTOR_ID);
-    private static final DoubleSolenoid solenoid = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 1, 2);
+    private static final DoubleSolenoid solenoid
+        = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, k.FWD_ID, k.REV_ID);
     
 
     // ===== METHODS ===== //
@@ -49,6 +51,8 @@ public abstract class Intake
         motor.configFactoryDefault();
         motor.setInverted(false);
         motor.setNeutralMode(NeutralMode.Coast);
+
+        // TODO: Init RunState & Position
     }
 
     public static void printData()

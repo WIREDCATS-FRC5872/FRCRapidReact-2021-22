@@ -14,7 +14,8 @@ public abstract class Drivetrain
         public static final int BL_ID = 2, BR_ID = 3;
     
         private static final double WHEEL_DIAMETER = 4.0;
-        private static final double GEAR_RATIO = 7.0; // 7 motor rots = 1 shaft rot
+        private static final double GEAR_RATIO = 7.0; // High gear = 7 motor rots = 1 shaft rot
+        // Not listed: Low gear ratio
         private static final int TICKS_PER_REV = 2048;
         private static final double TICKS_PER_INCH = (TICKS_PER_REV * GEAR_RATIO) / (WHEEL_DIAMETER * Math.PI);
 
@@ -130,13 +131,4 @@ public abstract class Drivetrain
         SmartDashboard.putNumber("R-Master Power", R_Master.get());
         SmartDashboard.putNumber("R-Slave Power", R_Slave.get());
     }
-
-    /*
-    // For smoother acceleration
-    public static double temperInput(double value)
-    {
-        return value/Math.abs(value)    // 1 or -1. to preserve original signage when using even exponent below
-            * Math.pow(value, 2);
-    }
-    */
 }

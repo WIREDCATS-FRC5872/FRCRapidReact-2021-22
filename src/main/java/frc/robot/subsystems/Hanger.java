@@ -3,7 +3,6 @@ package frc.robot.subsystems;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
-import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
 import edu.wpi.first.wpilibj.DoubleSolenoid;
@@ -16,6 +15,7 @@ public abstract class Hanger
     {
         private static final int LEFT_MOTOR_ID = 16;
         private static final int RIGHT_MOTOR_ID = 17;
+        private static final int FWD_ID = 99, REV_ID = 89; // TEMP
 
         private static final DoubleSolenoid.Value forward = DoubleSolenoid.Value.kForward;
         private static final DoubleSolenoid.Value rest = DoubleSolenoid.Value.kReverse;
@@ -54,7 +54,7 @@ public abstract class Hanger
     private static final WPI_TalonSRX lMotor = new WPI_TalonSRX(k.LEFT_MOTOR_ID);
     private static final WPI_TalonSRX rMotor = new WPI_TalonSRX(k.RIGHT_MOTOR_ID);
     private static final WPI_TalonSRX[] motors = new WPI_TalonSRX[]{lMotor, rMotor};
-    private static final DoubleSolenoid solenoid = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 1, 2);
+    private static final DoubleSolenoid solenoid = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, k.FWD_ID, k.REV_ID);
 
     // ===== METHODS ===== //
 
@@ -68,6 +68,7 @@ public abstract class Hanger
         }
         lMotor.setInverted(false);
         rMotor.setInverted(true);
+        resetEncoders();
     }
 
     public static void printData()
@@ -116,4 +117,20 @@ public abstract class Hanger
         solenoid.set(k.rest);
         _Angle = Angle.REST;
     }
+
+    /** Resets the drive encoders to currently read a position of 0. */
+  public static void resetEncoders() {
+    
+    lMotor.setSelectedSensorPosition(0);
+    rMotor.setSelectedSensorPosition(0);
+  }
+
+  /**
+   * Gets the average distance of the two encoders.
+   *
+   * @return the average of the two encoder readings
+   */
+  public static double getAverageEncoderDistance() {
+    return (lMotor.getSelectedSensorPosition() + rMotor.getSelectedSensorPosition()) / 2.0;
+  }
 }

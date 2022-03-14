@@ -19,7 +19,6 @@ import frc.robot.subsystems.Conveyor;
 import frc.robot.subsystems.DrivetrainEx;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Hanger;
-import frc.robot.subsystems.Vision;
 
 public class Robot extends TimedRobot 
 {
@@ -31,6 +30,33 @@ public class Robot extends TimedRobot
         private static final int UP = 0, RIGHT = 90, DOWN = 180, LEFT = 270;
         private static final int CONTROLLER1_ID = 0, CONTROLLER2_ID = 1;
         private static final int PCM_ID = 0; // default node ID
+    }
+
+    private static class controls
+    {
+        // Drive
+        private static final int slowMode = k.RB;
+        private static final int shiftGear = k.L_STICK;
+
+        // Intake
+        private static final int intakeRaise = k.X;
+        private static final int intakeFwd = k.A;
+        private static final int intakeRev = k.B;
+        
+        // Conveyor
+        private static final int conveyorFwd = k.A;
+        private static final int conveyorRev = k.B;
+        private static final int conveyorUp = k.UP;
+        private static final int conveyorDown = k.DOWN;
+        
+        // Hanger
+        private static final int hangerUp = k.UP;
+        private static final int hangerDown = k.DOWN;
+        private static final int hangerFwd = k.LEFT;
+        private static final int hangerRest = k.RIGHT;
+
+        // Vision
+        private static final int shiftCam = k.LB;
     }
 
     private final Joystick controller1 = new Joystick(k.CONTROLLER1_ID);
@@ -88,7 +114,7 @@ public class Robot extends TimedRobot
     public void teleopPeriodic()
     {
         // ==== Drive control ==== //
-        if (controller1.getRawButton(k.RB))  // Slow mode
+        if (controller1.getRawButton(controls.slowMode))  // Slow mode
             DrivetrainEx.arcadeDrive(controller1.getRawAxis(k.LY_ID)/2, controller1.getRawAxis(k.RX_ID)/2);
         else
             DrivetrainEx.arcadeDrive(controller1.getRawAxis(k.LY_ID), controller1.getRawAxis(k.RX_ID));
@@ -101,50 +127,59 @@ public class Robot extends TimedRobot
         SmartDashboard.putNumber("Turn rate", DrivetrainEx.getTurnRate());
         */
 
+        /*
+        // Shift gear
+        if (controller1.getRawButtonPressed(controls.shiftGear) && DrivetrainEx._Gear != DrivetrainEx.Gear.HIGH)
+            DrivetrainEx.setHighGear();
+        else if (controller1.getRawButtonPressed(controls.shiftGear) && DrivetrainEx._Gear != DrivetrainEx.Gear.LOW)
+            DrivetrainEx.setLowGear();
+        */
+        
         // ==== Intake ==== //
 
         // Raise/Lower
-        if (controller1.getRawButtonPressed(k.X) && Intake._Position == Intake.Position.UP)
+        if (controller1.getRawButtonPressed(controls.intakeRaise) && Intake._Position == Intake.Position.UP)
             Intake.lower();
-        else if (controller1.getRawButtonPressed(k.X))
+        else if (controller1.getRawButtonPressed(controls.intakeRaise))
             Intake.raise();
 
         // Spin
-        if (controller1.getRawButtonPressed(k.A) && Intake._RunState != Intake.RunState.FORWARD)
+        if (controller1.getRawButtonPressed(controls.intakeFwd) && Intake._RunState != Intake.RunState.FORWARD)
             Intake.forward();
-        else if (controller1.getRawButtonPressed(k.B) && Intake._RunState != Intake.RunState.REVERSE)
+        else if (controller1.getRawButtonPressed(controls.intakeRev) && Intake._RunState != Intake.RunState.REVERSE)
             Intake.reverse();
-        else if (controller1.getRawButtonPressed(k.A) || controller1.getRawButtonPressed(k.B))
+        else if (controller1.getRawButtonPressed(controls.intakeFwd) || controller1.getRawButtonPressed(controls.intakeRev))
             Intake.stop();
 
+        
         /*
         // ==== Conveyor ==== //
 
-        if (controller2.getRawButtonPressed(k.A) && Conveyor._RunState != Conveyor.RunState.FORWARD)
+        if (controller2.getRawButtonPressed(controls.conveyorFwd) && Conveyor._RunState != Conveyor.RunState.FORWARD)
             Conveyor.forward();
-        else if (controller2.getRawButtonPressed(k.B) && Conveyor._RunState != Conveyor.RunState.REVERSE)
+        else if (controller2.getRawButtonPressed(controls.conveyorRev) && Conveyor._RunState != Conveyor.RunState.REVERSE)
             Conveyor.reverse();
-        else if (controller2.getRawButtonPressed(k.A) || controller2.getRawButtonPressed(k.B))
+        else if (controller2.getRawButtonPressed(controls.conveyorFwd) || controller2.getRawButtonPressed(controls.conveyorRev))
             Conveyor.stop();
 
         // === Hanger === //
 
         // Vertical
-        if (controller2.getRawButton(k.UP))
+        if (controller2.getRawButton(controls.hangerUp))
             Hanger.raise();
-        else if (controller2.getRawButton(k.DOWN))
+        else if (controller2.getRawButton(controls.hangerDown))
             Hanger.lower();
         else
             Hanger.stop();
 
         // Angle
-        if (controller2.getRawButtonPressed(k.RIGHT) && Hanger._Angle != Hanger.Angle.FORWARD)
+        if (controller2.getRawButtonPressed(controls.hangerFwd) && Hanger._Angle != Hanger.Angle.FORWARD)
             Hanger.forward();
-        else if (controller2.getRawButtonPressed(k.LEFT) && Hanger._Angle != Hanger.Angle.REST)
+        else if (controller2.getRawButtonPressed(controls.hangerRest) && Hanger._Angle != Hanger.Angle.REST)
             Hanger.rest();
             
         // === Cameras === //
-        if (controller1.getRawButtonPressed(k.LB))
+        if (controller1.getRawButtonPressed(controls.shiftCam))
             Vision.toggle();
         */
     }
