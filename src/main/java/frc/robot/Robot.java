@@ -26,6 +26,7 @@ public class Robot extends TimedRobot
     private static class k
     {
         private static final int LX_ID = 0, LY_ID = 1, RX_ID = 4, RY_ID = 5;
+        private static final int LT = 2, RT = 3;
         private static final int A = 1, B = 2, X = 3, Y = 4, LB = 5, RB = 6,
             BACK = 7, START = 8, L_STICK = 9, R_STICK = 10;
         private static final int UP = 0, RIGHT = 90, DOWN = 180, LEFT = 270;
@@ -69,10 +70,10 @@ public class Robot extends TimedRobot
     private final long UNQUEUED = -1;    // Sentinel for prev line's vars
 
     // === Subsystems === //
-    Drivetrain dt;
+    DrivetrainEx dt;
     Conveyor conveyor;
     Intake intake;
-    //Hanger hanger;
+    Hanger hanger;
     //Vision vision;
     //private static UsbCamera cam;
 
@@ -83,11 +84,12 @@ public class Robot extends TimedRobot
     @Override
     public void robotInit()
     {
-        // SmartDashboard.updateValues();
-        // pcmCompressor.enableDigital();
+        SmartDashboard.updateValues();
+        pcmCompressor.enableDigital();
         dt = new DrivetrainEx();
         intake = new Intake();
         conveyor = new Conveyor();
+        hanger = new Hanger();
         //cam = CameraServer.startAutomaticCapture();
         //cam.setResolution(100, 100);
 
@@ -140,24 +142,23 @@ public class Robot extends TimedRobot
         SmartDashboard.putNumber("Turn rate", dt.getTurnRate());
         */
 
-        /*
+        boolean rt1 = controller1.getRawAxis(k.RT) > 0.2;
         // Shift gear
-        if (controller1.getRawButtonPressed(controls.shiftGear) && DrivetrainEx._Gear != DrivetrainEx.Gear.HIGH)
-            DrivetrainEx.setHighGear();
-        else if (controller1.getRawButtonPressed(controls.shiftGear) && DrivetrainEx._Gear != DrivetrainEx.Gear.LOW)
-            DrivetrainEx.setLowGear();
-        */
+        if (rt1 && dt._Gear != DrivetrainEx.Gear.HIGH)
+            dt.setHighGear();
+        else if (rt1 && dt._Gear != DrivetrainEx.Gear.LOW)
+            dt.setLowGear();
         
         // ==== Intake ==== //
-        /*
+        boolean lt = controller1.getRawAxis(k.LT) > 0.2;
         // Raise/Lower
         // These actions queue further actions to ensure the intake does not destroy the wires in our beloved robot
-        if (controller1.getRawButtonPressed(k.LB) && intake._Position == Intake.Position.UP)
+        if (lt && intake._Position == Intake.Position.UP)
         {
             intake.lower();
             runIntakeTime = System.currentTimeMillis() + Intake.DELAY;
         }
-        else if (controller1.getRawButtonPressed(k.LB))
+        else if (lt)
         {
             raiseIntakeTime = System.currentTimeMillis() + Intake.DELAY;
         }
@@ -175,8 +176,8 @@ public class Robot extends TimedRobot
             intake.raise();
             raiseIntakeTime = UNQUEUED;   // Return to sentinel
         }
-        */
 
+        /*
         // Spin
         boolean a1 = controller1.getRawButtonPressed(k.A);
         if (a1 && intake._RunState != Intake.RunState.ON)
@@ -185,29 +186,33 @@ public class Robot extends TimedRobot
             intake.stop();      
 
         // ==== Conveyor ==== //
-        boolean x2 = controller2.getRawButtonPressed(k.X);
-        if (x2 && conveyor._RunState != Conveyor.RunState.UP)
+        boolean lb = controller1.getRawButtonPressed(k.LB);
+        if (lb && conveyor._RunState != Conveyor.RunState.UP)
             conveyor.up();
-        else if (x2)
+        else if (lb)
             conveyor.stop();
+        */
 
-        /*
         // === Hanger === //
-
+        // TODO
+        boolean x = controller2.getRawButton(k.X);
+        boolean y = controller2.getRawButton(k.Y);
         // Vertical
-        if (controller2.getRawButton(controls.hangerUp))
-            Hanger.raise();
-        else if (controller2.getRawButton(controls.hangerDown))
-            Hanger.lower();
+        if (x)
+            hanger.raise();
+        else if (y)
+            hanger.lower();
         else
-            Hanger.stop();
+            hanger.stop();
 
+        boolean shift = controller2.getRawButton(k.A);
         // Angle
-        if (controller2.getRawButtonPressed(controls.hangerFwd) && Hanger._Angle != Hanger.Angle.FORWARD)
-            Hanger.forward();
-        else if (controller2.getRawButtonPressed(controls.hangerRest) && Hanger._Angle != Hanger.Angle.REST)
-            Hanger.rest();
-            
+        if (shift && hanger._Angle != Hanger.Angle.FORWARD)
+            hanger.forward();
+        else if (shift && hanger._Angle != Hanger.Angle.REST)
+            hanger.rest();
+         
+        /*
         // === Cameras === //
         if (controller1.getRawButtonPressed(controls.shiftCam))
             Vision.toggle();
