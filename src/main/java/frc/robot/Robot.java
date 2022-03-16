@@ -62,18 +62,18 @@ public class Robot extends TimedRobot
     */
 
     private final Joystick controller1 = new Joystick(k.CONTROLLER1_ID);
-    private final Joystick controller2 = new Joystick(k.CONTROLLER1_ID);    // Should be 2
-    private final Compressor pcmCompressor = new Compressor(k.PCM_ID, PneumaticsModuleType.CTREPCM);
-    private final Timer auto_timer = new Timer();
+    //private final Joystick controller2 = new Joystick(k.CONTROLLER1_ID);    // Should be 2
+    //private final Compressor pcmCompressor = new Compressor(k.PCM_ID, PneumaticsModuleType.CTREPCM);
+    // private final Timer auto_timer = new Timer();
 
-    long runIntakeTime, raiseIntakeTime;
-    private final long UNQUEUED = -1;    // Sentinel for prev line's vars
+    // long runIntakeTime, raiseIntakeTime;
+    // private final long UNQUEUED = -1;    // Sentinel for prev line's vars
 
     // === Subsystems === //
-    DrivetrainEx dt;
-    Conveyor conveyor;
+    //DrivetrainEx dt;
+    //Conveyor conveyor;
     Intake intake;
-    Hanger hanger;
+    //Hanger hanger;
     //Vision vision;
     //private static UsbCamera cam;
 
@@ -84,12 +84,12 @@ public class Robot extends TimedRobot
     @Override
     public void robotInit()
     {
-        SmartDashboard.updateValues();
-        pcmCompressor.enableDigital();
-        dt = new DrivetrainEx();
+        //SmartDashboard.updateValues();
+        //pcmCompressor.enableDigital();
+        //dt = new DrivetrainEx();
         intake = new Intake();
-        conveyor = new Conveyor();
-        hanger = new Hanger();
+        //conveyor = new Conveyor();
+        //hanger = new Hanger();
         //cam = CameraServer.startAutomaticCapture();
         //cam.setResolution(100, 100);
 
@@ -100,8 +100,8 @@ public class Robot extends TimedRobot
     @Override
     public void autonomousInit()
     {
-        auto_timer.reset();
-        auto_timer.start();
+        //auto_timer.reset();
+        //auto_timer.start();
         //dt.zeroHeading();
     }
 
@@ -110,20 +110,33 @@ public class Robot extends TimedRobot
     public void autonomousPeriodic()
     {
         //dt.updateOdometry();
-        dt.printData();
+        //dt.printData();
     }
 
     /** This function is called once each time the robot enters teleoperated mode. */
     @Override
     public void teleopInit() {
-        runIntakeTime = UNQUEUED;
-        raiseIntakeTime = UNQUEUED;
+        // runIntakeTime = UNQUEUED;
+        // raiseIntakeTime = UNQUEUED;
     }
 
     /** This function is called periodically during teleoperated mode. */
     @Override
     public void teleopPeriodic()
     {
+        if (controller1.getRawButton(k.A))
+            intake.forward();
+        else if (controller1.getRawButton(k.B))
+            intake.reverse();
+        else
+            intake.stop();
+            
+        if (controller1.getRawButtonPressed(k.X))
+            intake.raise();
+        if (controller1.getRawButtonPressed(k.Y))
+            intake.lower();
+
+        /*
         // ==== Drive control ==== //
         boolean rb1 = controller1.getRawButton(k.RB);
         double ly1 = controller1.getRawAxis(k.LY_ID);
@@ -136,11 +149,10 @@ public class Robot extends TimedRobot
 
         // DT TELEMENTRY
         dt.printData();
-        /*
+
         SmartDashboard.putNumber("Raw Heading", dt.getRawHeading());
         SmartDashboard.putNumber("Abs Heading", dt.getHeading());
         SmartDashboard.putNumber("Turn rate", dt.getTurnRate());
-        */
 
         boolean rt1 = controller1.getRawAxis(k.RT) > 0.2;
         // Shift gear
@@ -177,7 +189,6 @@ public class Robot extends TimedRobot
             raiseIntakeTime = UNQUEUED;   // Return to sentinel
         }
 
-        /*
         // Spin
         boolean a1 = controller1.getRawButtonPressed(k.A);
         if (a1 && intake._RunState != Intake.RunState.ON)
@@ -191,7 +202,6 @@ public class Robot extends TimedRobot
             conveyor.up();
         else if (lb)
             conveyor.stop();
-        */
 
         // === Hanger === //
         // TODO
@@ -212,7 +222,6 @@ public class Robot extends TimedRobot
         else if (shift && hanger._Angle != Hanger.Angle.REST)
             hanger.rest();
          
-        /*
         // === Cameras === //
         if (controller1.getRawButtonPressed(controls.shiftCam))
             Vision.toggle();
@@ -225,8 +234,9 @@ public class Robot extends TimedRobot
 
     /** This function is called periodically during test mode. */
     @Override
-    public void testPeriodic() {}
+    public void testPeriodic() { }
 
+    /*
     public void delay(int ms){
 
         try{
@@ -236,6 +246,7 @@ public class Robot extends TimedRobot
             e1.printStackTrace();
         }
     }
+    */
 
     /**
      * Use this to pass the autonomous command to the main {@link Robot} class.

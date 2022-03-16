@@ -15,7 +15,7 @@ public class Hanger
     {
         private static final int LEFT_MOTOR_ID = 16;
         private static final int RIGHT_MOTOR_ID = 17;
-        private static final int FWD_ID = 0, REV_ID = 1; // TEMP
+        private static final int FWD_ID = 2, REV_ID = 5; // TEMP
 
         private static final DoubleSolenoid.Value forward = DoubleSolenoid.Value.kForward;
         private static final DoubleSolenoid.Value rest = DoubleSolenoid.Value.kReverse;
