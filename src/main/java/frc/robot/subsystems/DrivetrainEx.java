@@ -14,10 +14,10 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class DrivetrainEx extends Drivetrain {
 
-  private static class kEx {
+  public static class kEx {
 
     private static final int PIGEON_ID = 0;
-    private static final int FWD_ID = 0, REV_ID = 1;  // TEMP
+    private static final int FWD_ID = 4, REV_ID = 3;
 
     private static final DoubleSolenoid.Value high = DoubleSolenoid.Value.kForward;
     private static final DoubleSolenoid.Value low = DoubleSolenoid.Value.kReverse;
@@ -86,13 +86,13 @@ public class DrivetrainEx extends Drivetrain {
   public void setHighGear()
   {
     _Gear = Gear.HIGH;
-    shifter.set(kEx.high);  // TEMP - check which is high
+    shifter.set(kEx.high);
   }
 
   public void setLowGear()
   {
     _Gear = Gear.LOW;
-    shifter.set(kEx.low);  // TEMP - check which is low
+    shifter.set(kEx.low);
   }
 
   public void updateOdometry() {
