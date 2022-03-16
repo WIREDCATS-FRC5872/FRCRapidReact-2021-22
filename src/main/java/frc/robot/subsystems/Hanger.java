@@ -74,6 +74,12 @@ public class Hanger
         // rest();
     }
 
+    public void init()
+    {
+        stop();
+        rest();
+    }
+
     public void printData()
     {
         SmartDashboard.putString("Hanger Angle", _Angle.name());

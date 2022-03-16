@@ -7,6 +7,18 @@
 package frc.robot;
 
 
+import java.util.List;
+
+import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.RamseteController;
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.trajectory.Trajectory;
+import edu.wpi.first.math.trajectory.TrajectoryConfig;
+import edu.wpi.first.math.trajectory.TrajectoryGenerator;
+import edu.wpi.first.math.trajectory.constraint.DifferentialDriveVoltageConstraint;
 //import edu.wpi.first.cameraserver.CameraServer;
 //import edu.wpi.first.cscore.UsbCamera;
 import edu.wpi.first.wpilibj.Compressor;
@@ -15,6 +27,8 @@ import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.RamseteCommand;
 import frc.robot.subsystems.Conveyor;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.DrivetrainEx;
@@ -34,46 +48,19 @@ public class Robot extends TimedRobot
         private static final int PCM_ID = 0; // default node ID
     }
 
-    /*
-    private static class controls
-    {
-        // Drive
-        private static final int slowMode = k.RB;
-        private static final int shiftGear = k.L_STICK;
-
-        // Intake
-        private static final int intakeRaise = k.X;
-        private static final int intakeFwd = k.A;
-        private static final int intakeRev = k.B;
-        
-        // Conveyor
-        private static final int conveyorUp = k.X;
-        private static final int conveyorDown = k.DOWN;
-        
-        // Hanger
-        private static final int hangerUp = k.UP;
-        private static final int hangerDown = k.DOWN;
-        private static final int hangerFwd = k.LEFT;
-        private static final int hangerRest = k.RIGHT;
-
-        // Vision
-        private static final int shiftCam = k.LB;
-    }
-    */
-
     private final Joystick controller1 = new Joystick(k.CONTROLLER1_ID);
-    //private final Joystick controller2 = new Joystick(k.CONTROLLER1_ID);    // Should be 2
-    //private final Compressor pcmCompressor = new Compressor(k.PCM_ID, PneumaticsModuleType.CTREPCM);
-    // private final Timer auto_timer = new Timer();
+    private final Joystick controller2 = new Joystick(k.CONTROLLER1_ID);    // Should be 2
+    private final Compressor pcmCompressor = new Compressor(k.PCM_ID, PneumaticsModuleType.CTREPCM);
+    private final Timer auto_timer = new Timer();
 
-    // long runIntakeTime, raiseIntakeTime;
-    // private final long UNQUEUED = -1;    // Sentinel for prev line's vars
+    long runIntakeTime, raiseIntakeTime;
+    private final long UNQUEUED = Long.MAX_VALUE;    // Sentinel for prev line's vars
 
     // === Subsystems === //
-    //DrivetrainEx dt;
-    //Conveyor conveyor;
+    DrivetrainEx dt;
+    Conveyor conveyor;
     Intake intake;
-    //Hanger hanger;
+    Hanger hanger;
     //Vision vision;
     //private static UsbCamera cam;
 
@@ -84,59 +71,46 @@ public class Robot extends TimedRobot
     @Override
     public void robotInit()
     {
-        //SmartDashboard.updateValues();
-        //pcmCompressor.enableDigital();
-        //dt = new DrivetrainEx();
+        SmartDashboard.updateValues();
+        pcmCompressor.enableDigital();
+        dt = new DrivetrainEx();
         intake = new Intake();
-        //conveyor = new Conveyor();
-        //hanger = new Hanger();
+        conveyor = new Conveyor();
+        hanger = new Hanger();
         //cam = CameraServer.startAutomaticCapture();
         //cam.setResolution(100, 100);
-
-        // TODO: SUBSYSTEMS ARE STARTING IN THEIR LAST-USED STATE! WHY IS THE INTAKE ON!?
     }
 
     /** This function is run once each time the robot enters autonomous mode. */
     @Override
     public void autonomousInit()
     {
-        //auto_timer.reset();
-        //auto_timer.start();
-        //dt.zeroHeading();
+        init();
+        auto_timer.reset();
+        auto_timer.start();
+        dt.zeroHeading();
     }
 
     /** This function is called periodically during autonomous. */
     @Override
     public void autonomousPeriodic()
     {
-        //dt.updateOdometry();
-        //dt.printData();
+        dt.updateOdometry();
+        dt.printData();
     }
 
     /** This function is called once each time the robot enters teleoperated mode. */
     @Override
     public void teleopInit() {
-        // runIntakeTime = UNQUEUED;
-        // raiseIntakeTime = UNQUEUED;
+        init();
+        runIntakeTime = UNQUEUED;
+        raiseIntakeTime = UNQUEUED;
     }
 
     /** This function is called periodically during teleoperated mode. */
     @Override
     public void teleopPeriodic()
     {
-        if (controller1.getRawButton(k.A))
-            intake.forward();
-        else if (controller1.getRawButton(k.B))
-            intake.reverse();
-        else
-            intake.stop();
-            
-        if (controller1.getRawButtonPressed(k.X))
-            intake.raise();
-        if (controller1.getRawButtonPressed(k.Y))
-            intake.lower();
-
-        /*
         // ==== Drive control ==== //
         boolean rb1 = controller1.getRawButton(k.RB);
         double ly1 = controller1.getRawAxis(k.LY_ID);
@@ -149,7 +123,6 @@ public class Robot extends TimedRobot
 
         // DT TELEMENTRY
         dt.printData();
-
         SmartDashboard.putNumber("Raw Heading", dt.getRawHeading());
         SmartDashboard.putNumber("Abs Heading", dt.getHeading());
         SmartDashboard.putNumber("Turn rate", dt.getTurnRate());
@@ -187,14 +160,7 @@ public class Robot extends TimedRobot
         {
             intake.raise();
             raiseIntakeTime = UNQUEUED;   // Return to sentinel
-        }
-
-        // Spin
-        boolean a1 = controller1.getRawButtonPressed(k.A);
-        if (a1 && intake._RunState != Intake.RunState.ON)
-            intake.on();
-        else if (a1)
-            intake.stop();      
+        }  
 
         // ==== Conveyor ==== //
         boolean lb = controller1.getRawButtonPressed(k.LB);
@@ -204,7 +170,6 @@ public class Robot extends TimedRobot
             conveyor.stop();
 
         // === Hanger === //
-        // TODO
         boolean x = controller2.getRawButton(k.X);
         boolean y = controller2.getRawButton(k.Y);
         // Vertical
@@ -222,6 +187,7 @@ public class Robot extends TimedRobot
         else if (shift && hanger._Angle != Hanger.Angle.REST)
             hanger.rest();
          
+        /*
         // === Cameras === //
         if (controller1.getRawButtonPressed(controls.shiftCam))
             Vision.toggle();
@@ -248,31 +214,37 @@ public class Robot extends TimedRobot
     }
     */
 
+    public void init()
+    {
+        conveyor.init();
+        hanger.init();
+        intake.init();
+    }
+
     /**
      * Use this to pass the autonomous command to the main {@link Robot} class.
      *
      * @return the command to run in autonomous
      */
-    /*
-    public static Command getAutonomousCommand() {
+    public Command getAutonomousCommand() {
 
         // Create a voltage constraint to ensure we don't accelerate too fast
         var autoVoltageConstraint =
             new DifferentialDriveVoltageConstraint(
                 new SimpleMotorFeedforward(
-                    kEx.sVolts,
-                    kEx.vVoltSecondsPerMeter,
-                    kEx.aVoltSecondsSquaredPerMeter),
-                kEx.DriveKinematics,
+                    DrivetrainEx.kEx.sVolts,
+                    DrivetrainEx.kEx.vVoltSecondsPerMeter,
+                    DrivetrainEx.kEx.aVoltSecondsSquaredPerMeter),
+                    DrivetrainEx.kEx.DriveKinematics,
                 10);
     
         // Create config for trajectory
         TrajectoryConfig config =
             new TrajectoryConfig(
-                    kEx.MaxSpeedMetersPerSecond,
-                    kEx.MaxAccelerationMetersPerSecondSquared)
+                    DrivetrainEx.kEx.MaxSpeedMetersPerSecond,
+                    DrivetrainEx.kEx.MaxAccelerationMetersPerSecondSquared)
                 // Add kinematics to ensure max speed is actually obeyed
-                .setKinematics(kEx.DriveKinematics)
+                .setKinematics(DrivetrainEx.kEx.DriveKinematics)
                 // Apply the voltage constraint
                 .addConstraint(autoVoltageConstraint);
     
@@ -291,25 +263,24 @@ public class Robot extends TimedRobot
         RamseteCommand ramseteCommand =
             new RamseteCommand(
                 exampleTrajectory,
-                drive::getPose,
-                new RamseteController(kEx.RamseteB, kEx.RamseteZeta),
+                dt::getPose,
+                new RamseteController(DrivetrainEx.kEx.RamseteB, DrivetrainEx.kEx.RamseteZeta),
                 new SimpleMotorFeedforward(
-                    kEx.sVolts,
-                    kEx.vVoltSecondsPerMeter,
-                    kEx.aVoltSecondsSquaredPerMeter),
-                kEx.DriveKinematics,
-                drive::getWheelSpeeds,
-                new PIDController(kEx.PDriveVel, 0, 0),
-                new PIDController(kEx.PDriveVel, 0, 0),
+                    DrivetrainEx.kEx.sVolts,
+                    DrivetrainEx.kEx.vVoltSecondsPerMeter,
+                    DrivetrainEx.kEx.aVoltSecondsSquaredPerMeter),
+                    DrivetrainEx.kEx.DriveKinematics,
+                    dt::getWheelSpeeds,
+                new PIDController(DrivetrainEx.kEx.PDriveVel, 0, 0),
+                new PIDController(DrivetrainEx.kEx.PDriveVel, 0, 0),
                 // RamseteCommand passes volts to the callback
-                drive::tankDriveVolts,
-                m_robotDrive);
+                dt::tankDriveVolts,
+                dt);
     
         // Reset odometry to the starting pose of the trajectory.
-        m_robotDrive.resetOdometry(exampleTrajectory.getInitialPose());
+        dt.resetOdometry(exampleTrajectory.getInitialPose());
     
         // Run path following command, then stop at the end.
-        return ramseteCommand.andThen(() -> m_robotDrive.tankDriveVolts(0, 0));
-      }
-    }*/
+        return ramseteCommand.andThen(() -> dt.tankDriveVolts(0, 0));
+    }
 }

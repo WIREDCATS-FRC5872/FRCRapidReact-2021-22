@@ -24,7 +24,7 @@ public class Intake
 
     public enum RunState
     {
-        FORWARD,
+        ON,
         REVERSE,
         STOP;
     }
@@ -44,12 +44,15 @@ public class Intake
 
     // ===== METHODS ===== //
 
-    public void init()
+    public Intake()
     {
         motor.configFactoryDefault();
         motor.setInverted(false);
         motor.setNeutralMode(NeutralMode.Coast);
-
+    }
+    
+    public void init()
+    {
         stop();
         lower();
     }
@@ -74,17 +77,22 @@ public class Intake
         _Position = Position.DOWN;
     }
 
-    public void forward()
+    public void on()
     {
-        motor.set(ControlMode.PercentOutput, k.speed);
-        _RunState = RunState.FORWARD;
+        if (_Position == Position.DOWN) // TODO: Test that this doesn't cause problems
+        {
+            motor.set(ControlMode.PercentOutput, k.speed);
+            _RunState = RunState.ON;
+        }
     }
 
+    /*
     public void reverse()
     {
         motor.set(ControlMode.PercentOutput, -k.speed);
         _RunState = RunState.REVERSE;
     }
+    */
 
     public void stop()
     {

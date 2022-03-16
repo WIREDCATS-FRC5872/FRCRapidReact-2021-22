@@ -42,11 +42,13 @@ public class Conveyor
         }
         leftMotor.setInverted(false);
         rightMotor.setInverted(true);
-
-        // Initial position
-        stop();
     }
 
+    public void init()
+    {
+        stop();
+    }
+    
     public void printData()
     {
         SmartDashboard.putString("Conveyor RunState", _RunState.name());
