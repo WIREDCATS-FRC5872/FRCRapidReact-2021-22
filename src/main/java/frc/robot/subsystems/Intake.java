@@ -13,7 +13,7 @@ public class Intake
     private static class k
     {
         private static final int MOTOR_ID = 10;
-        private static final int FWD_ID = 1, REV_ID = 6;
+        private static final int FWD_ID = 6, REV_ID = 1;
 
         private static final DoubleSolenoid.Value forward = DoubleSolenoid.Value.kForward;
         private static final DoubleSolenoid.Value reverse = DoubleSolenoid.Value.kReverse;
@@ -50,17 +50,17 @@ public class Intake
         motor.setInverted(false);
         motor.setNeutralMode(NeutralMode.Coast);
     }
-    
+
     public void init()
     {
         stop();
-        lower();
+        raise();
     }
 
     public void printData()
     {
         SmartDashboard.putString("Intake RunState", _RunState.name());
-        SmartDashboard.putString("Intake Position", _RunState.name());
+        SmartDashboard.putString("Intake Position", _Position.name());
         SmartDashboard.putString("Solenoid Value", solenoid.get().toString());
         SmartDashboard.putNumber("Motor Power", motor.get());
     }
@@ -79,11 +79,11 @@ public class Intake
 
     public void on()
     {
-        if (_Position == Position.DOWN) // TODO: Test that this doesn't cause problems
-        {
+        //if (_Position == Position.DOWN) // TODO: Test that this doesn't cause problems
+        //{
             motor.set(ControlMode.PercentOutput, k.speed);
             _RunState = RunState.ON;
-        }
+        //}
     }
 
     /*

@@ -146,19 +146,20 @@ public class Robot extends TimedRobot
             }
             else
             {
+                intake.stop();
                 raiseIntakeTime = currTime + Intake.DELAY;
             }
         }
 
         // Act on the queues
         // Run intake as queued
-        if (currTime >= runIntakeTime)
+        if (currTime >= runIntakeTime && intake._Position == Intake.Position.DOWN)
         {
             intake.on();
             runIntakeTime = UNQUEUED; // Return to sentinel
         }
         // Raise intake as queued
-        if (currTime >= raiseIntakeTime)
+        if (currTime >= raiseIntakeTime && intake._RunState == Intake.RunState.STOP)
         {
             intake.raise();
             raiseIntakeTime = UNQUEUED;   // Return to sentinel
