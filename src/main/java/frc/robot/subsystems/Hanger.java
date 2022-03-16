@@ -69,9 +69,6 @@ public class Hanger
         lMotor.setInverted(false);
         rMotor.setInverted(true);
         resetEncoders();
-
-        // Initial position
-        // rest();
     }
 
     public void init()
