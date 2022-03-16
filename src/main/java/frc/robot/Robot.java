@@ -112,14 +112,10 @@ public class Robot extends TimedRobot
     public void teleopPeriodic()
     {
         // ==== Drive control ==== //
-        boolean rb1 = controller1.getRawButton(k.RB);
-        double ly1 = controller1.getRawAxis(k.LY_ID);
-        Double rx1 = controller1.getRawAxis(k.RX_ID);
-        
-        if (rb1)  // Slow mode
-            dt.arcadeDrive(ly1/2, rx1/2);
+        if (controller1.getRawButton(k.RB))  // Slow mode
+            dt.arcadeDrive(controller1.getRawAxis(k.LY_ID)/2, controller1.getRawAxis(k.RX_ID)/2);
         else
-            dt.arcadeDrive(ly1, rx1);
+            dt.arcadeDrive(controller1.getRawAxis(k.LY_ID), controller1.getRawAxis(k.RX_ID));
 
         // DT TELEMENTRY
         dt.printData();
@@ -127,66 +123,74 @@ public class Robot extends TimedRobot
         SmartDashboard.putNumber("Abs Heading", dt.getHeading());
         SmartDashboard.putNumber("Turn rate", dt.getTurnRate());
 
-        boolean rt1 = controller1.getRawAxis(k.RT) > 0.2;
         // Shift gear
-        if (rt1 && dt._Gear != DrivetrainEx.Gear.HIGH)
-            dt.setHighGear();
-        else if (rt1 && dt._Gear != DrivetrainEx.Gear.LOW)
-            dt.setLowGear();
+        if (controller1.getRawAxis(k.RT) > 0.2)
+        {
+            if (dt._Gear != DrivetrainEx.Gear.HIGH)
+                dt.setHighGear();
+            else // Low gear
+                dt.setLowGear();
+        }
         
         // ==== Intake ==== //
-        boolean lt = controller1.getRawAxis(k.LT) > 0.2;
+        long currTime = System.currentTimeMillis();
+
         // Raise/Lower
         // These actions queue further actions to ensure the intake does not destroy the wires in our beloved robot
-        if (lt && intake._Position == Intake.Position.UP)
+        if (controller1.getRawAxis(k.LT) > 0.2)
         {
-            intake.lower();
-            runIntakeTime = System.currentTimeMillis() + Intake.DELAY;
-        }
-        else if (lt)
-        {
-            raiseIntakeTime = System.currentTimeMillis() + Intake.DELAY;
+            if (intake._Position == Intake.Position.UP)
+            {
+                intake.lower();
+                runIntakeTime = currTime + Intake.DELAY;
+            }
+            else
+            {
+                raiseIntakeTime = currTime + Intake.DELAY;
+            }
         }
 
         // Act on the queues
         // Run intake as queued
-        if (System.currentTimeMillis() >= runIntakeTime)
+        if (currTime >= runIntakeTime)
         {
             intake.on();
             runIntakeTime = UNQUEUED; // Return to sentinel
         }
         // Raise intake as queued
-        if (System.currentTimeMillis() >= raiseIntakeTime)
+        if (currTime >= raiseIntakeTime)
         {
             intake.raise();
             raiseIntakeTime = UNQUEUED;   // Return to sentinel
         }  
 
         // ==== Conveyor ==== //
-        boolean lb = controller1.getRawButtonPressed(k.LB);
-        if (lb && conveyor._RunState != Conveyor.RunState.UP)
-            conveyor.up();
-        else if (lb)
-            conveyor.stop();
+        if (controller1.getRawButtonPressed(k.LB))
+        {
+            if (conveyor._RunState != Conveyor.RunState.UP)
+                conveyor.up();
+            else
+                conveyor.stop();
+        }
 
         // === Hanger === //
-        boolean x = controller2.getRawButton(k.X);
-        boolean y = controller2.getRawButton(k.Y);
         // Vertical
-        if (x)
+        if (controller2.getRawButton(k.X))
             hanger.raise();
-        else if (y)
+        else if (controller2.getRawButton(k.Y))
             hanger.lower();
         else
             hanger.stop();
 
-        boolean shift = controller2.getRawButton(k.A);
         // Angle
-        if (shift && hanger._Angle != Hanger.Angle.FORWARD)
-            hanger.forward();
-        else if (shift && hanger._Angle != Hanger.Angle.REST)
-            hanger.rest();
-         
+        if (controller2.getRawButtonPressed(k.A))
+        {
+            if (hanger._Angle != Hanger.Angle.FORWARD)
+                hanger.forward();
+            else if (hanger._Angle != Hanger.Angle.REST)
+                hanger.rest();
+        }
+        
         /*
         // === Cameras === //
         if (controller1.getRawButtonPressed(controls.shiftCam))
