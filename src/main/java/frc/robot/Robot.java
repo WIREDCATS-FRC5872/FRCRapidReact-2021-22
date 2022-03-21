@@ -119,9 +119,6 @@ public class Robot extends TimedRobot
 
         // DT TELEMENTRY
         dt.printData();
-        SmartDashboard.putNumber("Raw Heading", dt.getRawHeading());
-        SmartDashboard.putNumber("Abs Heading", dt.getHeading());
-        SmartDashboard.putNumber("Turn rate", dt.getTurnRate());
 
         // Shift gear
         if (controller1.getRawAxis(k.RT) > 0.2)
@@ -183,6 +180,9 @@ public class Robot extends TimedRobot
         else
             hanger.stop();
 
+        if (controller2.getRawButtonPressed(k.START))
+            hanger.resetEncoders();
+
         // Angle
         if (controller2.getRawButtonPressed(k.A))
         {
@@ -191,6 +191,7 @@ public class Robot extends TimedRobot
             else if (hanger._Angle != Hanger.Angle.REST)
                 hanger.rest();
         }
+        hanger.printData();
         
         /*
         // === Cameras === //

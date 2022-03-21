@@ -3,7 +3,7 @@
   "encoder type": "Built-in",
   "encoding": false,
   "gearing denominator": 1.0,
-  "gearing numerator": 10.71,
+  "gearing numerator": 7.0,
   "gyro": "Pigeon",
   "gyro ctor": "0",
   "is drivetrain": true,

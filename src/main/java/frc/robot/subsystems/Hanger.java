@@ -21,8 +21,10 @@ public class Hanger
         private static final DoubleSolenoid.Value rest = DoubleSolenoid.Value.kReverse;
         private static final DoubleSolenoid.Value off = DoubleSolenoid.Value.kOff;
         
-        private static final float upSpeed = 1.0f;
+        private static final float upSpeed = -0.5f;
         private static final float downSpeed = 1.0f;
+        private static final int MAX_HEIGHT = 1200000;
+        private static final int MIN_HEIGHT = 0;
 
         private static final float TICKS_PER_REV = 1024f;
         private static final float GEAR_RATIO = 100.0f;
@@ -66,8 +68,8 @@ public class Hanger
             motor.setNeutralMode(NeutralMode.Brake);
             motor.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, k.PIDLoopIDx, k.TimeoutMs);
         }
-        lMotor.setInverted(false);
-        rMotor.setInverted(true);
+        lMotor.setInverted(true);
+        rMotor.setInverted(false);
         resetEncoders();
     }
 
@@ -80,30 +82,36 @@ public class Hanger
     public void printData()
     {
         SmartDashboard.putString("Hanger Angle", _Angle.name());
-        SmartDashboard.putString("Solenoid Value", solenoid.get().toString());
-        SmartDashboard.putNumber("L Motor Power", lMotor.get());
-        SmartDashboard.putNumber("R Motor Power", rMotor.get());
+        SmartDashboard.putString("Hanger Solenoid Value", solenoid.get().toString());
+        //SmartDashboard.putNumber("L Motor Power", lMotor.get());
+        //SmartDashboard.putNumber("R Motor Power", rMotor.get());
 
-        SmartDashboard.putNumber("L Motor Position", lMotor.getSelectedSensorPosition());
-        SmartDashboard.putNumber("R Motor Position", rMotor.getSelectedSensorPosition());
+        SmartDashboard.putNumber("Hanger L Motor Position", lMotor.getSelectedSensorPosition());
+        SmartDashboard.putNumber("Hanger R Motor Position", rMotor.getSelectedSensorPosition());
     }
 
     public void raise()
     {
-        for (WPI_TalonSRX motor : motors)
-        {
-            motor.setNeutralMode(NeutralMode.Coast);
-            motor.set(ControlMode.PercentOutput, k.upSpeed);
-        }
+        if (getAverageEncoderDistance() < k.MAX_HEIGHT)
+            for (WPI_TalonSRX motor : motors)
+            {
+                motor.setNeutralMode(NeutralMode.Brake);
+                motor.set(ControlMode.PercentOutput, k.upSpeed);
+            }
+        else
+            stop();
     }
 
     public void lower()
     {
-        for (WPI_TalonSRX motor : motors)
-        {
-            motor.setNeutralMode(NeutralMode.Brake);
-            motor.set(ControlMode.PercentOutput, -1 * k.downSpeed);
-        }
+        if (getAverageEncoderDistance() > k.MIN_HEIGHT)
+            for (WPI_TalonSRX motor : motors)
+            {
+                motor.setNeutralMode(NeutralMode.Brake);
+                motor.set(ControlMode.PercentOutput, k.downSpeed);
+            }
+        else
+            stop();
     }
 
     public void stop()
