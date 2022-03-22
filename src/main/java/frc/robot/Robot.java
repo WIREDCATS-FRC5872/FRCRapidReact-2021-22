@@ -95,8 +95,14 @@ public class Robot extends TimedRobot
     @Override
     public void autonomousPeriodic()
     {
-        dt.updateOdometry();
-        dt.printData();
+        SmartDashboard.putString("AUTO", "RUNNING");
+
+        
+        //dt.updateOdometry();
+        //dt.printData();
+
+        while (true)
+            SmartDashboard.putString("AUTO", "FINISHED");
     }
 
     /** This function is called once each time the robot enters teleoperated mode. */
@@ -122,6 +128,7 @@ public class Robot extends TimedRobot
 
 
         // Shift gear
+        /*
         if (controller1.getRawAxis(k.RT) > 0.2)
         {
             if (dt._Gear != DrivetrainEx.Gear.HIGH)
@@ -129,6 +136,17 @@ public class Robot extends TimedRobot
             else // Low gear
                 dt.setLowGear();
         }
+        */
+        
+        // Shift gear
+        if (controller1.getRawAxis(k.RT) > 0.2)
+        {
+            if (dt._Gear != DrivetrainEx.Gear.HIGH)
+                dt.setLowGear();
+        }
+        else if (dt._Gear != DrivetrainEx.Gear.HIGH)
+            dt.setHighGear();
+        
         
         // ==== Intake ==== //
         long currTime = System.currentTimeMillis();
