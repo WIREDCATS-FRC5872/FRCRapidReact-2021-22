@@ -88,7 +88,7 @@ public class Robot extends TimedRobot
         init();
         auto_timer.reset();
         auto_timer.start();
-        dt.zeroHeading();
+        dt.autoInit();
     }
 
     /** This function is called periodically during autonomous. */
@@ -119,6 +119,7 @@ public class Robot extends TimedRobot
 
         // DT TELEMENTRY
         dt.printData();
+
 
         // Shift gear
         if (controller1.getRawAxis(k.RT) > 0.2)

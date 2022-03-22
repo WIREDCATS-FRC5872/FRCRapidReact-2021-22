@@ -83,6 +83,12 @@ public class DrivetrainEx extends Drivetrain {
     odometry = new DifferentialDriveOdometry(getRotation2d());
   }
 
+  public void autoInit()
+  {
+    setHighGear();
+    zeroHeading();
+  }
+
   public void setHighGear()
   {
     _Gear = Gear.HIGH;
