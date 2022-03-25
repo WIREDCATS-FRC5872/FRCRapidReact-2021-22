@@ -129,6 +129,8 @@ public class Robot extends TimedRobot
 
             // Move & score pre-loaded
             dt.forward(2);
+
+            /*
             dt.rotateRight(90);
             dt.backward(3);
             conveyor.release();
@@ -141,6 +143,7 @@ public class Robot extends TimedRobot
             dt.forward(7*2.0/1.4);
 
             // Fin.
+            */
         }
         // === BLUE/RED RIGHTMOST SIDE === //
         else if (auto == Auto.RIGHTMOST)
@@ -155,6 +158,7 @@ public class Robot extends TimedRobot
 
             // Move & score pre-loaded
             dt.forward(2);
+            /*
             dt.rotateRight(90);
             dt.backward(3);
             conveyor.release();
@@ -204,8 +208,9 @@ public class Robot extends TimedRobot
 
             // Leave again
             dt.forward(7*2.0/1.4);
+            */
         }
-        // === TODO === //
+        // === RIGHTMOST SIDE - HOLDS 2 BALLS AT A TIME === //
         else if (auto == Auto.RIGHTMOST_2ATATIME)
         {
             // Init position is ball pre-loaded, facing perpendicular to the hub
@@ -218,6 +223,7 @@ public class Robot extends TimedRobot
 
             // Move & score pre-loaded
             dt.forward(2);
+            /*
             dt.rotateRight(90);
             dt.backward(3);
             conveyor.release();
@@ -267,6 +273,7 @@ public class Robot extends TimedRobot
 
             // Leave again
             dt.forward(7*2.0/1.4);
+            */
         }
         // === LEFT SIMPLE === //
         else if (auto == Auto.SIMPLELEFT)
@@ -281,6 +288,7 @@ public class Robot extends TimedRobot
 
             // Move & score pre-loaded
             dt.forward(2);
+            /*
             dt.rotateRight(90);
             dt.backward(3);
             conveyor.release();
@@ -291,6 +299,7 @@ public class Robot extends TimedRobot
             
             // Exit tarmac
             dt.forward(7*2.0/1.4);
+            */
         }
         // === BLUE/RED LEFTMOST SIDE === //
         else if (auto == Auto.LEFTMOST)
@@ -305,6 +314,7 @@ public class Robot extends TimedRobot
 
             // Move & score pre-loaded
             dt.forward(2);
+            /*
             dt.rotateRight(90);
             dt.backward(3);
             conveyor.release();
@@ -354,6 +364,7 @@ public class Robot extends TimedRobot
 
             // Leave again
             dt.forward(7*2.0/1.4);
+            */
         }
 
         while (true)
