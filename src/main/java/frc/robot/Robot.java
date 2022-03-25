@@ -33,7 +33,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
 import frc.robot.subsystems.Conveyor;
 import frc.robot.subsystems.Drivetrain;
-import frc.robot.subsystems.DrivetrainEx;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Hanger;
 
@@ -73,7 +72,7 @@ public class Robot extends TimedRobot
     private final long UNQUEUED = Long.MAX_VALUE;    // Sentinel for prev line's vars
 
     // === Subsystems === //
-    DrivetrainEx dt;
+    Drivetrain dt;
     Conveyor conveyor;
     Intake intake;
     Hanger hanger;
@@ -89,7 +88,7 @@ public class Robot extends TimedRobot
     {
         SmartDashboard.updateValues();
         pcmCompressor.enableDigital();
-        dt = new DrivetrainEx();
+        dt = new Drivetrain();
         intake = new Intake();
         conveyor = new Conveyor();
         hanger = new Hanger();
@@ -221,9 +220,9 @@ public class Robot extends TimedRobot
             // "GET OUT DA WAY!!!"
             wait(3000);
 
+            /*
             // Move & score pre-loaded
             dt.forward(2);
-            /*
             dt.rotateRight(90);
             dt.backward(3);
             conveyor.release();
@@ -286,9 +285,10 @@ public class Robot extends TimedRobot
             // "GET OUT DA WAY!!!"
             wait(3000);
 
+            /*
             // Move & score pre-loaded
             dt.forward(2);
-            /*
+            
             dt.rotateRight(90);
             dt.backward(3);
             conveyor.release();
@@ -411,10 +411,10 @@ public class Robot extends TimedRobot
         // Shift gear
         if (controller1.getRawAxis(k.RT) > 0.2)
         {
-            if (dt._Gear != DrivetrainEx.Gear.HIGH)
+            if (dt._Gear != Drivetrain.Gear.HIGH)
                 dt.setLowGear();
         }
-        else if (dt._Gear != DrivetrainEx.Gear.HIGH)
+        else if (dt._Gear != Drivetrain.Gear.HIGH)
             dt.setHighGear();
         
         
@@ -509,11 +509,13 @@ public class Robot extends TimedRobot
     }
     */
 
+    // NOT USED; TRAJECTORY STUFF NEVER TESTED
     /**
      * Use this to pass the autonomous command to the main {@link Robot} class.
      *
      * @return the command to run in autonomous
      */
+    /*
     public Command getAutonomousCommand() {
 
         // Create a voltage constraint to ensure we don't accelerate too fast
@@ -571,4 +573,5 @@ public class Robot extends TimedRobot
         // Run path following command, then stop at the end.
         return ramseteCommand.andThen(() -> dt.tankDriveVolts(0, 0));
     }
+    */
 }

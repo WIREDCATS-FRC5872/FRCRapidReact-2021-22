@@ -2,6 +2,8 @@ package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.InvertType;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
 import com.ctre.phoenix.motorcontrol.StatusFrameEnhanced;
 import com.ctre.phoenix.motorcontrol.TalonFXFeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
@@ -155,6 +157,42 @@ public class Drivetrain {
     {
         _Gear = Gear.LOW;
         shifter.set(k.low);
+    }
+
+    public void forward(double inches)
+    {
+        resetEncoders();
+        double ticks = inches * k.TICKS_PER_INCH;
+        for (WPI_TalonFX motor : driveMotors)
+            motor.set(TalonFXControlMode.Position, ticks);
+    }
+
+    public void backward(double inches)
+    {
+        resetEncoders();
+        double ticks = inches * -k.TICKS_PER_INCH;
+        for (WPI_TalonFX motor : driveMotors)
+            motor.set(TalonFXControlMode.Position, ticks);
+    }
+    
+    public void rotateRight(double angle)
+    {
+        resetEncoders();
+        double ticks = angle/360.0 * k.RobotTrackCircumference;
+        L_Master.set(TalonFXControlMode.Position, ticks);
+        L_Slave.set(TalonFXControlMode.Position, ticks);
+        R_Master.set(TalonFXControlMode.Position, -ticks);
+        R_Slave.set(TalonFXControlMode.Position, -ticks);
+    }
+
+    public void rotateLeft(double angle)
+    {
+        resetEncoders();
+        double ticks = angle/360.0 * k.RobotTrackCircumference;
+        L_Master.set(TalonFXControlMode.Position, -ticks);
+        L_Slave.set(TalonFXControlMode.Position, -ticks);
+        R_Master.set(TalonFXControlMode.Position, ticks);
+        R_Slave.set(TalonFXControlMode.Position, ticks);
     }
 
     public void resetEncoders()
