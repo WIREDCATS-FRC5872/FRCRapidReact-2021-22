@@ -99,6 +99,8 @@ public class Robot extends TimedRobot
     {
         SmartDashboard.putString("AUTO RUNNING", auto.toString());
 
+        double TARMAC_L = 7.0;
+
         // === RIGHT SIMPLE === //
         if (auto == Auto.SIMPLERIGHT)
         {
@@ -122,7 +124,7 @@ public class Robot extends TimedRobot
             conveyor.lock();
 
             // Exit tarmac
-            dt.forward(7*2.0/1.4);
+            dt.forward(TARMAC_L*2.0/1.4);
 
             // Fin.
             */
@@ -150,27 +152,29 @@ public class Robot extends TimedRobot
             conveyor.lock();
             
             // Move & pick up next ball
-            dt.forward(7*2.0/1.4);
+            dt.forward(TARMAC_L*2.0/1.4);
             dt.rotateLeft(90);
             intake.on();
             conveyor.up();
-            dt.forward(7/2.0);
+            dt.forward(TARMAC_L/2.0);
             intake.off();
             conveyor.stop();
 
-            // Get 3rd & final ball
-            rotateRight(180);
-            dt.forward(7);
+            // Get 3rd & final ball, the one on the other alliance side
+            rotateLeft(30);
+            dt.forward(TARMAC_L*0.8);
             intake.on();
             conveyor.up();
-            dt.forward(7*0.4);
+            dt.forward(TARMAC_L*0.4);
             intake.off();
             conveyor.stop();
 
             // Return & score both
-            dt.backward(7*0.9);
-            dt.rotateRight(90);
-            dt.backward(7*2.0/1.4);
+            dt.backward(TARMAC_L*1.2);
+            dt.rotateRight(30);
+            dt.backward(TARMAC_L/2.0);
+            dt.rotaateLeft(90);
+            dt.backward(TARMAC_L*2.0/1.4);
             conveyor.release();
             conveyor.up();
             Timer.delay(4);
@@ -178,7 +182,7 @@ public class Robot extends TimedRobot
             conveyor.lock();
 
             // Leave again
-            dt.forward(7*2.0/1.4);
+            dt.forward(TARMAC_L*2.0/1.4);
             */
         }
         // === BLUE/RED RIGHTMOST SIDE - less preferred auto === //
@@ -203,18 +207,18 @@ public class Robot extends TimedRobot
             conveyor.lock();
             
             // Move & pick up next ball
-            dt.forward(7*2.0/1.4);
+            dt.forward(TARMAC_L*2.0/1.4);
             dt.rotateLeft(90);
             intake.on();
             conveyor.up();
-            dt.forward(7*0.7/1.4);
+            dt.forward(TARMAC_L*0.7/1.4);
             intake.off();
             conveyor.stop();
 
             // Return & score it
-            dt.backward(7*0.7/1.4);
+            dt.backward(TARMAC_L*0.7/1.4);
             dt.rotateRight(90);
-            dt.backward(7*2.0/1.4);
+            dt.backward(TARMAC_L*2.0/1.4);
             conveyor.release();
             conveyor.up();
             Timer.delay(2);
@@ -222,19 +226,19 @@ public class Robot extends TimedRobot
             conveyor.lock();
 
             // Get 3rd & final ball
-            dt.forward(7*1.6/1.4);
+            dt.forward(TARMAC_L*1.6/1.4);
             dt.rotateLeft(90);
-            dt.forward(7*1.0/1.4);
+            dt.forward(TARMAC_L*1.0/1.4);
             intake.on();
             conveyor.up();
-            dt.forward(7*0.7/1.4);
+            dt.forward(TARMAC_L*0.7/1.4);
             intake.off();
             conveyor.stop();
 
             // Return & score it
-            dt.backward(7*1.7/1.4);
+            dt.backward(TARMAC_L*1.7/1.4);
             dt.rotateRight(90);
-            dt.backward(7*1.6/1.4);
+            dt.backward(TARMAC_L*1.6/1.4);
             conveyor.release();
             conveyor.up();
             Timer.delay(2);
@@ -242,7 +246,7 @@ public class Robot extends TimedRobot
             conveyor.lock();
 
             // Leave again
-            dt.forward(7*2.0/1.4);
+            dt.forward(TARMAC_L*2.0/1.4);
             */
         }
         // === RIGHTMOST SIDE - HOLDS 2 BALLS AT A TIME === //
@@ -268,27 +272,27 @@ public class Robot extends TimedRobot
             conveyor.lock();
             
             // Move & pick up next ball
-            dt.forward(7*2.0/1.4);
+            dt.forward(TARMAC_L*2.0/1.4);
             dt.rotateLeft(90);
             intake.on();
             conveyor.up();
-            dt.forward(7/2.0);
+            dt.forward(TARMAC_L/2.0);
             intake.off();
             conveyor.stop();
 
             // Get 3rd & final ball
             rotateRight(180);
-            dt.forward(7);
+            dt.forward(TARMAC_L);
             intake.on();
             conveyor.up();
-            dt.forward(7*0.4);
+            dt.forward(TARMAC_L*0.4);
             intake.off();
             conveyor.stop();
 
             // Return & score both
-            dt.backward(7*0.9);
+            dt.backward(TARMAC_L*0.9);
             dt.rotateRight(90);
-            dt.backward(7*2.0/1.4);
+            dt.backward(TARMAC_L*2.0/1.4);
             conveyor.release();
             conveyor.up();
             Timer.delay(4);
@@ -296,7 +300,7 @@ public class Robot extends TimedRobot
             conveyor.lock();
 
             // Leave again
-            dt.forward(7*2.0/1.4);
+            dt.forward(TARMAC_L*2.0/1.4);
             */
         }
         // === LEFT SIMPLE === //
@@ -323,7 +327,7 @@ public class Robot extends TimedRobot
             conveyor.lock();
             
             // Exit tarmac
-            dt.forward(7*2.0/1.4);
+            dt.forward(TARMAC_L*2.0/1.4);
             */
         }
         // === LEFTMOST SIDE === //
@@ -335,12 +339,7 @@ public class Robot extends TimedRobot
 
             // Let the neighbor robot move out of the way
             // "GET OUT DA WAY!!!"
-            try {
-                wait(3000);
-            } catch (InterruptedException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
+            Timer.delay(3);
 
             // Move & score pre-loaded
             dt.forward(2);
@@ -354,31 +353,31 @@ public class Robot extends TimedRobot
             conveyor.lock();
             
             // Move & pick up next ball
-            dt.forward(7);
+            dt.forward(TARMAC_L);
             intake.on();
             conveyor.up();
-            dt.forward(7*0.6/1.4);
+            dt.forward(TARMAC_L*0.6/1.4);
             intake.off();
             conveyor.stop();
 
 
             // Get 3rd & final ball
-            dt.forward(7*2.0/1.4);
+            dt.forward(TARMAC_L*2.0/1.4);
             dt.rotateRight(45);
-            dt.forward(7);
+            dt.forward(TARMAC_L);
             dt.rotateRight(90);
             intake.on();
             conveyor.up();
-            dt.forward(7*2.0/1.4);
+            dt.forward(TARMAC_L*2.0/1.4);
             intake.off();
             conveyor.stop();
 
             // Return & score it
-            dt.backward(7*2.0/1.4);
+            dt.backward(TARMAC_L*2.0/1.4);
             dt.rotateLeft(90);
-            dt.backward(7);
+            dt.backward(TARMAC_L);
             dt.rotateLeft(45);
-            dt.backward(7*2.0/1.4);
+            dt.backward(TARMAC_L*2.0/1.4);
             conveyor.release();
             conveyor.up();
             Timer.delay(2);
@@ -386,10 +385,9 @@ public class Robot extends TimedRobot
             conveyor.lock();
 
             // Leave again
-            dt.forward(7*2.0/1.4);
+            dt.forward(TARMAC_L*2.0/1.4);
             */
         }
-        // 
 
         while (true)
             SmartDashboard.putString("AUTO RUNNING", "COMPLETED");
