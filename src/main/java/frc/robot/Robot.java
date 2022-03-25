@@ -27,7 +27,7 @@ public class Robot extends TimedRobot
         SIMPLERIGHT,
         RIGHTMOST,
         RIGHTMOST_CENTER_BALLS,
-        RIGHTMOST_CENTER_BALLS_ALT,
+        //RIGHTMOST_CENTER_BALLS_ALT,
 
         SIMPLELEFT,
         LEFTMOST;
@@ -185,6 +185,8 @@ public class Robot extends TimedRobot
             dt.forward(TARMAC_L*2.0/1.4);
             */
         }
+        
+        /*
         // === BLUE/RED RIGHTMOST SIDE - less preferred auto === //
         else if (auto == Auto.RIGHTMOST_CENTER_BALLS_ALT)
         {
@@ -247,8 +249,8 @@ public class Robot extends TimedRobot
 
             // Leave again
             dt.forward(TARMAC_L*2.0/1.4);
-            */
         }
+        */
         // === RIGHTMOST SIDE - HOLDS 2 BALLS AT A TIME === //
         else if (auto == Auto.RIGHTMOST_CENTER_BALLS)
         {
@@ -360,8 +362,7 @@ public class Robot extends TimedRobot
             intake.off();
             conveyor.stop();
 
-
-            // Get 3rd & final ball
+            // Get 3rd & final ball, the one on the opposite alliance side
             dt.forward(TARMAC_L*2.0/1.4);
             dt.rotateRight(45);
             dt.forward(TARMAC_L);
