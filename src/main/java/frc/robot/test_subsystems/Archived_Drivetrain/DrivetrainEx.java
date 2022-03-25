@@ -242,40 +242,4 @@ public class DrivetrainEx extends Drivetrain {
 
     return res[kEx.rotAxis];
   }
-
-  public void forward(double inches)
-  {
-    resetEncoders();
-    double ticks = inches * k.TICKS_PER_INCH;
-    for (TalonFX motor : DriveMotors)
-        motor.set(TalonFXControlMode.Position, ticks);
-  }
-
-  public void backward(double inches)
-  {
-    resetEncoders();
-    double ticks = inches * -k.TICKS_PER_INCH;
-    for (TalonFX motor : DriveMotors)
-        motor.set(TalonFXControlMode.Position, ticks);
-  }
-  
-  public void rotateRight(double angle)
-  {
-    resetEncoders();
-    double ticks = angle/360.0 * kEx.RobotTrackCircumference;
-    L_Master.set(TalonFXControlMode.Position, ticks);
-    L_Slave.set(TalonFXControlMode.Position, ticks);
-    R_Master.set(TalonFXControlMode.Position, -ticks);
-    R_Slave.set(TalonFXControlMode.Position, -ticks);
-  }
-
-  public void rotateLeft(double angle)
-  {
-    resetEncoders();
-    double ticks = angle/360.0 * kEx.RobotTrackCircumference;
-    L_Master.set(TalonFXControlMode.Position, -ticks);
-    L_Slave.set(TalonFXControlMode.Position, -ticks);
-    R_Master.set(TalonFXControlMode.Position, ticks);
-    R_Slave.set(TalonFXControlMode.Position, ticks);
-  }
 }
