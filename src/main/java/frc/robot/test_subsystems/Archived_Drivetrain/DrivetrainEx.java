@@ -1,4 +1,4 @@
-package frc.robot.subsystems;
+package frc.robot.test_subsystems.Archived_Drivetrain;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -6,6 +6,8 @@ import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
 
+import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
+import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.sensors.PigeonIMU;
 
 import edu.wpi.first.wpilibj.DoubleSolenoid;
@@ -38,6 +40,8 @@ public class DrivetrainEx extends Drivetrain {
     public static final double PDriveVel = 8.5;
 
     public static final double TrackwidthMeters = 0.69;
+    public static final double TrackWidthInches = 22;
+    public static final double RobotTrackCircumference = 2 * TrackWidthInches * Math.PI;
     public static final DifferentialDriveKinematics DriveKinematics =
         new DifferentialDriveKinematics(TrackwidthMeters);
 
@@ -237,5 +241,41 @@ public class DrivetrainEx extends Drivetrain {
     imu.getRawGyro(res);
 
     return res[kEx.rotAxis];
+  }
+
+  public void forward(double inches)
+  {
+    resetEncoders();
+    double ticks = inches * k.TICKS_PER_INCH;
+    for (TalonFX motor : DriveMotors)
+        motor.set(TalonFXControlMode.Position, ticks);
+  }
+
+  public void backward(double inches)
+  {
+    resetEncoders();
+    double ticks = inches * -k.TICKS_PER_INCH;
+    for (TalonFX motor : DriveMotors)
+        motor.set(TalonFXControlMode.Position, ticks);
+  }
+  
+  public void rotateRight(double angle)
+  {
+    resetEncoders();
+    double ticks = angle/360.0 * kEx.RobotTrackCircumference;
+    L_Master.set(TalonFXControlMode.Position, ticks);
+    L_Slave.set(TalonFXControlMode.Position, ticks);
+    R_Master.set(TalonFXControlMode.Position, -ticks);
+    R_Slave.set(TalonFXControlMode.Position, -ticks);
+  }
+
+  public void rotateLeft(double angle)
+  {
+    resetEncoders();
+    double ticks = angle/360.0 * kEx.RobotTrackCircumference;
+    L_Master.set(TalonFXControlMode.Position, -ticks);
+    L_Slave.set(TalonFXControlMode.Position, -ticks);
+    R_Master.set(TalonFXControlMode.Position, ticks);
+    R_Slave.set(TalonFXControlMode.Position, ticks);
   }
 }

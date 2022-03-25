@@ -1,4 +1,4 @@
-package frc.robot.subsystems;
+package frc.robot.test_subsystems.Archived_Drivetrain;
 
 import com.ctre.phoenix.motorcontrol.*;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
@@ -14,15 +14,15 @@ public class Drivetrain extends SubsystemBase
         public static final int FL_ID = 0, FR_ID = 1;
         public static final int BL_ID = 2, BR_ID = 3;
     
-        private static final double WHEEL_DIAMETER = 4.0;
-        private static final double GEAR_RATIO = 7.0; // High gear = 7 motor rots = 1 shaft rot
+        protected static final double WHEEL_DIAMETER = 4.0;
+        protected static final double GEAR_RATIO = 7.0; // High gear = 7 motor rots = 1 shaft rot
         // Not listed: Low gear ratio
-        private static final int TICKS_PER_REV = 2048;
-        private static final double TICKS_PER_INCH = (TICKS_PER_REV * GEAR_RATIO) / (WHEEL_DIAMETER * Math.PI);
+        protected static final int TICKS_PER_REV = 2048;
+        protected static final double TICKS_PER_INCH = (TICKS_PER_REV * GEAR_RATIO) / (WHEEL_DIAMETER * Math.PI);
 
         // Set to zero to skip waiting for confirmation, set to nonzero to wait and
         // report to DS if action fails.
-        private static final int TimeoutMs = 30;
+        protected static final int TimeoutMs = 30;
 
         /**
          * Which PID slot to pull gains from. Starting 2018, you can choose from
@@ -33,7 +33,7 @@ public class Drivetrain extends SubsystemBase
 
         // Talon SRX/ Victor SPX will supported multiple (cascaded) PID loops. For
         // now we just want the primary one.
-        private static final int PIDLoopIDx = 0;
+        protected static final int PIDLoopIDx = 0;
     }
 
     protected static class Gains

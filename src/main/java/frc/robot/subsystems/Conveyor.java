@@ -1,5 +1,6 @@
 package frc.robot.subsystems;
 
+import com.ctre.phoenix.ParamEnum;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
@@ -12,8 +13,10 @@ public class Conveyor
     {
         private static final int LEFT_MOTOR_ID = 51;
         private static final int RIGHT_MOTOR_ID = 52;
+        private static final int BLOCKER_MOTOR_ID = 53; // TEMP
 
         private static final float speed = -1.0f;
+        private static final double MAX_BLOCKER_VOLTAGE = 0;
     }
 
     public static enum RunState
@@ -28,7 +31,8 @@ public class Conveyor
     public Conveyor.RunState _RunState;
     private final WPI_TalonSRX leftMotor = new WPI_TalonSRX(k.LEFT_MOTOR_ID);
     private final WPI_TalonSRX rightMotor = new WPI_TalonSRX(k.RIGHT_MOTOR_ID);
-    private final WPI_TalonSRX[] motors = {leftMotor, rightMotor};
+    private final WPI_TalonSRX blockerMotor = new WPI_TalonSRX(k.BLOCKER_MOTOR_ID);
+    private final WPI_TalonSRX[] motors = {leftMotor, rightMotor, blockerMotor};
 
     // ===== METHODS ===== //
 
@@ -41,6 +45,8 @@ public class Conveyor
         }
         leftMotor.setInverted(false);
         rightMotor.setInverted(true);
+
+        blockerMotor.get
     }
 
     public void init()
@@ -78,5 +84,10 @@ public class Conveyor
         //leftMotor.set(ControlMode.PercentOutput, 0.0f);
         //rightMotor.set(ControlMode.PercentOutput, 0.0f);
         _RunState = RunState.STOP;
+    }
+
+    public void lock()
+    {
+
     }
 }
