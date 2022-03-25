@@ -129,6 +129,7 @@ public class Robot extends TimedRobot
             // Fin.
             */
         }
+        
         // === RIGHTMOST SIDE - HOLDS 2 BALLS AT A TIME === //
         else if (auto == Auto.RIGHTMOST)
         {
@@ -251,6 +252,7 @@ public class Robot extends TimedRobot
             dt.forward(TARMAC_L*2.0/1.4);
         }
         */
+        
         // === RIGHTMOST SIDE - HOLDS 2 BALLS AT A TIME === //
         else if (auto == Auto.RIGHTMOST_CENTER_BALLS)
         {
@@ -305,6 +307,7 @@ public class Robot extends TimedRobot
             dt.forward(TARMAC_L*2.0/1.4);
             */
         }
+        
         // === LEFT SIMPLE === //
         else if (auto == Auto.SIMPLELEFT)
         {
@@ -332,6 +335,7 @@ public class Robot extends TimedRobot
             dt.forward(TARMAC_L*2.0/1.4);
             */
         }
+        
         // === LEFTMOST SIDE === //
         else if (auto == Auto.LEFTMOST)
         {
@@ -519,4 +523,5 @@ public class Robot extends TimedRobot
     /** This function is called periodically during test mode. */
     @Override
     public void testPeriodic() { }
+
 }
