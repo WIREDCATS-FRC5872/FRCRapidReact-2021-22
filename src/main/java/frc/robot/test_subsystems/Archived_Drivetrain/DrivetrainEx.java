@@ -279,3 +279,71 @@ public class DrivetrainEx extends Drivetrain {
     R_Slave.set(TalonFXControlMode.Position, ticks);
   }
 }
+
+
+// FOR ROBOT/CONTAINER CLASS:
+// NOT USED; TRAJECTORY STUFF NEVER TESTED
+/**
+ * Use this to pass the autonomous command to the main {@link Robot} class.
+ *
+ * @return the command to run in autonomous
+ */
+/*
+public Command getAutonomousCommand() {
+
+    // Create a voltage constraint to ensure we don't accelerate too fast
+    var autoVoltageConstraint =
+        new DifferentialDriveVoltageConstraint(
+            new SimpleMotorFeedforward(
+                DrivetrainEx.kEx.sVolts,
+                DrivetrainEx.kEx.vVoltSecondsPerMeter,
+                DrivetrainEx.kEx.aVoltSecondsSquaredPerMeter),
+                DrivetrainEx.kEx.DriveKinematics,
+            10);
+
+    // Create config for trajectory
+    TrajectoryConfig config =
+        new TrajectoryConfig(
+                DrivetrainEx.kEx.MaxSpeedMetersPerSecond,
+                DrivetrainEx.kEx.MaxAccelerationMetersPerSecondSquared)
+            // Add kinematics to ensure max speed is actually obeyed
+            .setKinematics(DrivetrainEx.kEx.DriveKinematics)
+            // Apply the voltage constraint
+            .addConstraint(autoVoltageConstraint);
+
+    // An example trajectory to follow.  All units in meters.
+    Trajectory exampleTrajectory =
+        TrajectoryGenerator.generateTrajectory(
+            // Start at the origin facing the +X direction
+            new Pose2d(0, 0, new Rotation2d(0)),
+            // Pass through these two interior waypoints, making an 's' curve path
+            List.of(new Translation2d(1, 1), new Translation2d(2, -1)),
+            // End 3 meters straight ahead of where we started, facing forward
+            new Pose2d(3, 0, new Rotation2d(0)),
+            // Pass config
+            config);
+
+    RamseteCommand ramseteCommand =
+        new RamseteCommand(
+            exampleTrajectory,
+            dt::getPose,
+            new RamseteController(DrivetrainEx.kEx.RamseteB, DrivetrainEx.kEx.RamseteZeta),
+            new SimpleMotorFeedforward(
+                DrivetrainEx.kEx.sVolts,
+                DrivetrainEx.kEx.vVoltSecondsPerMeter,
+                DrivetrainEx.kEx.aVoltSecondsSquaredPerMeter),
+                DrivetrainEx.kEx.DriveKinematics,
+                dt::getWheelSpeeds,
+            new PIDController(DrivetrainEx.kEx.PDriveVel, 0, 0),
+            new PIDController(DrivetrainEx.kEx.PDriveVel, 0, 0),
+            // RamseteCommand passes volts to the callback
+            dt::tankDriveVolts,
+            dt);
+
+    // Reset odometry to the starting pose of the trajectory.
+    dt.resetOdometry(exampleTrajectory.getInitialPose());
+
+    // Run path following command, then stop at the end.
+    return ramseteCommand.andThen(() -> dt.tankDriveVolts(0, 0));
+}
+*/
