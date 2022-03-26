@@ -14,7 +14,7 @@ public class Conveyor
         private static final int MAIN_MOTOR_ID = 52;
         private static final int OPEN_SENSOR_ID = 9,
                                 CLOSED_SENSOR_ID = 8;
-        private static final float speed = -1.0f;
+        private static final float speed = 1.0f;
         private static final double MAX_BLOCKER_VOLTAGE = 0;
     }
 
@@ -106,13 +106,15 @@ public class Conveyor
 
     public void close()
     {
-        blockerMotor.set(ControlMode.PercentOutput, 1);
+        blockerMotor.set(ControlMode.PercentOutput, 0.2);
+        //System.out.println("SHUT UR MOUF");
         _OpenState = OpenState.CLOSED;
     }
 
     public void open()
     {
-        blockerMotor.set(ControlMode.PercentOutput, -1);
+        blockerMotor.set(ControlMode.PercentOutput, -0.2);
+        //System.out.println("OPEN UP ITS THE POLICE");
         _OpenState = OpenState.OPEN;
     }
 

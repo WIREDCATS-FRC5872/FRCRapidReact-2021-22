@@ -414,52 +414,36 @@ public class Robot extends TimedRobot
     @Override
     public void teleopPeriodic()
     {
-        if(controller1.getRawButtonPressed(k.START))
-            conveyor.close();
-        else if (controller1.getRawButtonPressed(k.BACK))
-            conveyor.open();
-        else if (conveyor._OpenState == Conveyor.OpenState.OPEN && conveyor.isOpen()
-        || conveyor._OpenState == Conveyor.OpenState.CLOSED && conveyor.isClosed())
-            conveyor.stopBlocker();
+        long currTime = System.currentTimeMillis();
+        
+        // ==== DRIVETRAIN ==== //
 
-        conveyor.printData();
-
-        // ==== Drive control ==== //
+        // Drive
         if (controller1.getRawButton(k.RB))  // Slow mode
             drivetrain.arcadeDrive(controller1.getRawAxis(k.LY_ID)/2, controller1.getRawAxis(k.RX_ID)/2);
         else
             drivetrain.arcadeDrive(controller1.getRawAxis(k.LY_ID), controller1.getRawAxis(k.RX_ID));
-
-        // drivetrain TELEMENTRY
-        drivetrain.printData();
-
-
-        // Shift gear - toggle
-        /*
+            
+        // Gear
         if (controller1.getRawAxis(k.RT) > 0.2)
         {
-            if (drivetrain._Gear != DrivetrainEx.Gear.HIGH)
-                drivetrain.setHighGear();
-            else // Low gear
-                drivetrain.setLowGear();
-        }
-        */
-        
-        // Shift gear
-        if (controller1.getRawAxis(k.RT) > 0.2)
-        {
-            if (drivetrain._Gear != Drivetrain.Gear.HIGH)
+            if (drivetrain._Gear != Drivetrain.Gear.LOW)
                 drivetrain.setLowGear();
         }
         else if (drivetrain._Gear != Drivetrain.Gear.HIGH)
             drivetrain.setHighGear();
-        
+
+        // Telemetry
+        drivetrain.printData();
+
+        // Telemetry
+        conveyor.printData();
         
         // ==== Intake ==== //
-        long currTime = System.currentTimeMillis();
-
+        
         // Raise/Lower
         // These actions queue further actions to ensure the intake does not destroy the wires in our beloved robot
+
         if (controller1.getRawAxis(k.LT) > 0.2)
         {
             if (intake._Position == Intake.Position.UP)
@@ -467,9 +451,11 @@ public class Robot extends TimedRobot
                 intake.lower();
                 runIntakeTime = currTime + Intake.DELAY;
             }
-            else
+            else if (intake._RunState == Intake.RunState.ON)
             {
                 intake.stop();
+                conveyor.stop();
+                conveyor.open();
                 raiseIntakeTime = currTime + Intake.DELAY;
             }
         }
@@ -479,6 +465,8 @@ public class Robot extends TimedRobot
         if (currTime >= runIntakeTime && intake._Position == Intake.Position.DOWN)
         {
             intake.on();
+            conveyor.up();
+            conveyor.close();
             runIntakeTime = UNQUEUED; // Return to sentinel
         }
         // Raise intake as queued
@@ -486,18 +474,39 @@ public class Robot extends TimedRobot
         {
             intake.raise();
             raiseIntakeTime = UNQUEUED;   // Return to sentinel
-        }  
+        }
 
-        // ==== Conveyor ==== //
+        // ==== CONVEYOR ==== //
+
+        // Outtake
         if (controller1.getRawButtonPressed(k.LB))
         {
             if (conveyor._RunState != Conveyor.RunState.UP)
+            {
                 conveyor.up();
+                conveyor.open();
+            }
             else
+            {
                 conveyor.stop();
+                conveyor.close();
+                /*
+                if (intake._RunState == Intake.RunState.ON)
+                {
+                    intake.stop();
+                    raiseIntakeTime = currTime + Intake.DELAY;
+                }
+                */
+            }
         }
 
+        // Stop blocker if necessary by above actions + sensor input
+        if (conveyor._OpenState == Conveyor.OpenState.OPEN && conveyor.isOpen()
+        || conveyor._OpenState == Conveyor.OpenState.CLOSED && conveyor.isClosed())
+            conveyor.stopBlocker();
+
         // === Hanger === //
+
         // Vertical
         if (controller2.getRawButton(k.X))
             hanger.raise();
