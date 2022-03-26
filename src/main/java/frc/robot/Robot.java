@@ -414,6 +414,16 @@ public class Robot extends TimedRobot
     @Override
     public void teleopPeriodic()
     {
+        if(controller1.getRawButtonPressed(k.START))
+            conveyor.close();
+        else if (controller1.getRawButtonPressed(k.BACK))
+            conveyor.open();
+        else if (conveyor._OpenState == Conveyor.OpenState.OPEN && conveyor.isOpen()
+        || conveyor._OpenState == Conveyor.OpenState.CLOSED && conveyor.isClosed())
+            conveyor.stopBlocker();
+
+        conveyor.printData();
+
         // ==== Drive control ==== //
         if (controller1.getRawButton(k.RB))  // Slow mode
             drivetrain.arcadeDrive(controller1.getRawAxis(k.LY_ID)/2, controller1.getRawAxis(k.RX_ID)/2);
