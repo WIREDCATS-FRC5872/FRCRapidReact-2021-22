@@ -187,9 +187,14 @@ public class Drivetrain {
         timer.start();
         while (timer.get() < seconds)
         {
-            for ()
-            motor.setVoltage(4.0*forward);
-            //drive.arcadeDrive(forward, rotation);
+            for (int i = 0; i < 4; i++)
+            {
+                if (forward < 0 || (rotation > 1 && i%2 == 0) || (rotation < 1 && i%2==1))
+                    driveMotors[i].setVoltage(-4.0);
+                else
+                    driveMotors[i].setVoltage(4.0);
+                //drive.arcadeDrive(forward, rotation);
+            }
         }
         
         for (WPI_TalonFX motor : driveMotors)
