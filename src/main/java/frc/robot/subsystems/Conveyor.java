@@ -4,6 +4,7 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Conveyor
@@ -41,6 +42,7 @@ public class Conveyor
     private final WPI_TalonSRX[] motors = {mainMotor, blockerMotor};
     private final DigitalInput openSensor = new DigitalInput(k.OPEN_SENSOR_ID);
     private final DigitalInput closeSensor = new DigitalInput(k.CLOSED_SENSOR_ID);
+    private final Timer auto_timer = new Timer();
 
     // ===== METHODS ===== //
 
@@ -85,6 +87,17 @@ public class Conveyor
     {
         mainMotor.set(ControlMode.PercentOutput, k.speed);
         _RunState = RunState.UP;
+    }
+
+    public void autoRun(double seconds)
+    {
+        mainMotor.set(ControlMode.PercentOutput, 0.75);
+
+        auto_timer.reset();
+        auto_timer.start();
+        while (auto_timer.get() < 5) {}
+
+        stop();
     }
 
     /*

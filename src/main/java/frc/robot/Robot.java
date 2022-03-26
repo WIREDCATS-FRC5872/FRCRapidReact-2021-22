@@ -322,16 +322,22 @@ public class Robot extends TimedRobot
             //Timer.delay(3);
 
             // Move & score pre-loaded
+            drivetrain.move(0.2, 0, 0.5);
+            drivetrain.move(1.5, -0.5, 0);
 
-            drivetrain.forward(36);
+            conveyor.autoRun(5);
 
-            Timer.delay(5);
+            drivetrain.move(2.5, 0.5, 0);
+
 
             //drivetrain.rotateLeft(180);
 
             //Timer.delay(10);
 
-            drivetrain.backward(36);
+           // drivetrain.backward(18);
+            //Timer.delay(8);
+
+            //drivetrain.forward(24);
             
             //Timer.delay(2);
             //drivetrain.rotateRight(90);
@@ -418,6 +424,8 @@ public class Robot extends TimedRobot
         conveyor.init();
         hanger.init();
         intake.init();
+        drivetrain.init();
+        drivetrain.setCoast();
 
         runIntakeTime = UNQUEUED;
         raiseIntakeTime = UNQUEUED;
@@ -440,11 +448,11 @@ public class Robot extends TimedRobot
         // Gear
         if (controller1.getRawAxis(k.RT) > 0.2)
         {
-            if (drivetrain._Gear != Drivetrain.Gear.LOW)
-                drivetrain.setLowGear();
+            if (drivetrain._Gear != Drivetrain.Gear.HIGH)
+                drivetrain.setHighGear();
         }
-        else if (drivetrain._Gear != Drivetrain.Gear.HIGH)
-            drivetrain.setHighGear();
+        else if (drivetrain._Gear != Drivetrain.Gear.LOW)
+            drivetrain.setLowGear();
 
         // Telemetry
         drivetrain.printData();

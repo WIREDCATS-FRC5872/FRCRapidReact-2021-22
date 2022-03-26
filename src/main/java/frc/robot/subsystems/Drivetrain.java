@@ -2,6 +2,9 @@ package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.InvertType;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
+
+import edu.wpi.first.wpilibj.Timer;
+
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
 import com.ctre.phoenix.motorcontrol.StatusFrameEnhanced;
@@ -25,7 +28,7 @@ public class Drivetrain {
         private static final double GEAR_RATIO = 7.0; // High gear = 7 motor rots = 1 shaft rot
         // Not listed: Low gear ratio
         private static final int TICKS_PER_REV = 2048;
-        private static final double TICKS_PER_INCH = (TICKS_PER_REV * GEAR_RATIO) / (WHEEL_DIAMETER * Math.PI);
+        private static final double TICKS_PER_INCH = ((TICKS_PER_REV * GEAR_RATIO) / (WHEEL_DIAMETER * Math.PI));
 
         private static final int PIGEON_ID = 0;
         private static final int FWD_ID = 3, REV_ID = 4;
@@ -80,6 +83,7 @@ public class Drivetrain {
     private WPI_TalonFX[] driveMotors = new WPI_TalonFX[]{L_Master, R_Master, L_Slave, R_Slave};
 
     private final PigeonIMU imu = new PigeonIMU(k.PIGEON_ID);
+    private final Timer timer = new Timer();
     private final DoubleSolenoid shifter = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, k.FWD_ID, k.REV_ID);
     public Drivetrain.Gear _Gear;
 
@@ -141,11 +145,28 @@ public class Drivetrain {
         drive.arcadeDrive(-leftY, leftX);
     }
 
+    public void setCoast()
+    {
+        for (WPI_TalonFX motor : driveMotors)
+            motor.setNeutralMode(NeutralMode.Coast);
+    }
+
+    public void setBrake()
+    {
+        for (WPI_TalonFX motor : driveMotors)
+            motor.setNeutralMode(NeutralMode.Brake);
+    }
+
+    public void init()
+    {
+        setHighGear();
+    }
+
     public void autoInit()
     {
-        setLowGear();
         resetEncoders();
-        //zeroHeading();
+        setHighGear();
+        setBrake();
     }
 
     public void setHighGear()
@@ -160,12 +181,29 @@ public class Drivetrain {
         shifter.set(k.low);
     }
 
+    public void move(double seconds, double forward, double rotation)
+    {
+        timer.reset();
+        timer.start();
+        while (timer.get() < seconds)
+        {
+            for ()
+            motor.setVoltage(4.0*forward);
+            //drive.arcadeDrive(forward, rotation);
+        }
+        
+        for (WPI_TalonFX motor : driveMotors)
+            motor.stopMotor();
+        
+        //drive.arcadeDrive(0, 0);
+    }
+
     public void forward(double inches)
     {
         resetEncoders();
         double ticks = inches * k.TICKS_PER_INCH;
         for (WPI_TalonFX motor : driveMotors)
-            motor.set(TalonFXControlMode.Position, ticks);
+            motor.set(ControlMode.Position, ticks);
     }
 
     public void backward(double inches)
@@ -173,7 +211,7 @@ public class Drivetrain {
         resetEncoders();
         double ticks = inches * -k.TICKS_PER_INCH;
         for (WPI_TalonFX motor : driveMotors)
-            motor.set(TalonFXControlMode.Position, ticks);
+            motor.set(ControlMode.Position, ticks);
     }
     
     public void rotateRight(double angle)
@@ -200,6 +238,8 @@ public class Drivetrain {
     {
         L_Master.setSelectedSensorPosition(0);
         R_Master.setSelectedSensorPosition(0);
+        L_Slave.setSelectedSensorPosition(0);
+        R_Slave.setSelectedSensorPosition(0);
     }
 
     public void zeroHeading()
