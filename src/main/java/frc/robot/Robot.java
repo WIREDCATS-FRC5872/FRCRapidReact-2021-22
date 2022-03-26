@@ -56,7 +56,7 @@ public class Robot extends TimedRobot
     private final long UNQUEUED = Long.MAX_VALUE;    // Sentinel for prev line's vars
 
     // === Subsystems === //
-    Drivetrain dt;
+    Drivetrain drivetrain;
     Conveyor conveyor;
     Intake intake;
     Hanger hanger;
@@ -72,7 +72,7 @@ public class Robot extends TimedRobot
     {
         SmartDashboard.updateValues();
         pcmCompressor.enableDigital();
-        dt = new Drivetrain();
+        drivetrain = new Drivetrain();
         intake = new Intake();
         conveyor = new Conveyor();
         hanger = new Hanger();
@@ -90,7 +90,7 @@ public class Robot extends TimedRobot
 
         auto_timer.reset();
         auto_timer.start();
-        dt.autoInit();
+        drivetrain.autoInit();
     }
 
     /** This function is called periodically during autonomous. */
@@ -106,25 +106,25 @@ public class Robot extends TimedRobot
         {
             // Init position is ball pre-loaded, facing perpendicular to the hub
             intake.lower();
-            conveyor.lock();
+            conveyor.close();
 
             // Let the neighbor robot move out of the way
             Timer.delay(3);
 
             // Move & score pre-loaded
-            dt.forward(2.0);
+            drivetrain.forward(2.0);
 
             /*
-            dt.rotateRight(90);
-            dt.backward(3);
-            conveyor.release();
+            drivetrain.rotateRight(90);
+            drivetrain.backward(3);
+            conveyor.open();
             conveyor.up();
             Timer.delay(2);
             conveyor.stop();
-            conveyor.lock();
+            conveyor.close();
 
             // Exit tarmac
-            dt.forward(TARMAC_L*2.0/1.4);
+            drivetrain.forward(TARMAC_L*2.0/1.4);
 
             // Fin.
             */
@@ -135,7 +135,7 @@ public class Robot extends TimedRobot
         {
             // Init position is ball pre-loaded, facing perpendicular to the hub
             intake.lower();
-            conveyor.lock();
+            conveyor.close();
 
             // Let the neighbor robot move out of the way
             // "GET OUT DA WAY!!!"
@@ -143,47 +143,47 @@ public class Robot extends TimedRobot
 
             /*
             // Move & score pre-loaded
-            dt.forward(2);
-            dt.rotateRight(90);
-            dt.backward(3);
-            conveyor.release();
+            drivetrain.forward(2);
+            drivetrain.rotateRight(90);
+            drivetrain.backward(3);
+            conveyor.open();
             conveyor.up();
             Timer.delay(2);
             conveyor.stop();
-            conveyor.lock();
+            conveyor.close();
             
             // Move & pick up next ball
-            dt.forward(TARMAC_L*2.0/1.4);
-            dt.rotateLeft(90);
+            drivetrain.forward(TARMAC_L*2.0/1.4);
+            drivetrain.rotateLeft(90);
             intake.on();
             conveyor.up();
-            dt.forward(TARMAC_L/2.0);
+            drivetrain.forward(TARMAC_L/2.0);
             intake.off();
             conveyor.stop();
 
             // Get 3rd & final ball, the one on the other alliance side
             rotateLeft(30);
-            dt.forward(TARMAC_L*0.8);
+            drivetrain.forward(TARMAC_L*0.8);
             intake.on();
             conveyor.up();
-            dt.forward(TARMAC_L*0.4);
+            drivetrain.forward(TARMAC_L*0.4);
             intake.off();
             conveyor.stop();
 
             // Return & score both
-            dt.backward(TARMAC_L*1.2);
-            dt.rotateRight(30);
-            dt.backward(TARMAC_L/2.0);
-            dt.rotaateLeft(90);
-            dt.backward(TARMAC_L*2.0/1.4);
-            conveyor.release();
+            drivetrain.backward(TARMAC_L*1.2);
+            drivetrain.rotateRight(30);
+            drivetrain.backward(TARMAC_L/2.0);
+            drivetrain.rotaateLeft(90);
+            drivetrain.backward(TARMAC_L*2.0/1.4);
+            conveyor.open();
             conveyor.up();
             Timer.delay(4);
             conveyor.stop();
-            conveyor.lock();
+            conveyor.close();
 
             // Leave again
-            dt.forward(TARMAC_L*2.0/1.4);
+            drivetrain.forward(TARMAC_L*2.0/1.4);
             */
         }
         
@@ -193,63 +193,63 @@ public class Robot extends TimedRobot
         {
             // Init position is ball pre-loaded, facing perpendicular to the hub
             intake.lower();
-            conveyor.lock();
+            conveyor.close();
 
             // Let the neighbor robot move out of the way
             Timer.delay(3);
 
             // Move & score pre-loaded
-            dt.forward(2);
+            drivetrain.forward(2);
             /*
-            dt.rotateRight(90);
-            dt.backward(3);
-            conveyor.release();
+            drivetrain.rotateRight(90);
+            drivetrain.backward(3);
+            conveyor.open();
             conveyor.up();
             Timer.delay(2);
             conveyor.stop();
-            conveyor.lock();
+            conveyor.close();
             
             // Move & pick up next ball
-            dt.forward(TARMAC_L*2.0/1.4);
-            dt.rotateLeft(90);
+            drivetrain.forward(TARMAC_L*2.0/1.4);
+            drivetrain.rotateLeft(90);
             intake.on();
             conveyor.up();
-            dt.forward(TARMAC_L*0.7/1.4);
+            drivetrain.forward(TARMAC_L*0.7/1.4);
             intake.off();
             conveyor.stop();
 
             // Return & score it
-            dt.backward(TARMAC_L*0.7/1.4);
-            dt.rotateRight(90);
-            dt.backward(TARMAC_L*2.0/1.4);
-            conveyor.release();
+            drivetrain.backward(TARMAC_L*0.7/1.4);
+            drivetrain.rotateRight(90);
+            drivetrain.backward(TARMAC_L*2.0/1.4);
+            conveyor.open();
             conveyor.up();
             Timer.delay(2);
             conveyor.stop();
-            conveyor.lock();
+            conveyor.close();
 
             // Get 3rd & final ball
-            dt.forward(TARMAC_L*1.6/1.4);
-            dt.rotateLeft(90);
-            dt.forward(TARMAC_L*1.0/1.4);
+            drivetrain.forward(TARMAC_L*1.6/1.4);
+            drivetrain.rotateLeft(90);
+            drivetrain.forward(TARMAC_L*1.0/1.4);
             intake.on();
             conveyor.up();
-            dt.forward(TARMAC_L*0.7/1.4);
+            drivetrain.forward(TARMAC_L*0.7/1.4);
             intake.off();
             conveyor.stop();
 
             // Return & score it
-            dt.backward(TARMAC_L*1.7/1.4);
-            dt.rotateRight(90);
-            dt.backward(TARMAC_L*1.6/1.4);
-            conveyor.release();
+            drivetrain.backward(TARMAC_L*1.7/1.4);
+            drivetrain.rotateRight(90);
+            drivetrain.backward(TARMAC_L*1.6/1.4);
+            conveyor.open();
             conveyor.up();
             Timer.delay(2);
             conveyor.stop();
-            conveyor.lock();
+            conveyor.close();
 
             // Leave again
-            dt.forward(TARMAC_L*2.0/1.4);
+            drivetrain.forward(TARMAC_L*2.0/1.4);
         }
         */
         
@@ -258,7 +258,7 @@ public class Robot extends TimedRobot
         {
             // Init position is ball pre-loaded, facing perpendicular to the hub
             intake.lower();
-            conveyor.lock();
+            conveyor.close();
 
             // Let the neighbor robot move out of the way
             // "GET OUT DA WAY!!!"
@@ -266,45 +266,45 @@ public class Robot extends TimedRobot
 
             /*
             // Move & score pre-loaded
-            dt.forward(2);
-            dt.rotateRight(90);
-            dt.backward(3);
-            conveyor.release();
+            drivetrain.forward(2);
+            drivetrain.rotateRight(90);
+            drivetrain.backward(3);
+            conveyor.open();
             conveyor.up();
             Timer.delay(2);
             conveyor.stop();
-            conveyor.lock();
+            conveyor.close();
             
             // Move & pick up next ball
-            dt.forward(TARMAC_L*2.0/1.4);
-            dt.rotateLeft(90);
+            drivetrain.forward(TARMAC_L*2.0/1.4);
+            drivetrain.rotateLeft(90);
             intake.on();
             conveyor.up();
-            dt.forward(TARMAC_L/2.0);
+            drivetrain.forward(TARMAC_L/2.0);
             intake.off();
             conveyor.stop();
 
             // Get 3rd & final ball
             rotateRight(180);
-            dt.forward(TARMAC_L);
+            drivetrain.forward(TARMAC_L);
             intake.on();
             conveyor.up();
-            dt.forward(TARMAC_L*0.4);
+            drivetrain.forward(TARMAC_L*0.4);
             intake.off();
             conveyor.stop();
 
             // Return & score both
-            dt.backward(TARMAC_L*0.9);
-            dt.rotateRight(90);
-            dt.backward(TARMAC_L*2.0/1.4);
-            conveyor.release();
+            drivetrain.backward(TARMAC_L*0.9);
+            drivetrain.rotateRight(90);
+            drivetrain.backward(TARMAC_L*2.0/1.4);
+            conveyor.open();
             conveyor.up();
             Timer.delay(4);
             conveyor.stop();
-            conveyor.lock();
+            conveyor.close();
 
             // Leave again
-            dt.forward(TARMAC_L*2.0/1.4);
+            drivetrain.forward(TARMAC_L*2.0/1.4);
             */
         }
         
@@ -313,7 +313,7 @@ public class Robot extends TimedRobot
         {
             // Init position is ball pre-loaded, facing perpendicular to the hub
             intake.lower();
-            conveyor.lock();
+            conveyor.close();
 
             // Let the neighbor robot move out of the way
             // "GET OUT DA WAY!!!"
@@ -321,18 +321,18 @@ public class Robot extends TimedRobot
 
             /*
             // Move & score pre-loaded
-            dt.forward(2);
+            drivetrain.forward(2);
             
-            dt.rotateRight(90);
-            dt.backward(3);
-            conveyor.release();
+            drivetrain.rotateRight(90);
+            drivetrain.backward(3);
+            conveyor.open();
             conveyor.up();
             Timer.delay(2);
             conveyor.stop();
-            conveyor.lock();
+            conveyor.close();
             
             // Exit tarmac
-            dt.forward(TARMAC_L*2.0/1.4);
+            drivetrain.forward(TARMAC_L*2.0/1.4);
             */
         }
         
@@ -341,56 +341,56 @@ public class Robot extends TimedRobot
         {
             // Init position is ball pre-loaded, facing perpendicular to the hub
             intake.lower();
-            conveyor.lock();
+            conveyor.close();
 
             // Let the neighbor robot move out of the way
             // "GET OUT DA WAY!!!"
             Timer.delay(3);
 
             // Move & score pre-loaded
-            dt.forward(2);
+            drivetrain.forward(2);
             /*
-            dt.rotateRight(90);
-            dt.backward(3);
-            conveyor.release();
+            drivetrain.rotateRight(90);
+            drivetrain.backward(3);
+            conveyor.open();
             conveyor.up();
             Timer.delay(2);
             conveyor.stop();
-            conveyor.lock();
+            conveyor.close();
             
             // Move & pick up next ball
-            dt.forward(TARMAC_L);
+            drivetrain.forward(TARMAC_L);
             intake.on();
             conveyor.up();
-            dt.forward(TARMAC_L*0.6/1.4);
+            drivetrain.forward(TARMAC_L*0.6/1.4);
             intake.off();
             conveyor.stop();
 
             // Get 3rd & final ball, the one on the opposite alliance side
-            dt.forward(TARMAC_L*2.0/1.4);
-            dt.rotateRight(45);
-            dt.forward(TARMAC_L);
-            dt.rotateRight(90);
+            drivetrain.forward(TARMAC_L*2.0/1.4);
+            drivetrain.rotateRight(45);
+            drivetrain.forward(TARMAC_L);
+            drivetrain.rotateRight(90);
             intake.on();
             conveyor.up();
-            dt.forward(TARMAC_L*2.0/1.4);
+            drivetrain.forward(TARMAC_L*2.0/1.4);
             intake.off();
             conveyor.stop();
 
             // Return & score it
-            dt.backward(TARMAC_L*2.0/1.4);
-            dt.rotateLeft(90);
-            dt.backward(TARMAC_L);
-            dt.rotateLeft(45);
-            dt.backward(TARMAC_L*2.0/1.4);
-            conveyor.release();
+            drivetrain.backward(TARMAC_L*2.0/1.4);
+            drivetrain.rotateLeft(90);
+            drivetrain.backward(TARMAC_L);
+            drivetrain.rotateLeft(45);
+            drivetrain.backward(TARMAC_L*2.0/1.4);
+            conveyor.open();
             conveyor.up();
             Timer.delay(2);
             conveyor.stop();
-            conveyor.lock();
+            conveyor.close();
 
             // Leave again
-            dt.forward(TARMAC_L*2.0/1.4);
+            drivetrain.forward(TARMAC_L*2.0/1.4);
             */
         }
 
@@ -416,33 +416,33 @@ public class Robot extends TimedRobot
     {
         // ==== Drive control ==== //
         if (controller1.getRawButton(k.RB))  // Slow mode
-            dt.arcadeDrive(controller1.getRawAxis(k.LY_ID)/2, controller1.getRawAxis(k.RX_ID)/2);
+            drivetrain.arcadeDrive(controller1.getRawAxis(k.LY_ID)/2, controller1.getRawAxis(k.RX_ID)/2);
         else
-            dt.arcadeDrive(controller1.getRawAxis(k.LY_ID), controller1.getRawAxis(k.RX_ID));
+            drivetrain.arcadeDrive(controller1.getRawAxis(k.LY_ID), controller1.getRawAxis(k.RX_ID));
 
-        // DT TELEMENTRY
-        dt.printData();
+        // drivetrain TELEMENTRY
+        drivetrain.printData();
 
 
         // Shift gear - toggle
         /*
         if (controller1.getRawAxis(k.RT) > 0.2)
         {
-            if (dt._Gear != DrivetrainEx.Gear.HIGH)
-                dt.setHighGear();
+            if (drivetrain._Gear != DrivetrainEx.Gear.HIGH)
+                drivetrain.setHighGear();
             else // Low gear
-                dt.setLowGear();
+                drivetrain.setLowGear();
         }
         */
         
         // Shift gear
         if (controller1.getRawAxis(k.RT) > 0.2)
         {
-            if (dt._Gear != Drivetrain.Gear.HIGH)
-                dt.setLowGear();
+            if (drivetrain._Gear != Drivetrain.Gear.HIGH)
+                drivetrain.setLowGear();
         }
-        else if (dt._Gear != Drivetrain.Gear.HIGH)
-            dt.setHighGear();
+        else if (drivetrain._Gear != Drivetrain.Gear.HIGH)
+            drivetrain.setHighGear();
         
         
         // ==== Intake ==== //
