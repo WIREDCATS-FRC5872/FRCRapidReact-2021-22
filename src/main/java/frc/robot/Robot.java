@@ -33,7 +33,7 @@ public class Robot extends TimedRobot
         LEFTMOST;
     }
     // CHANGE THIS TO SELECT AUTO
-    private final Auto auto = Auto.SIMPLERIGHT;
+    private final Auto auto = Auto.SIMPLELEFT;
 
     private static class k
     {
@@ -97,9 +97,11 @@ public class Robot extends TimedRobot
     @Override
     public void autonomousPeriodic()
     {
+        //drivetrain.resetEncoders();
+
         SmartDashboard.putString("AUTO RUNNING", auto.toString());
 
-        double TARMAC_L = 7.0;
+        double TARMAC_L = 7.0*12;
 
         // === RIGHT SIMPLE === //
         if (auto == Auto.SIMPLERIGHT)
@@ -317,14 +319,25 @@ public class Robot extends TimedRobot
 
             // Let the neighbor robot move out of the way
             // "GET OUT DA WAY!!!"
-            Timer.delay(3);
+            //Timer.delay(3);
+
+            // Move & score pre-loaded
+
+            drivetrain.forward(36);
+
+            Timer.delay(5);
+
+            //drivetrain.rotateLeft(180);
+
+            //Timer.delay(10);
+
+            drivetrain.backward(36);
+            
+            //Timer.delay(2);
+            //drivetrain.rotateRight(90);
+            //drivetrain.backward(12);
 
             /*
-            // Move & score pre-loaded
-            drivetrain.forward(2);
-            
-            drivetrain.rotateRight(90);
-            drivetrain.backward(3);
             conveyor.open();
             conveyor.up();
             Timer.delay(2);

@@ -28,7 +28,7 @@ public class Drivetrain {
         private static final double TICKS_PER_INCH = (TICKS_PER_REV * GEAR_RATIO) / (WHEEL_DIAMETER * Math.PI);
 
         private static final int PIGEON_ID = 0;
-        private static final int FWD_ID = 4, REV_ID = 3;
+        private static final int FWD_ID = 3, REV_ID = 4;
 
         private static final DoubleSolenoid.Value high = DoubleSolenoid.Value.kForward;
         private static final DoubleSolenoid.Value low = DoubleSolenoid.Value.kReverse;
@@ -90,7 +90,7 @@ public class Drivetrain {
         for (WPI_TalonFX motor : driveMotors)
         {
             motor.configFactoryDefault();
-            motor.setNeutralMode(NeutralMode.Brake);
+            motor.setNeutralMode(NeutralMode.Coast);
 
             /* Set relevant frame periods to be at least as fast as periodic rate */
             motor.setStatusFramePeriod(StatusFrameEnhanced.Status_13_Base_PIDF0, 10, k.TimeoutMs);
@@ -143,8 +143,9 @@ public class Drivetrain {
 
     public void autoInit()
     {
-        setHighGear();
-        zeroHeading();
+        setLowGear();
+        resetEncoders();
+        //zeroHeading();
     }
 
     public void setHighGear()
