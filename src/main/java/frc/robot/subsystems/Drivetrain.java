@@ -24,11 +24,19 @@ public class Drivetrain {
         private static final int FL_ID = 0, FR_ID = 1;
         private static final int BL_ID = 2, BR_ID = 3;
     
+        // Auto by encoder distance - high gear
+        /*
         private static final double WHEEL_DIAMETER = 4.0;
         private static final double GEAR_RATIO = 7.0; // High gear = 7 motor rots = 1 shaft rot
         // Not listed: Low gear ratio
         private static final int TICKS_PER_REV = 2048;
         private static final double TICKS_PER_INCH = ((TICKS_PER_REV * GEAR_RATIO) / (WHEEL_DIAMETER * Math.PI));
+        */
+        
+        // Auto by time at 4.0V voltage - high gear
+        public  static final double AUTO_VOLTAGE = 4.0;
+        private static final double SECONDS_PER_INCH = 1/1.0f;      // TODO: TEST
+        private static final double SECONDS_PER_DEGREE = 1/1.0f;    // TODO: TEST
 
         private static final int PIGEON_ID = 0;
         private static final int FWD_ID = 3, REV_ID = 4;
@@ -181,28 +189,65 @@ public class Drivetrain {
         shifter.set(k.low);
     }
 
+    /**
+     * Run by time at voltage of 4.0V
+     * @param seconds
+     * @param forward
+     * @param rotation
+     */
     public void move(double seconds, double forward, double rotation)
     {
+        // Power motors for given # of seconds
         timer.reset();
         timer.start();
         while (timer.get() < seconds)
         {
             for (int i = 0; i < 4; i++)
             {
-                if (forward < 0 || (rotation > 1 && i%2 == 0) || (rotation < 1 && i%2==1))
-                    driveMotors[i].setVoltage(-4.0);
+                // If backward
+                if (forward < 0
+                // Or rotating clockwise & this is a right wheel
+                    || (rotation > 1 && i%2 == 0)
+                // Or rotating CCW & this is a left wheel
+                    || (rotation < 1 && i%2==1)
+                )
+                    // Negative power
+                    driveMotors[i].setVoltage(-k.AUTO_VOLTAGE);
+                
+                // All other cases, positive power
                 else
-                    driveMotors[i].setVoltage(4.0);
-                //drive.arcadeDrive(forward, rotation);
+                    driveMotors[i].setVoltage(k.AUTO_VOLTAGE);
             }
         }
         
+        // Stop all motion when finished
         for (WPI_TalonFX motor : driveMotors)
             motor.stopMotor();
-        
-        //drive.arcadeDrive(0, 0);
     }
 
+    /**
+     * Move forward, or backwards if negative parameter.
+     * @param inches
+     */
+    public void forward(double inches)
+    {
+        move(inches * k.SECONDS_PER_INCH,
+            Math.signum(inches) > 0 ? 1 : -1,
+            0);
+    }
+
+    /**
+     * Rotate clockwise, or ccw if given a negative.
+     * @param degrees Degrees to rotate
+     */
+    public void rotate(double degrees)
+    {
+        move(degrees * k.SECONDS_PER_DEGREE,
+            Math.signum(degrees) > 0 ? 1 : -1,
+            0);
+    }
+
+    /*
     public void forward(double inches)
     {
         resetEncoders();
@@ -238,6 +283,7 @@ public class Drivetrain {
         R_Master.set(TalonFXControlMode.Position, ticks);
         R_Slave.set(TalonFXControlMode.Position, ticks);
     }
+    */
 
     public void resetEncoders()
     {

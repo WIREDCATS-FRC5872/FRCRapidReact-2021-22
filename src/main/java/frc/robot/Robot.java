@@ -24,6 +24,8 @@ public class Robot extends TimedRobot
     // AUTO "CHOOSER" QUICK & DIRTY METHOD
     private enum Auto
     {
+        TEST,
+
         SIMPLERIGHT,
         RIGHTMOST,
         RIGHTMOST_CENTER_BALLS,
@@ -33,7 +35,7 @@ public class Robot extends TimedRobot
         LEFTMOST;
     }
     // CHANGE THIS TO SELECT AUTO
-    private final Auto auto = Auto.SIMPLELEFT;
+    private final Auto auto = Auto.TEST;
 
     private static class k
     {
@@ -411,6 +413,11 @@ public class Robot extends TimedRobot
             // Leave again
             drivetrain.forward(TARMAC_L*2.0/1.4);
             */
+        }
+
+        else if (auto == Auto.TEST)
+        {
+            drivetrain.move(1, 1, 0);
         }
 
         while (true)
