@@ -18,6 +18,7 @@ import frc.robot.subsystems.Conveyor;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Hanger;
+import com.ctre.phoenix.motorcontrol.NeutralMode;
 
 public class Robot extends TimedRobot 
 {
@@ -391,12 +392,6 @@ public class Robot extends TimedRobot
         long currTime = System.currentTimeMillis();
         
         // ==== DRIVETRAIN ==== //
-
-        // Drive
-        if (controller1.getRawButton(k.RB))  // Slow mode
-            drivetrain.arcadeDrive(controller1.getRawAxis(k.LY_ID)/2, controller1.getRawAxis(k.RX_ID)/2);
-        else
-            drivetrain.arcadeDrive(controller1.getRawAxis(k.LY_ID), controller1.getRawAxis(k.RX_ID));
             
         // Gear
         if (controller1.getRawAxis(k.RT) > 0.2)
@@ -406,6 +401,29 @@ public class Robot extends TimedRobot
         }
         else if (drivetrain._Gear != Drivetrain.Gear.LOW)
             drivetrain.setLowGear();
+
+        // Brake B Button
+        if (controller1.getRawButton(k.B))
+        {
+            // Stop motion
+            drivetrain.arcadeDrive(0, 0);
+
+            // Set to break
+            if (drivetrain.nm != NeutralMode.Brake)
+                drivetrain.setBrake();
+        }
+        else
+        {
+            // Drive
+            if (controller1.getRawButton(k.RB))  // Slow mode
+                drivetrain.arcadeDrive(controller1.getRawAxis(k.LY_ID)/2, controller1.getRawAxis(k.RX_ID)/2);
+            else
+                drivetrain.arcadeDrive(controller1.getRawAxis(k.LY_ID), controller1.getRawAxis(k.RX_ID));
+
+            // Swich to coast if necessary
+            if (drivetrain.nm != NeutralMode.Coast)
+                drivetrain.setCoast();
+        }
 
         // Telemetry
         drivetrain.printData();
@@ -481,9 +499,9 @@ public class Robot extends TimedRobot
         // === Hanger === //
 
         // Vertical
-        if (controller2.getRawButton(k.X))
+        if (controller2.getRawButton(k.Y))
             hanger.raise();
-        else if (controller2.getRawButton(k.Y))
+        else if (controller2.getRawButton(k.X))
             hanger.lower();
         else
             hanger.stop();
@@ -510,11 +528,18 @@ public class Robot extends TimedRobot
 
     /** This function is called once each time the robot enters test mode. */
     @Override
-    public void testInit() {}
+    public void testInit() {
+
+        teleopInit();
+        hanger.testInit();
+    }
 
     /** This function is called periodically during test mode. */
     @Override
-    public void testPeriodic() { }
+    public void testPeriodic() {
+
+        teleopPeriodic();
+    }
 
 
     // === AUTO METHODS === //

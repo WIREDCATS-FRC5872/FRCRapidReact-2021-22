@@ -94,6 +94,7 @@ public class Drivetrain {
     private final Timer timer = new Timer();
     private final DoubleSolenoid shifter = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, k.FWD_ID, k.REV_ID);
     public Drivetrain.Gear _Gear;
+    public NeutralMode nm;
 
     // ===== METHODS ===== //
 
@@ -157,12 +158,14 @@ public class Drivetrain {
     {
         for (WPI_TalonFX motor : driveMotors)
             motor.setNeutralMode(NeutralMode.Coast);
+        nm = NeutralMode.Coast;
     }
 
     public void setBrake()
     {
         for (WPI_TalonFX motor : driveMotors)
             motor.setNeutralMode(NeutralMode.Brake);
+        nm = NeutralMode.Brake;
     }
 
     public void init()

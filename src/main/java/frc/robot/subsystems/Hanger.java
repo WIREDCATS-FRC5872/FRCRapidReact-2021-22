@@ -24,7 +24,7 @@ public class Hanger
         private static final float upSpeed = -0.5f;
         private static final float downSpeed = 1.0f;
         private static final int MAX_HEIGHT = 1200000;
-        private static final int MIN_HEIGHT = 0;
+        public static int MIN_HEIGHT;
 
         private static final float TICKS_PER_REV = 1024f;
         private static final float GEAR_RATIO = 100.0f;
@@ -77,6 +77,12 @@ public class Hanger
     {
         stop();
         rest();
+        k.MIN_HEIGHT = 0;
+    }
+
+    public void testInit()
+    {
+        k.MIN_HEIGHT = Integer.MIN_VALUE;
     }
 
     public void printData()
