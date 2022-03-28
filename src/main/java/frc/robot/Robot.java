@@ -327,7 +327,7 @@ public class Robot extends TimedRobot
             drivetrain.move(0.2, 0, 0.5);
             drivetrain.move(1.5, -0.5, 0);
 
-            conveyor.autoRun(5);
+            conveyor.run(true);
 
             drivetrain.move(2.5, 0.5, 0);
 
@@ -416,8 +416,8 @@ public class Robot extends TimedRobot
         // ==== Intake ==== //
         
         // Raise/Lower
-        
         // These actions queue further actions to ensure the intake does not destroy the wires in our beloved robot
+
         if (controller1.getRawAxis(k.LT) > 0.2)
         {
             if (intake._Position == Intake.Position.UP)
@@ -439,7 +439,7 @@ public class Robot extends TimedRobot
         if (currTime >= runIntakeTime && intake._Position == Intake.Position.DOWN)
         {
             intake.on();
-            conveyor.up();
+            conveyor.run(false);
             conveyor.close();
             runIntakeTime = UNQUEUED; // Return to sentinel
         }
@@ -455,9 +455,9 @@ public class Robot extends TimedRobot
         // Outtake
         if (controller1.getRawButtonPressed(k.LB))
         {
-            if (conveyor._RunState != Conveyor.RunState.UP)
+            if (conveyor._BeltState != Conveyor.BeltState.UP)
             {
-                conveyor.up();
+                conveyor.run(false);
                 conveyor.open();
             }
             else
@@ -473,11 +473,9 @@ public class Robot extends TimedRobot
                 */
             }
         }
-        /*
 
-        // Stop blocker if necessary by above actions + sensor input
-        if (conveyor._OpenState == Conveyor.OpenState.OPEN && conveyor.isOpen()
-        || conveyor._OpenState == Conveyor.OpenState.CLOSED && conveyor.isClosed())
+        // Listen to Blocker Sensors
+        if (conveyor.isClosed() || conveyor.isOpen())
             conveyor.stopBlocker();
 
         // === Hanger === //
@@ -502,7 +500,7 @@ public class Robot extends TimedRobot
                 hanger.rest();
         }
         hanger.printData();
-        */
+        
         /*
         // === Cameras === //
         if (controller1.getRawButtonPressed(controls.shiftCam))
@@ -539,7 +537,7 @@ public class Robot extends TimedRobot
             drivetrain.rotate(90);
             drivetrain.forward(-3);
             conveyor.open();
-            conveyor.up();
+            conveyor.run(true);
             Timer.delay(2);
             conveyor.stop();
             conveyor.close();
@@ -562,7 +560,7 @@ public class Robot extends TimedRobot
         drivetrain.forward(7);
         // Intake ball (conveyor is closed)
         intake.on();
-        conveyor.up();
+        conveyor.run(true);
         drivetrain.forward(3);
         // Stop intake
         intake.stop();
