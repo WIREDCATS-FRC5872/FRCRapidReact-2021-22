@@ -359,61 +359,7 @@ public class Robot extends TimedRobot
         
         // === LEFTMOST SIDE === //
         else if (auto == Auto.LEFTMOST)
-        {
-            // Init position is ball pre-loaded, facing perpendicular to the hub
-            intake.lower();
-            conveyor.close();
-
-            // Let the neighbor robot move out of the way
-            // "GET OUT DA WAY!!!"
-            Timer.delay(3);
-
-            // Move & score pre-loaded
-            drivetrain.forward(2);
-            /*
-            drivetrain.rotateRight(90);
-            drivetrain.backward(3);
-            conveyor.open();
-            conveyor.up();
-            Timer.delay(2);
-            conveyor.stop();
-            conveyor.close();
-            
-            // Move & pick up next ball
-            drivetrain.forward(TARMAC_L);
-            intake.on();
-            conveyor.up();
-            drivetrain.forward(TARMAC_L*0.6/1.4);
-            intake.off();
-            conveyor.stop();
-
-            // Get 3rd & final ball, the one on the opposite alliance side
-            drivetrain.forward(TARMAC_L*2.0/1.4);
-            drivetrain.rotateRight(45);
-            drivetrain.forward(TARMAC_L);
-            drivetrain.rotateRight(90);
-            intake.on();
-            conveyor.up();
-            drivetrain.forward(TARMAC_L*2.0/1.4);
-            intake.off();
-            conveyor.stop();
-
-            // Return & score it
-            drivetrain.backward(TARMAC_L*2.0/1.4);
-            drivetrain.rotateLeft(90);
-            drivetrain.backward(TARMAC_L);
-            drivetrain.rotateLeft(45);
-            drivetrain.backward(TARMAC_L*2.0/1.4);
-            conveyor.open();
-            conveyor.up();
-            Timer.delay(2);
-            conveyor.stop();
-            conveyor.close();
-
-            // Leave again
-            drivetrain.forward(TARMAC_L*2.0/1.4);
-            */
-        }
+            leftmostAuto();
 
         else if (auto == Auto.TEST)
         {
@@ -470,8 +416,8 @@ public class Robot extends TimedRobot
         // ==== Intake ==== //
         
         // Raise/Lower
+        
         // These actions queue further actions to ensure the intake does not destroy the wires in our beloved robot
-
         if (controller1.getRawAxis(k.LT) > 0.2)
         {
             if (intake._Position == Intake.Position.UP)
@@ -489,7 +435,7 @@ public class Robot extends TimedRobot
         }
 
         // Act on the queues
-        // Run intake as queued
+        // Run intake
         if (currTime >= runIntakeTime && intake._Position == Intake.Position.DOWN)
         {
             intake.on();
@@ -497,7 +443,7 @@ public class Robot extends TimedRobot
             conveyor.close();
             runIntakeTime = UNQUEUED; // Return to sentinel
         }
-        // Raise intake as queued
+        // Raise intake
         if (currTime >= raiseIntakeTime && intake._RunState == Intake.RunState.STOP)
         {
             intake.raise();
@@ -527,6 +473,7 @@ public class Robot extends TimedRobot
                 */
             }
         }
+        /*
 
         // Stop blocker if necessary by above actions + sensor input
         if (conveyor._OpenState == Conveyor.OpenState.OPEN && conveyor.isOpen()
@@ -555,7 +502,7 @@ public class Robot extends TimedRobot
                 hanger.rest();
         }
         hanger.printData();
-        
+        */
         /*
         // === Cameras === //
         if (controller1.getRawButtonPressed(controls.shiftCam))
@@ -571,4 +518,82 @@ public class Robot extends TimedRobot
     @Override
     public void testPeriodic() { }
 
+
+    // === AUTO METHODS === //
+    public void scorePreloaded(Auto auto)
+    {
+        // Left side
+        if (auto == Auto.LEFTMOST || auto == Auto.SIMPLELEFT)
+        {
+            // Init position is ball pre-loaded, facing perpendicular to the hub
+            intake.lower();
+            conveyor.close();
+
+            // Let the neighbor robot move out of the way
+            // "GET OUT DA WAY!!!"
+            Timer.delay(3);
+
+            // Move & score pre-loaded
+            drivetrain.forward(2);
+
+            drivetrain.rotate(90);
+            drivetrain.forward(-3);
+            conveyor.open();
+            conveyor.up();
+            Timer.delay(2);
+            conveyor.stop();
+            conveyor.close();
+        }
+        // Right side
+        else if (auto == Auto.RIGHTMOST || auto == Auto.RIGHTMOST_CENTER_BALLS || auto == Auto.SIMPLERIGHT)
+        {
+            // TODO
+        }
+    }
+
+    public void leftmostAuto()
+    {
+        // Score preloaded ball from starting position
+        scorePreloaded(Auto.LEFTMOST);
+        
+        // Second ball (first non-preloaded) : 
+
+        // Move
+        drivetrain.forward(7);
+        // Intake ball (conveyor is closed)
+        intake.on();
+        conveyor.up();
+        drivetrain.forward(3);
+        // Stop intake
+        intake.stop();
+        conveyor.stop();
+
+        /*
+        // Third ball (second non-preloaded): the one on the opposite alliance side
+        drivetrain.forward(TARMAC_L*2.0/1.4);
+        drivetrain.rotateRight(45);
+        drivetrain.forward(TARMAC_L);
+        drivetrain.rotateRight(90);
+        intake.on();
+        conveyor.up();
+        drivetrain.forward(TARMAC_L*2.0/1.4);
+        intake.off();
+        conveyor.stop();
+
+        // Return & score it
+        drivetrain.backward(TARMAC_L*2.0/1.4);
+        drivetrain.rotateLeft(90);
+        drivetrain.backward(TARMAC_L);
+        drivetrain.rotateLeft(45);
+        drivetrain.backward(TARMAC_L*2.0/1.4);
+        conveyor.open();
+        conveyor.up();
+        Timer.delay(2);
+        conveyor.stop();
+        conveyor.close();
+
+        // Leave again
+        drivetrain.forward(TARMAC_L*2.0/1.4);
+        */
+    }
 }
