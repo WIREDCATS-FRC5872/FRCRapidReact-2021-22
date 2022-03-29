@@ -36,7 +36,7 @@ public class Drivetrain {
         // Auto by time at 4.0V voltage - high gear
         public  static final double AUTO_VOLTAGE = 4.0;
         private static final double SECONDS_PER_INCH = 1/40.0f;
-        private static final double SECONDS_PER_DEGREE = 1/219.0f;
+        private static final double SECONDS_PER_DEGREE = (1/219.0f) * 103.0/90.0;
 
         private static final int PIGEON_ID = 0;
         private static final int FWD_ID = 3, REV_ID = 4;
@@ -89,6 +89,7 @@ public class Drivetrain {
     private DifferentialDrive drive;
     // Left motors even, right odd
     private WPI_TalonFX[] driveMotors = new WPI_TalonFX[]{L_Master, R_Master, L_Slave, R_Slave};
+    private boolean[] motorInverted = new boolean[]{false, true, false, true};
 
     private final PigeonIMU imu = new PigeonIMU(k.PIGEON_ID);
     private final Timer timer = new Timer();
@@ -214,12 +215,20 @@ public class Drivetrain {
                 // Or rotating CCW & this is a left wheel
                     || (rotation < 0 && i%2==1)
                 )
+                {
                     // Negative power
-                    driveMotors[i].setVoltage(-k.AUTO_VOLTAGE);
-                
+                    if (driveMotors[i].getInverted() != !motorInverted[i])
+                        driveMotors[i].setInverted(!motorInverted[i]);
+
+                    driveMotors[i].setVoltage(k.AUTO_VOLTAGE);
+                }                
                 // All other cases, positive power
                 else
+                {
+                    if (driveMotors[i].getInverted() != motorInverted[i])
+                        driveMotors[i].setInverted(motorInverted[i]);
                     driveMotors[i].setVoltage(k.AUTO_VOLTAGE);
+                }
             }
         }
         

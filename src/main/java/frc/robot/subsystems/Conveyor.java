@@ -13,13 +13,13 @@ public class Conveyor
     private static class k
     {
         private static final int BELT_MOTOR_ID = 52, BLOCKER_MOTOR_ID = 51;
-        private static final int OPEN_SENSOR_ID = 9, CLOSED_SENSOR_ID = 0;
+        private static final int OPEN_SENSOR_ID = 1, CLOSED_SENSOR_ID = 0;
 
-        private static final double WAIT_TIME = 5;
-        private static final double BELT_POWER = 0.75;
+        private static final double BELT_WAIT = 5;
+        private static final double BELT_POWER = 1;
 
-        private static final float speed = 1.0f;
-        private static final double BLOCKER_POWER = 0.2;
+        private static final double BLOCKER_WAIT = 3;
+        private static final double BLOCKER_POWER = 1;
     }
 
     public static enum BeltState
@@ -59,6 +59,7 @@ public class Conveyor
         }
         beltMotor.setInverted(false);
         blockerMotor.setInverted(false);
+        blockerMotor.setNeutralMode(NeutralMode.Brake);
     }
 
     public void init()
@@ -78,22 +79,23 @@ public class Conveyor
     
     public void printData()
     {
-        SmartDashboard.putString("Conveyor BeltState", _BeltState.name());
-        SmartDashboard.putNumber("Belt-Motor Power", beltMotor.get());
+        //SmartDashboard.putString("Conveyor BeltState", _BeltState.name());
+        //SmartDashboard.putNumber("Belt-Motor Power", beltMotor.get());
         SmartDashboard.putNumber("Blocker-Motor Power", blockerMotor.get());
         SmartDashboard.putNumber("Blocker Stator Current", blockerMotor.getStatorCurrent());
         SmartDashboard.putNumber("Blocker Supply Current", blockerMotor.getSupplyCurrent());
-        SmartDashboard.putBoolean("Blocker Closed", closeSensor.get());
-        SmartDashboard.putBoolean("Blocker Open", openSensor.get());
+        SmartDashboard.putBoolean("Blocker Closed", isClosed());
+        SmartDashboard.putBoolean("Blocker Open", isOpen());
+        //SmartDashboard.putString("Blocker State", _BlockerState.name());
     }
 
-    public void run(boolean isAuto)
+    public void run(boolean isTimed, double power)
     {
-        if(isAuto)
+        if(isTimed)
         {
-            beltMotor.set(ControlMode.PercentOutput, k.BELT_POWER);
+            beltMotor.set(ControlMode.PercentOutput, power);
             timer.start();
-            while (timer.get() < k.WAIT_TIME) {}
+            while (timer.get() < k.BELT_WAIT) {}
             timer.stop();
             timer.reset();
             stop();
@@ -101,27 +103,41 @@ public class Conveyor
 
         else
         {
-            beltMotor.set(ControlMode.PercentOutput, k.speed);
+            beltMotor.set(ControlMode.PercentOutput, power);
             _BeltState = BeltState.UP;
         }
     }
 
     public void stop()
     {
-        beltMotor.stopMotor();
+        beltMotor.set(ControlMode.PercentOutput, 0);
         _BeltState = BeltState.STOP;
     }
 
     public void close()
     {
-        blockerMotor.set(ControlMode.PercentOutput, k.BLOCKER_POWER);
+        blockerMotor.set(ControlMode.PercentOutput, -k.BLOCKER_POWER);
         _BlockerState = BlockerState.CLOSING;
+    }
+
+    public void close(boolean isAuto)
+    {
+        while (!isClosed())
+            blockerMotor.set(ControlMode.PercentOutput, -k.BLOCKER_POWER);
+        blockerMotor.stopMotor();
     }
 
     public void open()
     {
-        blockerMotor.set(ControlMode.PercentOutput, -k.BLOCKER_POWER);
+        blockerMotor.set(ControlMode.PercentOutput, k.BLOCKER_POWER);
         _BlockerState = BlockerState.OPENING;
+    }
+
+    public void open(boolean isAuto)
+    {
+        while (!isClosed())
+            blockerMotor.set(ControlMode.PercentOutput, k.BLOCKER_POWER);
+        blockerMotor.stopMotor();
     }
 
     public void stopBlocker()

@@ -20,6 +20,8 @@ import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Hanger;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 
+import org.ejml.ops.ConvertMatrixData;
+
 public class Robot extends TimedRobot 
 {
     // AUTO "CHOOSER" QUICK & DIRTY METHOD
@@ -367,7 +369,7 @@ public class Robot extends TimedRobot
         if (controller1.getRawButton(k.B))
         {
             // Stop motion
-            drivetrain.arcadeDrive(0, 0);
+            //drivetrain.arcadeDrive(0, 0);
 
             // Set to break
             if (drivetrain.nm != NeutralMode.Brake)
@@ -387,10 +389,7 @@ public class Robot extends TimedRobot
         }
 
         // Telemetry
-        drivetrain.printData();
-
-        // Telemetry
-        conveyor.printData();
+        //drivetrain.printData();
         
         // ==== Intake ==== //
         
@@ -418,7 +417,7 @@ public class Robot extends TimedRobot
         if (currTime >= runIntakeTime && intake._Position == Intake.Position.DOWN)
         {
             intake.on();
-            conveyor.run(false);
+            conveyor.run(false, 1);
             conveyor.close();
             runIntakeTime = UNQUEUED; // Return to sentinel
         }
@@ -436,13 +435,12 @@ public class Robot extends TimedRobot
         {
             if (conveyor._BeltState != Conveyor.BeltState.UP)
             {
-                conveyor.run(false);
+                conveyor.run(false, 1);
                 conveyor.open();
             }
             else
             {
                 conveyor.stop();
-                conveyor.close();
                 /*
                 if (intake._RunState == Intake.RunState.ON)
                 {
@@ -453,9 +451,18 @@ public class Robot extends TimedRobot
             }
         }
 
+        if (conveyor._BeltState == Conveyor.BeltState.UP)
+            conveyor.run(false, 1);
+
         // Listen to Blocker Sensors
-        if (conveyor.isClosed() || conveyor.isOpen())
+        //if (conveyor.isClosed() || conveyor.isOpen())
+            //conveyor.stopBlocker();
+        
+        if (conveyor._BlockerState == Conveyor.BlockerState.OPENING && conveyor.isOpen())
             conveyor.stopBlocker();
+
+        // Telemetry
+        conveyor.printData();
 
         // === Hanger === //
 
@@ -511,20 +518,29 @@ public class Robot extends TimedRobot
         {
             // Init position is ball pre-loaded, facing perpendicular to the hub
             intake.lower();
+            
             conveyor.close();
+            conveyor.run(false, 0.7);
+            
+            Timer.delay(2);
 
-            // Let the neighbor robot move out of the way
-            // "GET OUT DA WAY!!!"
-            //Timer.delay(3);
+            drivetrain.forward(30);
+            intake.on();
+            drivetrain.forward(30);
 
-            // Move & score pre-loaded
-            drivetrain.forward(-3);
+            Timer.delay(2);
+            conveyor.stop();
 
-            /*
+            drivetrain.rotate(-15);
+            drivetrain.forward(-90);
+
             conveyor.open();
-            conveyor.run(true);
-            conveyor.close();
-            */
+            conveyor.run(true, 1);
+
+            // Exit tarmac - 2 pts
+            drivetrain.forward(90);
+            
+            // Fin
         }
         // Right side
         else if (auto == Auto.RIGHTMOST || auto == Auto.RIGHTMOST_CENTER_BALLS || auto == Auto.SIMPLERIGHT)
@@ -544,7 +560,7 @@ public class Robot extends TimedRobot
         drivetrain.forward(7);
         // Intake ball (conveyor is closed)
         intake.on();
-        conveyor.run(true);
+        conveyor.run(true, 0.5);
         drivetrain.forward(3);
         // Stop intake
         intake.stop();
