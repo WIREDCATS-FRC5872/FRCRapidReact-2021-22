@@ -35,8 +35,8 @@ public class Drivetrain {
         
         // Auto by time at 4.0V voltage - high gear
         public  static final double AUTO_VOLTAGE = 4.0;
-        private static final double SECONDS_PER_INCH = 1/1.0f;      // TODO: TEST
-        private static final double SECONDS_PER_DEGREE = 1/1.0f;    // TODO: TEST
+        private static final double SECONDS_PER_INCH = 1/40.0f;
+        private static final double SECONDS_PER_DEGREE = 1/219.0f;
 
         private static final int PIGEON_ID = 0;
         private static final int FWD_ID = 3, REV_ID = 4;
@@ -210,9 +210,9 @@ public class Drivetrain {
                 // If backward
                 if (forward < 0
                 // Or rotating clockwise & this is a right wheel
-                    || (rotation > 1 && i%2 == 0)
+                    || (rotation > 0 && i%2 == 0)
                 // Or rotating CCW & this is a left wheel
-                    || (rotation < 1 && i%2==1)
+                    || (rotation < 0 && i%2==1)
                 )
                     // Negative power
                     driveMotors[i].setVoltage(-k.AUTO_VOLTAGE);
@@ -234,7 +234,7 @@ public class Drivetrain {
      */
     public void forward(double inches)
     {
-        move(inches * k.SECONDS_PER_INCH,
+        move(Math.abs(inches) * k.SECONDS_PER_INCH,
             Math.signum(inches) > 0 ? 1 : -1,
             0);
     }
@@ -245,9 +245,10 @@ public class Drivetrain {
      */
     public void rotate(double degrees)
     {
-        move(degrees * k.SECONDS_PER_DEGREE,
-            Math.signum(degrees) > 0 ? 1 : -1,
-            0);
+        move(Math.abs(degrees) * k.SECONDS_PER_DEGREE,
+            0,
+            Math.signum(degrees) > 0 ? 1 : -1
+        );
     }
 
     /*

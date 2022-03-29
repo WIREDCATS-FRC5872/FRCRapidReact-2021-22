@@ -36,7 +36,7 @@ public class Robot extends TimedRobot
         LEFTMOST;
     }
     // CHANGE THIS TO SELECT AUTO
-    private final Auto auto = Auto.TEST;
+    private final Auto auto = Auto.SIMPLELEFT;
 
     private static class k
     {
@@ -316,46 +316,7 @@ public class Robot extends TimedRobot
         // === LEFT SIMPLE === //
         else if (auto == Auto.SIMPLELEFT)
         {
-            // Init position is ball pre-loaded, facing perpendicular to the hub
-            intake.lower();
-            conveyor.close();
-
-            // Let the neighbor robot move out of the way
-            // "GET OUT DA WAY!!!"
-            //Timer.delay(3);
-
-            // Move & score pre-loaded
-            drivetrain.move(0.2, 0, 0.5);
-            drivetrain.move(1.5, -0.5, 0);
-
-            conveyor.run(true);
-
-            drivetrain.move(2.5, 0.5, 0);
-
-
-            //drivetrain.rotateLeft(180);
-
-            //Timer.delay(10);
-
-           // drivetrain.backward(18);
-            //Timer.delay(8);
-
-            //drivetrain.forward(24);
-            
-            //Timer.delay(2);
-            //drivetrain.rotateRight(90);
-            //drivetrain.backward(12);
-
-            /*
-            conveyor.open();
-            conveyor.up();
-            Timer.delay(2);
-            conveyor.stop();
-            conveyor.close();
-            
-            // Exit tarmac
-            drivetrain.forward(TARMAC_L*2.0/1.4);
-            */
+            scorePreloaded(auto);
         }
         
         // === LEFTMOST SIDE === //
@@ -364,7 +325,7 @@ public class Robot extends TimedRobot
 
         else if (auto == Auto.TEST)
         {
-            drivetrain.move(1, 1, 0);
+            drivetrain.forward(24);
         }
 
         while (true)
@@ -554,18 +515,16 @@ public class Robot extends TimedRobot
 
             // Let the neighbor robot move out of the way
             // "GET OUT DA WAY!!!"
-            Timer.delay(3);
+            //Timer.delay(3);
 
             // Move & score pre-loaded
-            drivetrain.forward(2);
-
-            drivetrain.rotate(90);
             drivetrain.forward(-3);
+
+            /*
             conveyor.open();
             conveyor.run(true);
-            Timer.delay(2);
-            conveyor.stop();
             conveyor.close();
+            */
         }
         // Right side
         else if (auto == Auto.RIGHTMOST || auto == Auto.RIGHTMOST_CENTER_BALLS || auto == Auto.SIMPLERIGHT)
