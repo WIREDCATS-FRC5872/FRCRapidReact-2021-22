@@ -103,14 +103,15 @@ public class Conveyor
 
         else
         {
-            beltMotor.set(ControlMode.PercentOutput, power);
+            beltMotor.setVoltage(10.0);
+            //beltMotor.set(ControlMode.PercentOutput, power);
             _BeltState = BeltState.UP;
         }
     }
 
     public void stop()
     {
-        beltMotor.set(ControlMode.PercentOutput, 0);
+        beltMotor.stopMotor();
         _BeltState = BeltState.STOP;
     }
 
