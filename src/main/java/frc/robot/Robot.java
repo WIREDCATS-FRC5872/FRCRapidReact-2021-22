@@ -20,26 +20,8 @@ import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Hanger;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 
-import org.ejml.ops.ConvertMatrixData;
-
 public class Robot extends TimedRobot 
 {
-    // AUTO "CHOOSER" QUICK & DIRTY METHOD
-    private enum Auto
-    {
-        TEST,
-
-        SIMPLERIGHT,
-        RIGHTMOST,
-        RIGHTMOST_CENTER_BALLS,
-        //RIGHTMOST_CENTER_BALLS_ALT,
-
-        SIMPLELEFT,
-        LEFTMOST;
-    }
-    // CHANGE THIS TO SELECT AUTO
-    private final Auto auto = Auto.SIMPLELEFT;
-
     private static class k
     {
         private static final int LX_ID = 0, LY_ID = 1, RX_ID = 4, RY_ID = 5;
@@ -103,236 +85,34 @@ public class Robot extends TimedRobot
     @Override
     public void autonomousPeriodic()
     {
-        //drivetrain.resetEncoders();
+        // Begin auto with robot in far left position
+        SmartDashboard.putBoolean("AUTO RUNNING", true);
 
-        SmartDashboard.putString("AUTO RUNNING", auto.toString());
+        // Lower intake and close blocker
+        intake.lower();
+        conveyor.close(true);
 
-        double TARMAC_L = 7.0*12;
+        // Pick up ball
+        drivetrain.forward(30);
+        intake.run();
+        drivetrain.intakeBall(conveyor.beltMotor, 30); // Move forward 30" with conveyor on low voltage
+        Timer.delay(2);
+        conveyor.stopBelt();
 
-        // === RIGHT SIMPLE === //
-        if (auto == Auto.SIMPLERIGHT)
-        {
-            // Init position is ball pre-loaded, facing perpendicular to the hub
-            intake.lower();
-            conveyor.close(true);
+        // Drive to goal
+        drivetrain.rotate(-15);
+        drivetrain.forward(-90);
 
-            // Let the neighbor robot move out of the way
-            Timer.delay(3);
+        // Outtake both balls
+        conveyor.open(false);
+        conveyor.outtake();
 
-            // Move & score pre-loaded
-            drivetrain.forward(2.0);
+        // Exit tarmac
+        drivetrain.forward(90);
 
-            /*
-            drivetrain.rotateRight(90);
-            drivetrain.backward(3);
-            conveyor.open();
-            conveyor.up();
-            Timer.delay(2);
-            conveyor.stop();
-            conveyor.close();
-
-            // Exit tarmac
-            drivetrain.forward(TARMAC_L*2.0/1.4);
-
-            // Fin.
-            */
-        }
-        
-        // === RIGHTMOST SIDE - HOLDS 2 BALLS AT A TIME === //
-        else if (auto == Auto.RIGHTMOST)
-        {
-            // Init position is ball pre-loaded, facing perpendicular to the hub
-            intake.lower();
-            conveyor.close(true);
-
-            // Let the neighbor robot move out of the way
-            // "GET OUT DA WAY!!!"
-            Timer.delay(3);
-
-            /*
-            // Move & score pre-loaded
-            drivetrain.forward(2);
-            drivetrain.rotateRight(90);
-            drivetrain.backward(3);
-            conveyor.open();
-            conveyor.up();
-            Timer.delay(2);
-            conveyor.stop();
-            conveyor.close();
-            
-            // Move & pick up next ball
-            drivetrain.forward(TARMAC_L*2.0/1.4);
-            drivetrain.rotateLeft(90);
-            intake.on();
-            conveyor.up();
-            drivetrain.forward(TARMAC_L/2.0);
-            intake.off();
-            conveyor.stop();
-
-            // Get 3rd & final ball, the one on the other alliance side
-            rotateLeft(30);
-            drivetrain.forward(TARMAC_L*0.8);
-            intake.on();
-            conveyor.up();
-            drivetrain.forward(TARMAC_L*0.4);
-            intake.off();
-            conveyor.stop();
-
-            // Return & score both
-            drivetrain.backward(TARMAC_L*1.2);
-            drivetrain.rotateRight(30);
-            drivetrain.backward(TARMAC_L/2.0);
-            drivetrain.rotaateLeft(90);
-            drivetrain.backward(TARMAC_L*2.0/1.4);
-            conveyor.open();
-            conveyor.up();
-            Timer.delay(4);
-            conveyor.stop();
-            conveyor.close();
-
-            // Leave again
-            drivetrain.forward(TARMAC_L*2.0/1.4);
-            */
-        }
-        
-        /*
-        // === BLUE/RED RIGHTMOST SIDE - less preferred auto === //
-        else if (auto == Auto.RIGHTMOST_CENTER_BALLS_ALT)
-        {
-            // Init position is ball pre-loaded, facing perpendicular to the hub
-            intake.lower();
-            conveyor.close();
-
-            // Let the neighbor robot move out of the way
-            Timer.delay(3);
-
-            // Move & score pre-loaded
-            drivetrain.forward(2);
-            /*
-            drivetrain.rotateRight(90);
-            drivetrain.backward(3);
-            conveyor.open();
-            conveyor.up();
-            Timer.delay(2);
-            conveyor.stop();
-            conveyor.close();
-            
-            // Move & pick up next ball
-            drivetrain.forward(TARMAC_L*2.0/1.4);
-            drivetrain.rotateLeft(90);
-            intake.on();
-            conveyor.up();
-            drivetrain.forward(TARMAC_L*0.7/1.4);
-            intake.off();
-            conveyor.stop();
-
-            // Return & score it
-            drivetrain.backward(TARMAC_L*0.7/1.4);
-            drivetrain.rotateRight(90);
-            drivetrain.backward(TARMAC_L*2.0/1.4);
-            conveyor.open();
-            conveyor.up();
-            Timer.delay(2);
-            conveyor.stop();
-            conveyor.close();
-
-            // Get 3rd & final ball
-            drivetrain.forward(TARMAC_L*1.6/1.4);
-            drivetrain.rotateLeft(90);
-            drivetrain.forward(TARMAC_L*1.0/1.4);
-            intake.on();
-            conveyor.up();
-            drivetrain.forward(TARMAC_L*0.7/1.4);
-            intake.off();
-            conveyor.stop();
-
-            // Return & score it
-            drivetrain.backward(TARMAC_L*1.7/1.4);
-            drivetrain.rotateRight(90);
-            drivetrain.backward(TARMAC_L*1.6/1.4);
-            conveyor.open();
-            conveyor.up();
-            Timer.delay(2);
-            conveyor.stop();
-            conveyor.close();
-
-            // Leave again
-            drivetrain.forward(TARMAC_L*2.0/1.4);
-        }
-        */
-        
-        // === RIGHTMOST SIDE - HOLDS 2 BALLS AT A TIME === //
-        else if (auto == Auto.RIGHTMOST_CENTER_BALLS)
-        {
-            // Init position is ball pre-loaded, facing perpendicular to the hub
-            intake.lower();
-            conveyor.close(true);
-
-            // Let the neighbor robot move out of the way
-            // "GET OUT DA WAY!!!"
-            Timer.delay(3);
-
-            /*
-            // Move & score pre-loaded
-            drivetrain.forward(2);
-            drivetrain.rotateRight(90);
-            drivetrain.backward(3);
-            conveyor.open();
-            conveyor.up();
-            Timer.delay(2);
-            conveyor.stop();
-            conveyor.close();
-            
-            // Move & pick up next ball
-            drivetrain.forward(TARMAC_L*2.0/1.4);
-            drivetrain.rotateLeft(90);
-            intake.on();
-            conveyor.up();
-            drivetrain.forward(TARMAC_L/2.0);
-            intake.off();
-            conveyor.stop();
-
-            // Get 3rd & final ball
-            rotateRight(180);
-            drivetrain.forward(TARMAC_L);
-            intake.on();
-            conveyor.up();
-            drivetrain.forward(TARMAC_L*0.4);
-            intake.off();
-            conveyor.stop();
-
-            // Return & score both
-            drivetrain.backward(TARMAC_L*0.9);
-            drivetrain.rotateRight(90);
-            drivetrain.backward(TARMAC_L*2.0/1.4);
-            conveyor.open();
-            conveyor.up();
-            Timer.delay(4);
-            conveyor.stop();
-            conveyor.close();
-
-            // Leave again
-            drivetrain.forward(TARMAC_L*2.0/1.4);
-            */
-        }
-        
-        // === LEFT SIMPLE === //
-        else if (auto == Auto.SIMPLELEFT)
-        {
-            scorePreloaded(auto);
-        }
-        
-        // === LEFTMOST SIDE === //
-        else if (auto == Auto.LEFTMOST)
-            leftmostAuto();
-
-        else if (auto == Auto.TEST)
-        {
-            drivetrain.forward(24);
-        }
-
+        // Finished
         while (true)
-            SmartDashboard.putString("AUTO RUNNING", "COMPLETED");
+            SmartDashboard.putBoolean("AUTO RUNNING", false);
     }
 
     /** This function is called once each time the robot enters teleoperated mode. */
@@ -482,44 +262,5 @@ public class Robot extends TimedRobot
     public void testPeriodic() {
 
         teleopPeriodic();
-    }
-
-
-    // === AUTO METHODS === //
-    public void scorePreloaded(Auto auto)
-    {
-        // Left side
-        if (auto == Auto.LEFTMOST || auto == Auto.SIMPLELEFT)
-        {
-            
-            // Lower intake and close blocker
-            intake.lower();
-            conveyor.close(true);
-
-            // Pick up ball
-            drivetrain.forward(30);
-            intake.run();
-            drivetrain.intakeBall(conveyor.beltMotor, 30); // Move forward 30" with conveyor on low voltage
-            Timer.delay(2);
-            conveyor.stopBelt();
-
-            // Drive to goal
-            drivetrain.rotate(-15);
-            drivetrain.forward(-90);
-
-            // Outtake ball
-            conveyor.open(false);
-            conveyor.outtake();
-
-            // Exit tarmac - 2 pts
-            drivetrain.forward(90);
-
-            // Fin
-        }
-        // Right side
-        else if (auto == Auto.RIGHTMOST || auto == Auto.RIGHTMOST_CENTER_BALLS || auto == Auto.SIMPLERIGHT)
-        {
-            // TODO
-        }
     }
 }
