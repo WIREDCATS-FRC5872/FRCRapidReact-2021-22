@@ -526,7 +526,7 @@ public class Robot extends TimedRobot
 
             drivetrain.forward(30);
             intake.on();
-            drivetrain.forward(30);
+            drivetrain.intakeBall(conveyor.beltMotor, 30);
 
             Timer.delay(2);
             conveyor.stop();
@@ -539,7 +539,7 @@ public class Robot extends TimedRobot
 
             // Exit tarmac - 2 pts
             drivetrain.forward(90);
-            */
+
             // Fin
         }
         // Right side
@@ -593,5 +593,10 @@ public class Robot extends TimedRobot
         // Leave again
         drivetrain.forward(TARMAC_L*2.0/1.4);
         */
+    }
+
+    public void intakeBall()
+    {
+
     }
 }

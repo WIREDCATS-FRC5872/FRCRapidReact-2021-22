@@ -10,6 +10,7 @@ import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
 import com.ctre.phoenix.motorcontrol.StatusFrameEnhanced;
 import com.ctre.phoenix.motorcontrol.TalonFXFeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
+import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.ctre.phoenix.sensors.PigeonIMU;
 
 import edu.wpi.first.wpilibj.DoubleSolenoid;
@@ -246,6 +247,28 @@ public class Drivetrain {
         move(Math.abs(inches) * k.SECONDS_PER_INCH,
             Math.signum(inches) > 0 ? 1 : -1,
             0);
+    }
+
+    public void intakeBall(WPI_TalonSRX beltMotor, double inches)
+    {
+        // Power motors for given # of seconds
+        timer.reset();
+        timer.start();
+        while (timer.get() < inches * k.SECONDS_PER_INCH)
+        {
+            for (int i = 0; i < 4; i++)
+            {
+                if (driveMotors[i].getInverted() != motorInverted[i])
+                    driveMotors[i].setInverted(motorInverted[i]);
+                driveMotors[i].setVoltage(k.AUTO_VOLTAGE);
+            }
+            beltMotor.setVoltage(3);
+        }
+        
+        // Stop all motion when finished
+        for (WPI_TalonFX motor : driveMotors)
+            motor.stopMotor();
+        beltMotor.stopMotor();
     }
 
     /**

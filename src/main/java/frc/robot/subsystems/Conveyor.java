@@ -41,7 +41,7 @@ public class Conveyor
     public BeltState _BeltState;
     public BlockerState _BlockerState;
 
-    private final WPI_TalonSRX beltMotor = new WPI_TalonSRX(k.BELT_MOTOR_ID);
+    public final WPI_TalonSRX beltMotor = new WPI_TalonSRX(k.BELT_MOTOR_ID);
     private final WPI_TalonSRX blockerMotor = new WPI_TalonSRX(k.BLOCKER_MOTOR_ID);
     private final WPI_TalonSRX[] motors = {beltMotor, blockerMotor};
     private final DigitalInput openSensor = new DigitalInput(k.OPEN_SENSOR_ID);
@@ -97,7 +97,7 @@ public class Conveyor
             while (timer.get() < k.BELT_WAIT)
             {
                 if (isLowVoltage)
-                    beltMotor.setVoltage(0.3);
+                    beltMotor.setVoltage(3);
                 else
                     beltMotor.setVoltage(10);
             }
