@@ -89,13 +89,18 @@ public class Conveyor
         //SmartDashboard.putString("Blocker State", _BlockerState.name());
     }
 
-    public void run(boolean isTimed, double power)
+    public void run(boolean isTimed, boolean isLowVoltage)
     {
         if(isTimed)
         {
-            beltMotor.set(ControlMode.PercentOutput, power);
             timer.start();
-            while (timer.get() < k.BELT_WAIT) {}
+            while (timer.get() < k.BELT_WAIT)
+            {
+                if (isLowVoltage)
+                    beltMotor.setVoltage(0.3);
+                else
+                    beltMotor.setVoltage(10);
+            }
             timer.stop();
             timer.reset();
             stop();
@@ -103,8 +108,7 @@ public class Conveyor
 
         else
         {
-            beltMotor.setVoltage(10.0);
-            //beltMotor.set(ControlMode.PercentOutput, power);
+            beltMotor.set(ControlMode.PercentOutput, k.BELT_POWER);
             _BeltState = BeltState.UP;
         }
     }

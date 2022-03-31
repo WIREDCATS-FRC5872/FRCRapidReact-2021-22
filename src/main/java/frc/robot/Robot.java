@@ -417,7 +417,7 @@ public class Robot extends TimedRobot
         if (currTime >= runIntakeTime && intake._Position == Intake.Position.DOWN)
         {
             intake.on();
-            conveyor.run(false, 1);
+            conveyor.run(false, false);
             conveyor.close();
             runIntakeTime = UNQUEUED; // Return to sentinel
         }
@@ -435,7 +435,7 @@ public class Robot extends TimedRobot
         {
             if (conveyor._BeltState != Conveyor.BeltState.UP)
             {
-                conveyor.run(false, 1);
+                conveyor.run(false, false);
                 conveyor.open();
             }
             else
@@ -452,7 +452,7 @@ public class Robot extends TimedRobot
         }
 
         if (conveyor._BeltState == Conveyor.BeltState.UP)
-            conveyor.run(false, 1);
+            conveyor.run(false, false);
 
         // Listen to Blocker Sensors
         //if (conveyor.isClosed() || conveyor.isOpen())
@@ -517,10 +517,10 @@ public class Robot extends TimedRobot
         if (auto == Auto.LEFTMOST || auto == Auto.SIMPLELEFT)
         {
             // Init position is ball pre-loaded, facing perpendicular to the hub
-            intake.lower();
+            //intake.lower();
             
             conveyor.close();
-            conveyor.run(false, 0.7);
+            conveyor.run(false, true);
             
             Timer.delay(2);
 
@@ -535,11 +535,11 @@ public class Robot extends TimedRobot
             drivetrain.forward(-90);
 
             conveyor.open();
-            conveyor.run(true, 1);
+            conveyor.run(true, false);
 
             // Exit tarmac - 2 pts
             drivetrain.forward(90);
-            
+            */
             // Fin
         }
         // Right side
@@ -557,14 +557,14 @@ public class Robot extends TimedRobot
         // Second ball (first non-preloaded) : 
 
         // Move
-        drivetrain.forward(7);
+        //drivetrain.forward(7);
         // Intake ball (conveyor is closed)
-        intake.on();
-        conveyor.run(true, 0.5);
-        drivetrain.forward(3);
+        //intake.on();
+        //conveyor.run(true, 0.5);
+        //drivetrain.forward(3);
         // Stop intake
-        intake.stop();
-        conveyor.stop();
+        //intake.stop();
+        //conveyor.stop();
 
         /*
         // Third ball (second non-preloaded): the one on the opposite alliance side
