@@ -17,16 +17,15 @@ public class Conveyor
 
         private static final double BELT_WAIT = 5;
         private static final double BELT_POWER = 1;
+        private static final double BELT_LOW_VOLTAGE = 3;
 
-        private static final double BLOCKER_WAIT = 3;
         private static final double BLOCKER_POWER = 1;
     }
 
     public static enum BeltState
     {
-        UP,
-        DOWN,
-        STOP;
+        ON,
+        OFF;
     }
 
     public static enum BlockerState
@@ -64,7 +63,7 @@ public class Conveyor
 
     public void init()
     {
-        stop();
+        stopBelt();
     }
 
     public boolean isOpen()
@@ -89,65 +88,78 @@ public class Conveyor
         //SmartDashboard.putString("Blocker State", _BlockerState.name());
     }
 
-    public void run(boolean isTimed, boolean isLowVoltage)
+    public void run(boolean runAtLowVoltage)
     {
-        if(isTimed)
-        {
-            timer.start();
-            while (timer.get() < k.BELT_WAIT)
-            {
-                if (isLowVoltage)
-                    beltMotor.setVoltage(3);
-                else
-                    beltMotor.setVoltage(10);
-            }
-            timer.stop();
-            timer.reset();
-            stop();
-        }
-
+        if (runAtLowVoltage)
+            beltMotor.setVoltage(3);
         else
-        {
             beltMotor.set(ControlMode.PercentOutput, k.BELT_POWER);
-            _BeltState = BeltState.UP;
-        }
+        _BeltState = BeltState.ON;
     }
 
-    public void stop()
+    public void stopBelt()
     {
         beltMotor.stopMotor();
-        _BeltState = BeltState.STOP;
+        _BeltState = BeltState.OFF;
     }
-
-    public void close()
+    
+    /**
+     * Runs the belt moter for a set time at a set percent ouput.
+     */
+    public void outtake()
     {
-        blockerMotor.set(ControlMode.PercentOutput, -k.BLOCKER_POWER);
-        _BlockerState = BlockerState.CLOSING;
+        timer.start();
+        beltMotor.set(ControlMode.PercentOutput, k.BELT_POWER);
+        while (timer.get() < k.BELT_WAIT) {}
+        timer.stop();
+        timer.reset();
+        stopBelt();
     }
 
+    /**
+     * Closes the blocker motor.
+     * @param isAuto If true, blocker motor power is set to 0 (with brake neutral mode) when isClosed() is detected.
+     * Else, blocker motor will not be stopped and _BlockerState will be updated to "CLOSING".
+     */
     public void close(boolean isAuto)
     {
-        while (!isClosed())
+        if (isAuto)
+        {
+            while (!isClosed())
+                blockerMotor.set(ControlMode.PercentOutput, -k.BLOCKER_POWER);
+            blockerMotor.set(ControlMode.PercentOutput, 0);
+        }
+        else
+        {
             blockerMotor.set(ControlMode.PercentOutput, -k.BLOCKER_POWER);
-        blockerMotor.stopMotor();
+            _BlockerState = BlockerState.CLOSING;
+        }
     }
 
-    public void open()
-    {
-        blockerMotor.set(ControlMode.PercentOutput, k.BLOCKER_POWER);
-        _BlockerState = BlockerState.OPENING;
-    }
-
+    /**
+     * Opens the blocker motor.
+     * @param isAuto If true, blocker motor power is set to 0 (with brake neutral mode) when isOpen() is detected.
+     * Else, blocker motor will not be stopped and _BlockerState will be updated to "OPENING".
+     */
     public void open(boolean isAuto)
     {
-        while (!isClosed())
+        if (isAuto)
+        {
+            while (!isClosed())
+                blockerMotor.set(ControlMode.PercentOutput, k.BLOCKER_POWER);
+            blockerMotor.set(ControlMode.PercentOutput, 0);
+        }
+        else
+        {
             blockerMotor.set(ControlMode.PercentOutput, k.BLOCKER_POWER);
-        blockerMotor.stopMotor();
+            _BlockerState = BlockerState.OPENING;
+        }
+        
     }
 
     public void stopBlocker()
     {
-        blockerMotor.stopMotor();
+        blockerMotor.set(ControlMode.PercentOutput, 0);
         _BlockerState = Conveyor.BlockerState.STOPPED;
     }
 }

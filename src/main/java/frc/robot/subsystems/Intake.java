@@ -19,7 +19,7 @@ public class Intake
         private static final DoubleSolenoid.Value reverse = DoubleSolenoid.Value.kReverse;
         private static final DoubleSolenoid.Value off = DoubleSolenoid.Value.kOff;
         
-        private static final float speed = -0.6f;
+        private static final float power = -0.6f;
     }
 
     public enum RunState
@@ -77,22 +77,11 @@ public class Intake
         _Position = Position.DOWN;
     }
 
-    public void on()
+    public void run()
     {
-        //if (_Position == Position.DOWN) // TODO: Test that this doesn't cause problems
-        //{
-            motor.set(ControlMode.PercentOutput, k.speed);
-            _RunState = RunState.ON;
-        //}
+        motor.set(ControlMode.PercentOutput, k.power);
+        _RunState = RunState.ON;
     }
-
-    /*
-    public void reverse()
-    {
-        motor.set(ControlMode.PercentOutput, -k.speed);
-        _RunState = RunState.REVERSE;
-    }
-    */
 
     public void stop()
     {

@@ -170,16 +170,16 @@ public class Drivetrain {
         nm = NeutralMode.Brake;
     }
 
-    public void init()
+    public void init(boolean isAuto)
     {
         setHighGear();
-    }
-
-    public void autoInit()
-    {
-        resetEncoders();
-        setHighGear();
-        setBrake();
+        if (isAuto)
+        {
+            resetEncoders();
+            setBrake();
+        }
+        else
+            setCoast();
     }
 
     public void setHighGear()
@@ -249,6 +249,11 @@ public class Drivetrain {
             0);
     }
 
+    /**
+     * Moves the robot forward a set distance while running the belt motor at a set voltage.
+     * @param beltMotor
+     * @param inches
+     */
     public void intakeBall(WPI_TalonSRX beltMotor, double inches)
     {
         // Power motors for given # of seconds
@@ -282,44 +287,6 @@ public class Drivetrain {
             Math.signum(degrees) > 0 ? 1 : -1
         );
     }
-
-    /*
-    public void forward(double inches)
-    {
-        resetEncoders();
-        double ticks = inches * k.TICKS_PER_INCH;
-        for (WPI_TalonFX motor : driveMotors)
-            motor.set(ControlMode.Position, ticks);
-    }
-
-    public void backward(double inches)
-    {
-        resetEncoders();
-        double ticks = inches * -k.TICKS_PER_INCH;
-        for (WPI_TalonFX motor : driveMotors)
-            motor.set(ControlMode.Position, ticks);
-    }
-    
-    public void rotateRight(double angle)
-    {
-        resetEncoders();
-        double ticks = angle/360.0 * k.RobotTrackCircumference;
-        L_Master.set(TalonFXControlMode.Position, ticks);
-        L_Slave.set(TalonFXControlMode.Position, ticks);
-        R_Master.set(TalonFXControlMode.Position, -ticks);
-        R_Slave.set(TalonFXControlMode.Position, -ticks);
-    }
-
-    public void rotateLeft(double angle)
-    {
-        resetEncoders();
-        double ticks = angle/360.0 * k.RobotTrackCircumference;
-        L_Master.set(TalonFXControlMode.Position, -ticks);
-        L_Slave.set(TalonFXControlMode.Position, -ticks);
-        R_Master.set(TalonFXControlMode.Position, ticks);
-        R_Slave.set(TalonFXControlMode.Position, ticks);
-    }
-    */
 
     public void resetEncoders()
     {
