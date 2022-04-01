@@ -41,7 +41,7 @@ public class Conveyor
     public BlockerState _BlockerState;
 
     public final WPI_TalonSRX beltMotor = new WPI_TalonSRX(k.BELT_MOTOR_ID);
-    private final WPI_TalonSRX blockerMotor = new WPI_TalonSRX(k.BLOCKER_MOTOR_ID);
+    public final WPI_TalonSRX blockerMotor = new WPI_TalonSRX(k.BLOCKER_MOTOR_ID);
     private final WPI_TalonSRX[] motors = {beltMotor, blockerMotor};
     private final DigitalInput openSensor = new DigitalInput(k.OPEN_SENSOR_ID);
     private final DigitalInput closeSensor = new DigitalInput(k.CLOSED_SENSOR_ID);
@@ -91,7 +91,7 @@ public class Conveyor
     public void run(boolean runAtLowVoltage)
     {
         if (runAtLowVoltage)
-            beltMotor.setVoltage(3);
+            beltMotor.setVoltage(5.5);
         else
             beltMotor.set(ControlMode.PercentOutput, k.BELT_POWER);
         _BeltState = BeltState.ON;
@@ -99,7 +99,8 @@ public class Conveyor
 
     public void stopBelt()
     {
-        beltMotor.stopMotor();
+        //beltMotor.stopMotor();
+        beltMotor.set(ControlMode.PercentOutput, 0);
         _BeltState = BeltState.OFF;
     }
     
@@ -108,12 +109,15 @@ public class Conveyor
      */
     public void outtake()
     {
+        beltMotor.set(ControlMode.PercentOutput, k.BELT_POWER);
+        /*
         timer.start();
         beltMotor.set(ControlMode.PercentOutput, k.BELT_POWER);
         while (timer.get() < k.BELT_WAIT) {}
         timer.stop();
         timer.reset();
         stopBelt();
+        */
     }
 
     /**

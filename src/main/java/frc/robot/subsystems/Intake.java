@@ -19,7 +19,7 @@ public class Intake
         private static final DoubleSolenoid.Value reverse = DoubleSolenoid.Value.kReverse;
         private static final DoubleSolenoid.Value off = DoubleSolenoid.Value.kOff;
         
-        private static final float power = -0.6f;
+        private static final float power = -0.8f;
     }
 
     public enum RunState

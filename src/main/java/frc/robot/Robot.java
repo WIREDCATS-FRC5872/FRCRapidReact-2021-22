@@ -17,11 +17,30 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.subsystems.Conveyor;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Intake;
+import frc.robot.subsystems.Conveyor.BlockerState;
 import frc.robot.subsystems.Hanger;
+
+import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 
 public class Robot extends TimedRobot 
 {
+    private static enum Auto
+    {
+        LEFT,
+        RIGHT;
+    }
+    private static enum NumToScore
+    {
+        ZERO,
+        ONE,
+        TWO;
+    }
+
+    private final Auto auto = Auto.LEFT;
+    private final int AUTO_DELAY = 0;    // in seconds
+    private final NumToScore NUMBER_TO_SCORE = NumToScore.TWO;
+
     private static class k
     {
         private static final int LX_ID = 0, LY_ID = 1, RX_ID = 4, RY_ID = 5;
@@ -31,12 +50,17 @@ public class Robot extends TimedRobot
         private static final int UP = 0, RIGHT = 90, DOWN = 180, LEFT = 270;
         private static final int CONTROLLER1_ID = 0, CONTROLLER2_ID = 1;
         private static final int PCM_ID = 0; // default node ID
+
+        // Drive
+        private static final double 
+        SECONDS_PER_INCH = 1/40.0f;
+        private static final double SECONDS_PER_DEGREE = (1/219.0f) * 103.0/90.0;
     }
 
     private final Joystick controller1 = new Joystick(k.CONTROLLER1_ID);
     private final Joystick controller2 = new Joystick(k.CONTROLLER1_ID);    // Should be 2
     private final Compressor pcmCompressor = new Compressor(k.PCM_ID, PneumaticsModuleType.CTREPCM);
-    private final Timer auto_timer = new Timer();
+    private final Timer timer = new Timer();
 
     // For the intake
     long runIntakeTime, raiseIntakeTime;
@@ -49,6 +73,9 @@ public class Robot extends TimedRobot
     Hanger hanger;
     //Vision vision;
     //private static UsbCamera cam;
+
+    // Autonomous tracker
+    private boolean isFinished;
 
     /**
      * This function is run when the robot is first started up and should be used for any
@@ -71,48 +98,132 @@ public class Robot extends TimedRobot
     @Override
     public void autonomousInit()
     {
+        isFinished = false;
+
         conveyor.init();
         hanger.init();
         intake.init();
         drivetrain.init(true);
-
-        auto_timer.reset();
-        auto_timer.start();
         
+        timer.reset();
+        timer.start();
     }
 
     /** This function is called periodically during autonomous. */
     @Override
     public void autonomousPeriodic()
     {
-        // Begin auto with robot in far left position
-        SmartDashboard.putBoolean("AUTO RUNNING", true);
+        // Check for finished
+        if (isFinished)
+            return;
 
-        // Lower intake and close blocker
-        intake.lower();
-        conveyor.close(true);
+        // Add initial delay
+        if (timer.get() < AUTO_DELAY)
+            return;
 
-        // Pick up ball
-        drivetrain.forward(30);
-        intake.run();
-        drivetrain.intakeBall(conveyor.beltMotor, 30); // Move forward 30" with conveyor on low voltage
-        Timer.delay(2);
-        conveyor.stopBelt();
+        // Just park - 82/40 seconds
+        if (NUMBER_TO_SCORE == NumToScore.ZERO)
+        {
+            // Move off the tarmac
+            if (timer.get() < AUTO_DELAY +  82 * k.SECONDS_PER_INCH)
+            {
+                // Drive
+                drivetrain.move(1, 0);
+            }
+            else
+            {
+                // Auto is finished
+                drivetrain.stop();
+                isFinished = true;
+            }
+        }
+        // Score preloaded - 138/40 + 5.5 seconds
+        else if (NUMBER_TO_SCORE == NumToScore.ONE)
+        {
+            
+            if (timer.get() < AUTO_DELAY + 48 * k.SECONDS_PER_INCH)
+            {
+                drivetrain.move(-1, 0);
+            }
+            else if (timer.get() < AUTO_DELAY + 48 * k.SECONDS_PER_INCH + 5)
+            {
+                drivetrain.stop();
+                conveyor.open(false);
+                conveyor.run(false);
+            }
+            else if (timer.get() < AUTO_DELAY + 48 * k.SECONDS_PER_INCH + 5.5)
+            {
+                conveyor.stopBelt();
+            }
+            else if (timer.get() < AUTO_DELAY + 138 * k.SECONDS_PER_INCH + 5.5)
+            {
+                drivetrain.move(1, 0);
+            }
+            else
+            {
+                // Auto is finished
+                drivetrain.stop();
+                isFinished = true;
+            }
+        }
+        // Two-ball auto - 150/40 + 15/219.0f * 103.0/90.0 + 5.5
+        else if (NUMBER_TO_SCORE == NumToScore.TWO)
+        {
+            if (timer.get() < AUTO_DELAY +  30 * k.SECONDS_PER_INCH)
+            {
+                // Lower intake and close blocker
+                intake.lower();
+                conveyor.close(false);
 
-        // Drive to goal
-        drivetrain.rotate(-15);
-        drivetrain.forward(-90);
+                // Move towards ball
+                drivetrain.move(1, 0);
+            }
+            else if (timer.get() < AUTO_DELAY + 60 * k.SECONDS_PER_INCH)
+            {
+                // Pick up ball
+                intake.run();
+                conveyor.run(true);
 
-        // Outtake both balls
-        conveyor.open(false);
-        conveyor.outtake();
+                drivetrain.move(1, 0);
+            }
+            else if (timer.get() < AUTO_DELAY + 60 * k.SECONDS_PER_INCH + 0.5)
+            {
+                conveyor.stopBelt();
+                intake.stop();
+                drivetrain.stop();
+            }
+            else if (timer.get() < AUTO_DELAY + 60 * k.SECONDS_PER_INCH + 15 * k.SECONDS_PER_DEGREE + 0.5)
+            {                
+                // Drive to goal
+                if (auto == Auto.LEFT)
+                    drivetrain.move(0, -1);
+                else // RIGHT
+                    drivetrain.move(0, 1);
+            }
+            else if (timer.get() < AUTO_DELAY + 60 * k.SECONDS_PER_INCH + 15 * k.SECONDS_PER_DEGREE + 5)
+            {
+                // Outtake both balls
 
-        // Exit tarmac
-        drivetrain.forward(90);
-
-        // Finished
-        while (true)
-            SmartDashboard.putBoolean("AUTO RUNNING", false);
+                drivetrain.stop();
+                conveyor.open(false);
+                conveyor.run(false);
+            }
+            else if (timer.get() < AUTO_DELAY + 60 * k.SECONDS_PER_INCH + 15 * k.SECONDS_PER_DEGREE + 5.5)
+            {
+                conveyor.stopBelt();
+            }
+            else if (timer.get() < AUTO_DELAY + 150 * k.SECONDS_PER_INCH + 15 * k.SECONDS_PER_DEGREE + 5.5)
+            {
+                // Exit tarmac
+                drivetrain.move(-1, 0);
+            }
+            else
+            {
+                // Auto is finished
+                drivetrain.stop();
+                isFinished = true;
+            }
+        }
     }
 
     /** This function is called once each time the robot enters teleoperated mode. */
@@ -135,7 +246,7 @@ public class Robot extends TimedRobot
         long currTime = System.currentTimeMillis();
         
         // ==== DRIVETRAIN ==== //
-            
+        
         // Gear
         if (controller1.getRawAxis(k.RT) > 0.2)
         {
@@ -148,25 +259,22 @@ public class Robot extends TimedRobot
         // Brake B Button
         if (controller1.getRawButton(k.B))
         {
-            // Stop motion
-            //drivetrain.arcadeDrive(0, 0);
-
             // Set to break
             if (drivetrain.nm != NeutralMode.Brake)
                 drivetrain.setBrake();
         }
         else
         {
-            // Drive
-            if (controller1.getRawButton(k.RB))  // Slow mode
-                drivetrain.arcadeDrive(controller1.getRawAxis(k.LY_ID)/2, controller1.getRawAxis(k.RX_ID)/2);
-            else
-                drivetrain.arcadeDrive(controller1.getRawAxis(k.LY_ID), controller1.getRawAxis(k.RX_ID));
-
             // Swich to coast if necessary
             if (drivetrain.nm != NeutralMode.Coast)
                 drivetrain.setCoast();
         }
+
+        // Drive
+        if (controller1.getRawButton(k.RB))  // Slow mode
+            drivetrain.arcadeDrive(-controller1.getRawAxis(k.LY_ID)/2, -controller1.getRawAxis(k.RX_ID)/2);
+        else
+            drivetrain.arcadeDrive(-controller1.getRawAxis(k.LY_ID), -controller1.getRawAxis(k.RX_ID));
         
         // ==== Intake ==== //
         
@@ -183,7 +291,6 @@ public class Robot extends TimedRobot
             {
                 intake.stop();
                 conveyor.stopBelt();
-                conveyor.open(false);
                 raiseIntakeTime = currTime + Intake.DELAY;
             }
         }
@@ -194,7 +301,6 @@ public class Robot extends TimedRobot
         {
             intake.run();
             conveyor.run(true);
-            conveyor.close(false);
             runIntakeTime = UNQUEUED; // Return to sentinel
         }
         // Raise intake
@@ -207,6 +313,7 @@ public class Robot extends TimedRobot
         // ==== CONVEYOR ==== //
 
         // Outtake
+        /*
         if (controller1.getRawButton(k.LB))
         {
             if (conveyor._BeltState != Conveyor.BeltState.ON)
@@ -217,10 +324,25 @@ public class Robot extends TimedRobot
             else
                 conveyor.stopBelt();
         }
+        */
 
-        // Listen to Blocker Sensors
-        if (conveyor.isClosed() || conveyor.isOpen())
-            conveyor.stopBlocker();
+        if (controller1.getRawButton(k.LB) && intake._Position == Intake.Position.UP)
+        {
+            conveyor.run(false);
+            if (!conveyor.isClosed())
+                conveyor.stopBlocker();
+            else
+                conveyor.open(false);
+        }
+        // Then stop belt UNLESS intake is running (in which case let it be)
+        else if (intake._Position != Intake.Position.DOWN)
+        {
+            conveyor.stopBelt();
+            if (conveyor.isClosed())
+                conveyor.stopBlocker();
+            else
+                conveyor.close(false);
+        }
 
         // Telemetry
         conveyor.printData();

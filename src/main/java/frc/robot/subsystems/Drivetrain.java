@@ -36,8 +36,6 @@ public class Drivetrain {
         
         // Auto by time at 4.0V voltage - high gear
         public  static final double AUTO_VOLTAGE = 4.0;
-        private static final double SECONDS_PER_INCH = 1/40.0f;
-        private static final double SECONDS_PER_DEGREE = (1/219.0f) * 103.0/90.0;
 
         private static final int PIGEON_ID = 0;
         private static final int FWD_ID = 3, REV_ID = 4;
@@ -87,7 +85,7 @@ public class Drivetrain {
     private WPI_TalonFX R_Master = new WPI_TalonFX(k.FR_ID);
     private WPI_TalonFX L_Slave = new WPI_TalonFX(k.BL_ID);
     private WPI_TalonFX R_Slave = new WPI_TalonFX(k.BR_ID);
-    private DifferentialDrive drive;
+    //private DifferentialDrive drive;
     // Left motors even, right odd
     private WPI_TalonFX[] driveMotors = new WPI_TalonFX[]{L_Master, R_Master, L_Slave, R_Slave};
     private boolean[] motorInverted = new boolean[]{false, true, false, true};
@@ -132,17 +130,9 @@ public class Drivetrain {
             motor.setSelectedSensorPosition(0, k.PIDLoopIDx, k.TimeoutMs);
         }
 
-        // Invert as necessary & assign to diff drive 
-        L_Master.setInverted(false);
-        R_Master.setInverted(true);
-
-        // Set followers
-        L_Slave.follow(L_Master);
-        R_Slave.follow(R_Master);
-
-        L_Slave.setInverted(InvertType.FollowMaster);
-        R_Slave.setInverted(InvertType.FollowMaster);
-        drive = new DifferentialDrive(L_Master, R_Master);
+        // Invert as necessary
+        for (int i = 0; i < driveMotors.length; i++)
+            driveMotors[i].setInverted(motorInverted[i]);
     }
 
     /**
@@ -151,9 +141,18 @@ public class Drivetrain {
     * @param fwd the commanded forward movement
     * @param rot the commanded rotation
     */
-    public void arcadeDrive(double leftY, double leftX)
+    public void arcadeDrive(double leftY, double rightX)
     {
-        drive.arcadeDrive(-leftY, leftX);
+        // Limit input
+        if (leftY > 0.8)
+            leftY = 0.8;
+        if (rightX > 0.8)
+            rightX = 0.8;
+
+        L_Master.set(ControlMode.PercentOutput, leftY - rightX);
+        R_Master.set(ControlMode.PercentOutput, leftY + rightX);
+        L_Slave.set(ControlMode.PercentOutput, leftY - rightX);
+        R_Slave.set(ControlMode.PercentOutput, leftY + rightX);
     }
 
     public void setCoast()
@@ -172,14 +171,17 @@ public class Drivetrain {
 
     public void init(boolean isAuto)
     {
-        setHighGear();
         if (isAuto)
         {
             resetEncoders();
             setBrake();
+            setHighGear();
         }
         else
             setCoast();
+            setLowGear();
+
+        stop();
     }
 
     public void setHighGear()
@@ -200,92 +202,42 @@ public class Drivetrain {
      * @param forward
      * @param rotation
      */
-    public void move(double seconds, double forward, double rotation)
+    public void move(double forward, double rotation)
     {
         // Power motors for given # of seconds
-        timer.reset();
-        timer.start();
-        while (timer.get() < seconds)
+        for (int i = 0; i < 4; i++)
         {
-            for (int i = 0; i < 4; i++)
+            // If backward
+            if (forward < 0
+            // Or rotating clockwise & this is a right wheel
+                || (rotation > 0 && i%2 == 0)
+            // Or rotating CCW & this is a left wheel
+                || (rotation < 0 && i%2==1)
+            )
             {
-                // If backward
-                if (forward < 0
-                // Or rotating clockwise & this is a right wheel
-                    || (rotation > 0 && i%2 == 0)
-                // Or rotating CCW & this is a left wheel
-                    || (rotation < 0 && i%2==1)
-                )
-                {
-                    // Negative power
-                    if (driveMotors[i].getInverted() != !motorInverted[i])
-                        driveMotors[i].setInverted(!motorInverted[i]);
-
-                    driveMotors[i].setVoltage(k.AUTO_VOLTAGE);
-                }                
-                // All other cases, positive power
-                else
-                {
-                    if (driveMotors[i].getInverted() != motorInverted[i])
-                        driveMotors[i].setInverted(motorInverted[i]);
-                    driveMotors[i].setVoltage(k.AUTO_VOLTAGE);
-                }
-            }
-        }
-        
-        // Stop all motion when finished
-        for (WPI_TalonFX motor : driveMotors)
-            motor.stopMotor();
-    }
-
-    /**
-     * Move forward, or backwards if negative parameter.
-     * @param inches
-     */
-    public void forward(double inches)
-    {
-        move(Math.abs(inches) * k.SECONDS_PER_INCH,
-            Math.signum(inches) > 0 ? 1 : -1,
-            0);
-    }
-
-    /**
-     * Moves the robot forward a set distance while running the belt motor at a set voltage.
-     * @param beltMotor
-     * @param inches
-     */
-    public void intakeBall(WPI_TalonSRX beltMotor, double inches)
-    {
-        // Power motors for given # of seconds
-        timer.reset();
-        timer.start();
-        while (timer.get() < inches * k.SECONDS_PER_INCH)
-        {
-            for (int i = 0; i < 4; i++)
+                // Reverse if not reversed
+                if (driveMotors[i].getInverted() == motorInverted[i])
+                    driveMotors[i].setInverted(!motorInverted[i]);
+                // Apply voltage
+                driveMotors[i].setVoltage(k.AUTO_VOLTAGE);
+            }                
+            // All other cases, positive power
+            else
             {
+                // Un-reverse if reversed
                 if (driveMotors[i].getInverted() != motorInverted[i])
                     driveMotors[i].setInverted(motorInverted[i]);
+                // Apply voltage
                 driveMotors[i].setVoltage(k.AUTO_VOLTAGE);
             }
-            beltMotor.setVoltage(3);
         }
-        
+    }
+
+    public void stop()
+    {
         // Stop all motion when finished
         for (WPI_TalonFX motor : driveMotors)
             motor.stopMotor();
-        beltMotor.stopMotor();
-    }
-
-    /**
-     * Rotate clockwise, or ccw if given a negative.
-     * @param degrees Degrees to rotate
-     */
-    public void rotate(double degrees)
-    {
-        move(Math.abs(degrees) * k.SECONDS_PER_DEGREE,
-            0,
-            Math.signum(degrees) > 0 ? 1 : -1
-        );
     }
 
     public void resetEncoders()
