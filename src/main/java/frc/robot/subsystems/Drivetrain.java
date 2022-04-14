@@ -38,8 +38,8 @@ public class Drivetrain {
         public  static final double AUTO_VOLTAGE = 4.0;
 
         private static final int PIGEON_ID = 0;
-        private static final int FWD_ID = 3, REV_ID = 4;
-
+        private static final int FWD_ID = 4, REV_ID = 3;
+                                    // HIGH     // LOW
         private static final DoubleSolenoid.Value high = DoubleSolenoid.Value.kForward;
         private static final DoubleSolenoid.Value low = DoubleSolenoid.Value.kReverse;
         private static final DoubleSolenoid.Value off = DoubleSolenoid.Value.kOff;
@@ -143,12 +143,6 @@ public class Drivetrain {
     */
     public void arcadeDrive(double leftY, double rightX)
     {
-        // Limit input
-        if (leftY > 0.8)
-            leftY = 0.8;
-        if (rightX > 0.8)
-            rightX = 0.8;
-
         L_Master.set(ControlMode.PercentOutput, leftY - rightX);
         R_Master.set(ControlMode.PercentOutput, leftY + rightX);
         L_Slave.set(ControlMode.PercentOutput, leftY - rightX);
@@ -169,17 +163,24 @@ public class Drivetrain {
         nm = NeutralMode.Brake;
     }
 
+    public void setHalfBrake()
+    {
+        L_Master.setNeutralMode(NeutralMode.Brake);
+        R_Master.setNeutralMode(NeutralMode.Coast);
+        L_Slave.setNeutralMode(NeutralMode.Coast);
+        R_Slave.setNeutralMode(NeutralMode.Brake);
+    }
+
     public void init(boolean isAuto)
     {
+        setLowGear();
         if (isAuto)
         {
             resetEncoders();
             setBrake();
-            setHighGear();
         }
         else
             setCoast();
-            setLowGear();
 
         stop();
     }

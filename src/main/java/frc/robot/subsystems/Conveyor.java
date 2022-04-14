@@ -97,6 +97,12 @@ public class Conveyor
         _BeltState = BeltState.ON;
     }
 
+    public void runReverse()
+    {
+        beltMotor.set(ControlMode.PercentOutput, -k.BELT_POWER);
+        _BeltState = BeltState.ON;
+    }
+
     public void stopBelt()
     {
         //beltMotor.stopMotor();
