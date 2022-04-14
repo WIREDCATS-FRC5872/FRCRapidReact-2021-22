@@ -66,6 +66,16 @@ public class Conveyor
         stopBelt();
     }
 
+    public void runAll(double input)
+    {
+        for (WPI_TalonSRX motor : motors)
+        {
+            motor.set(ControlMode.PercentOutput, input);
+        }
+    }
+
+    /*
+
     public boolean isOpen()
     {
         return openSensor.get();
@@ -109,10 +119,12 @@ public class Conveyor
         beltMotor.set(ControlMode.PercentOutput, 0);
         _BeltState = BeltState.OFF;
     }
+    */
     
     /**
      * Runs the belt moter for a set time at a set percent ouput.
      */
+    /*
     public void outtake()
     {
         beltMotor.set(ControlMode.PercentOutput, k.BELT_POWER);
@@ -124,13 +136,16 @@ public class Conveyor
         timer.reset();
         stopBelt();
         */
+    /*
     }
+    */
 
     /**
      * Closes the blocker motor.
      * @param isAuto If true, blocker motor power is set to 0 (with brake neutral mode) when isClosed() is detected.
      * Else, blocker motor will not be stopped and _BlockerState will be updated to "CLOSING".
      */
+    /*
     public void close(boolean isAuto)
     {
         if (isAuto)
@@ -145,12 +160,14 @@ public class Conveyor
             _BlockerState = BlockerState.CLOSING;
         }
     }
+    */
 
     /**
      * Opens the blocker motor.
      * @param isAuto If true, blocker motor power is set to 0 (with brake neutral mode) when isOpen() is detected.
      * Else, blocker motor will not be stopped and _BlockerState will be updated to "OPENING".
      */
+    /*
     public void open(boolean isAuto)
     {
         if (isAuto)
@@ -172,4 +189,5 @@ public class Conveyor
         blockerMotor.set(ControlMode.PercentOutput, 0);
         _BlockerState = Conveyor.BlockerState.STOPPED;
     }
+    */
 }

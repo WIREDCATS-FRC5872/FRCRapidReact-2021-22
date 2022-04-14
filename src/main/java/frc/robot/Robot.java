@@ -316,7 +316,8 @@ public class Robot extends TimedRobot
             else if (intake._RunState == Intake.RunState.ON)
             {
                 intake.stop();
-                conveyor.stopBelt();
+                //conveyor.stopBelt();
+                conveyor.runAll(0);
                 raiseIntakeTime = currTime + Intake.DELAY;
             }
         }
@@ -326,7 +327,8 @@ public class Robot extends TimedRobot
         if (currTime >= runIntakeTime && intake._Position == Intake.Position.DOWN)
         {
             intake.run();
-            conveyor.run(true);
+            //conveyor.run(true);
+            conveyor.runAll(1.0);
             runIntakeTime = UNQUEUED; // Return to sentinel
         }
         // Raise intake
@@ -354,24 +356,31 @@ public class Robot extends TimedRobot
 
         if (controller1.getRawButton(k.LB) && intake._Position == Intake.Position.UP)
         {
+            conveyor.runAll(1.0);
+            /*
             conveyor.run(false);
             if (!conveyor.isClosed())
                 conveyor.stopBlocker();
             else
                 conveyor.open(false);
+            */
         }
         // Then stop belt UNLESS intake is running (in which case let it be)
         else if (intake._Position != Intake.Position.DOWN)
         {
+            conveyor.runAll(0);
+            /*
             conveyor.stopBelt();
             if (conveyor.isClosed())
                 conveyor.stopBlocker();
             else
                 conveyor.close(false);
+            */
         }
 
         if (controller1.getRawButton(k.A))
-            conveyor.runReverse();
+            //conveyor.runReverse();
+            conveyor.runAll(-1.0);
 
         // Telemetry
         conveyor.printData();
