@@ -115,6 +115,7 @@ public class Robot extends TimedRobot
     @Override
     public void autonomousPeriodic()
     {
+        /*
         // Check for finished
         if (isFinished)
             return;
@@ -251,6 +252,7 @@ public class Robot extends TimedRobot
                 isFinished = true;
             }
         }
+        */
     }
 
     /** This function is called once each time the robot enters teleoperated mode. */
@@ -383,7 +385,7 @@ public class Robot extends TimedRobot
             conveyor.runAll(-1.0);
 
         // Telemetry
-        conveyor.printData();
+        // conveyor.printData();
 
         // === Hanger === //
 

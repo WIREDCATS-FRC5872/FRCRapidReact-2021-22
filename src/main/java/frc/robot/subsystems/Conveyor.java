@@ -63,7 +63,8 @@ public class Conveyor
 
     public void init()
     {
-        stopBelt();
+        runAll(0);
+        //stopBelt();
     }
 
     public void runAll(double input)
